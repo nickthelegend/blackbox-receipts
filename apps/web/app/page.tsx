@@ -11,7 +11,7 @@ export default function Home() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [expanded, setExpanded] = useState<number | null>(null);
-  const refresh = useCallback(async () => { const response = await fetch('/api/session', { cache: 'no-store' }); setData(await response.json()); }, []);
+  const refresh = useCallback(async () => { try { const response = await fetch('/api/session', { cache: 'no-store' }); const result = await response.json(); if (!response.ok) throw new Error(result.error ?? `Session request failed (${response.status})`); setData(result); } catch (error) { setData(null); setMessage(`Could not load the session: ${error instanceof Error ? error.message : String(error)}`); } }, []);
   useEffect(() => { void refresh(); const timer = setInterval(() => void refresh(), 3000); return () => clearInterval(timer); }, [refresh]);
   async function action(url: string) { setBusy(true); setMessage(''); try { const response = await fetch(url, { method: 'POST' }); const result = await response.json(); if (!response.ok) throw new Error(result.error ?? 'Request failed'); setMessage(url.includes('tamper') ? `Receipt ${result.editedStep} edited. Verification now detects the change.` : 'Upload completed. Walrus returned a blob response.'); await refresh(); } catch (error) { setMessage(error instanceof Error ? error.message : String(error)); } finally { setBusy(false); } }
 
@@ -37,7 +37,7 @@ export default function Home() {
       <button className="button button-primary" disabled={!receipts.length || busy} onClick={() => void refresh()}><span>✓</span> Verify session <span className="button-arrow">↗</span></button>
       <button className="button button-secondary" disabled={!receipts.length || busy} onClick={() => void action('/api/tamper')}><span>⌁</span> Run tamper demo <span className="button-arrow">↗</span></button>
       <div className="anchor-box"><div><div className="eyebrow">TAMPER EVIDENCE</div><strong>{valid ? 'All receipts intact' : receipts.length ? `Receipt ${data?.chain.brokenAt} altered` : 'Ready when you are'}</strong></div><span className={valid ? 'seal-good' : 'seal-bad'}>{valid ? '✓' : '!'}</span></div>
-      <div className="anchor-box walrus-box"><div><div className="eyebrow">DECENTRALIZED STORAGE</div><strong>{data?.walrus ? 'Session blob stored' : 'Pin the session log'}</strong>{data?.walrus && <code>{typeof blobId === 'string' ? blobId : JSON.stringify(blobId)?.slice(0, 50)}</code>}</div><button className="anchor-button" disabled={busy} onClick={() => void action('/api/anchor')}>{data?.walrus ? '↻' : '↑'}</button></div>
+      <div className="anchor-box walrus-box"><div><div className="eyebrow">DECENTRALIZED STORAGE</div><strong>{data?.walrus ? 'Session blob stored' : 'Pin the session log'}</strong>{data?.walrus && <code>{typeof blobId === 'string' ? blobId : JSON.stringify(blobId)?.slice(0, 50)}</code>}</div><button className="anchor-button" aria-label={data?.walrus ? 'Re-upload session to Walrus' : 'Upload session to Walrus'} disabled={busy} onClick={() => void action('/api/anchor')}>{data?.walrus ? '↻' : '↑'}</button></div>
       {message && <div className="notice" role="status">{message}</div>}
       <div className="disclaimer">Signatures prove what the proxy observed. They do not prove the proxy machine was uncompromised. TEE attestation is future work.</div>
     </aside></section>
