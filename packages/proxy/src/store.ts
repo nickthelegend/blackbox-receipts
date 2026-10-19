@@ -3,7 +3,7 @@ import { resolve, relative, isAbsolute, sep } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
 import { existsSync, realpathSync, statSync } from 'node:fs';
-import { createReceipt, generateSigningKey, type Receipt, sha256 } from '@blackbox/receipts';
+import { createReceipt, generateSigningKey, type Receipt, type Witness, sha256 } from '@blackbox/receipts';
 
 const currentDirectory = process.cwd();
 const monorepoRoot = existsSync(resolve(currentDirectory, 'apps/web/package.json')) && existsSync(resolve(currentDirectory, 'packages/proxy/package.json'))
@@ -13,6 +13,8 @@ const monorepoRoot = existsSync(resolve(currentDirectory, 'apps/web/package.json
     : currentDirectory;
 export const dataDir = resolve(monorepoRoot, process.env.RECEIPTS_DIR ?? '.blackbox');
 const sessionFile = resolve(dataDir, 'session.jsonl');
+// Raw tool arguments: the private witness for property proofs. Never served to the dashboard or included in proofs.
+const witnessFile = resolve(dataDir, 'witness.jsonl');
 const keyFile = resolve(dataDir, 'signing-key.pem');
 const publicKeyFile = resolve(dataDir, 'public-key.pem');
 export const sessionId = process.env.RECEIPTS_SESSION_ID ?? randomUUID();
@@ -43,6 +45,16 @@ export async function loadReceipts(): Promise<Receipt[]> {
   }
 }
 
+export async function loadWitnesses(): Promise<Witness[]> {
+  try {
+    const lines = (await readFile(witnessFile, 'utf8')).trim().split('\n').filter(Boolean);
+    return lines.map((line) => JSON.parse(line) as Witness);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
+    throw error;
+  }
+}
+
 export async function addReceipt(tool: string, args: unknown, result: unknown, paths: string[], secretsAccessed: boolean, permissions: string[], approvedBy: string | null = null) {
   const receipts = await loadReceipts();
   const keys = await signingKeys();
@@ -53,13 +65,14 @@ export async function addReceipt(tool: string, args: unknown, result: unknown, p
     resultHash: sha256(JSON.stringify(result)), previousHash: receipts.at(-1)?.hash ?? null,
   }, keys.privateKey);
   await mkdir(dataDir, { recursive: true, mode: 0o700 });
+  await appendFile(witnessFile, `${JSON.stringify({ sessionId, step: receipt.step, args } satisfies Witness)}\n`, { mode: 0o600 });
   await appendFile(sessionFile, `${JSON.stringify(receipt)}\n`, { mode: 0o600 });
   return receipt;
 }
 
 export async function resetSession() {
   await mkdir(dataDir, { recursive: true, mode: 0o700 });
-  await writeFile(sessionFile, '', { mode: 0o600 });
+  await Promise.all([writeFile(sessionFile, '', { mode: 0o600 }), writeFile(witnessFile, '', { mode: 0o600 })]);
 }
 
 export function safePath(input: string): { path: string; relativePath: string } {

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createReceipt, generateSigningKey, merkleProof, proveNoSecrets, verifyChain, verifyMerkleProof, type ReceiptInput } from '../packages/receipts/src/index.ts';
+import { createReceipt, generateSigningKey, merkleProof, verifyChain, verifyMerkleProof, type ReceiptInput } from '../packages/receipts/src/index.ts';
 
 function receiptsFixture(secretsAccessed = false) {
   const keys = generateSigningKey();
@@ -36,19 +36,3 @@ test('generates membership proofs against the session root', () => {
   const leaves = items.map(({ hash }) => hash);
   assert.ok(leaves.every((_, index) => verifyMerkleProof(merkleProof(leaves, index))));
 });
-
-test('proves no-secret policy only for a valid session', () => {
-  const emptyKeys = generateSigningKey();
-  const empty = proveNoSecrets([], emptyKeys.publicKey);
-  assert.equal(empty.valid, false);
-  if (!empty.valid) assert.equal(empty.reason, 'No receipts exist for this session');
-  const safe = receiptsFixture();
-  const result = proveNoSecrets(safe.items, safe.keys.publicKey);
-  assert.equal(result.valid, true);
-  if (result.valid) assert.ok(result.proofs.every(verifyMerkleProof));
-  const unsafe = receiptsFixture(true);
-  const violation = proveNoSecrets(unsafe.items, unsafe.keys.publicKey);
-  assert.equal(violation.valid, false);
-  if (!violation.valid) assert.equal(violation.reason, 'Secrets were accessed at step 2');
-});
-

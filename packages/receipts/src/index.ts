@@ -106,13 +106,4 @@ export function verifyMerkleProof(proof: ReturnType<typeof merkleProof>): boolea
   return value === proof.root;
 }
 
-export function proveNoSecrets(receipts: Receipt[], publicKeyPem: string) {
-  if (receipts.length === 0) return { valid: false as const, reason: 'No receipts exist for this session', proof: null, root: null };
-  const chain = verifyChain(receipts, publicKeyPem);
-  if (!chain.valid) return { valid: false as const, reason: chain.reason, proof: null, root: null };
-  const violating = receipts.find((receipt) => receipt.secretsAccessed);
-  if (violating) return { valid: false as const, reason: `Secrets were accessed at step ${violating.step}`, proof: null, root: merkleRoot(receipts.map(({ hash }) => hash)) };
-  const leaves = receipts.map(({ hash }) => hash);
-  const proofs = leaves.map((_, index) => merkleProof(leaves, index));
-  return { valid: true as const, reason: null, proofs, root: merkleRoot(leaves) };
-}
+export * from './property.js';

@@ -7,14 +7,17 @@
   "exports": {
     ".": {
       "types": "./dist/server.d.ts",
+      "source": "./src/server.ts",
       "import": "./dist/server.js"
     },
     "./store": {
       "types": "./dist/store.d.ts",
+      "source": "./src/store.ts",
       "import": "./dist/store.js"
     },
     "./cli": {
       "types": "./dist/cli.d.ts",
+      "source": "./src/cli.ts",
       "import": "./dist/cli.js"
     }
   },
@@ -22,7 +25,9 @@
     "build": "tsc -p tsconfig.json",
     "start": "cd ../.. && node packages/proxy/dist/server.js",
     "verify": "cd ../.. && node packages/proxy/dist/cli.js verify",
-    "prove-no-secrets": "cd ../.. && node packages/proxy/dist/cli.js prove-no-secrets",
+    "prove": "cd ../.. && node packages/proxy/dist/cli.js prove",
+    "verify-proof": "cd ../.. && node packages/proxy/dist/cli.js verify-proof",
+    "prove-no-secrets": "cd ../.. && node packages/proxy/dist/cli.js prove",
     "tamper": "cd ../.. && node packages/proxy/dist/cli.js tamper"
   },
   "dependencies": { "@blackbox/receipts": "workspace:*", "@modelcontextprotocol/sdk": "^1.25.2", "zod": "^4.1.12" }
