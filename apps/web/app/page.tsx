@@ -114,7 +114,7 @@ export default function Home() {
           </li>;
         })}</ol> : <div className="empty"><div className="empty-icon">⌁</div><strong>Recorder armed. Nothing recorded yet.</strong><span>Start the MCP proxy and call a tool. Signed blocks appear here as the agent works.</span><code>pnpm --filter @blackbox/proxy start</code></div>}
 
-        <div className="recorder-foot"><span>MERKLE ROOT</span><code>{data?.root ?? '—'}</code><button onClick={() => setExpanded(expanded === -1 ? null : -1)}>{expanded === -1 ? 'HIDE KEY' : 'PUBLIC KEY'}</button></div>
+        <div className="recorder-foot"><span>MERKLE ROOT</span><code>{receipts.length ? data?.root ?? '—' : '—'}</code><button onClick={() => setExpanded(expanded === -1 ? null : -1)}>{expanded === -1 ? 'HIDE KEY' : 'PUBLIC KEY'}</button></div>
         {expanded === -1 && <div className="pubkey"><label>PROXY PUBLIC KEY</label><pre>{data?.publicKey}</pre></div>}
       </div>
 
