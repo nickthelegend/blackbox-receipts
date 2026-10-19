@@ -2,7 +2,7 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { defaultSecretPolicy, discloseStep, merkleRoot, proveProperty, verifyChain, verifyPropertyProof, type PropertyFailure, type PropertyProof, type Receipt, type SecretPolicy } from '@blackbox/receipts';
-import { loadReceipts, loadWitnesses, signingKeys, dataDir } from './store.js';
+import { loadReceipts, loadWitnesses, restoreSession, signingKeys, tamperReceipt, dataDir } from './store.js';
 
 const [command = 'verify', ...rest] = process.argv.slice(2);
 const option = (name: string) => { const index = rest.indexOf(`--${name}`); return index >= 0 ? rest[index + 1] : undefined; };
@@ -113,16 +113,12 @@ if (command === 'verify') {
   const [receipts, witnesses, keys, policy] = await Promise.all([loadReceipts(), loadWitnesses(), signingKeys(), loadPolicy()]);
   console.log(JSON.stringify(discloseStep(receipts, witnesses, step, policy, keys.privateKey), null, 2));
 } else if (command === 'tamper') {
-  const receipts = await loadReceipts();
-  if (!receipts.length) throw new Error('No receipts exist to tamper with');
-  const file = resolve(dataDir, 'session.jsonl');
-  const lines = (await readFile(file, 'utf8')).trim().split('\n');
-  const entry = JSON.parse(lines[0]);
-  entry.tool = `${entry.tool}-edited`;
-  lines[0] = JSON.stringify(entry);
-  await writeFile(file, `${lines.join('\n')}\n`);
-  console.log(`Edited receipt 1 in ${file}`);
+  const step = Number(positional[0] ?? 1);
+  if (!Number.isInteger(step) || step < 1) throw new Error(`tamper takes a block step number, got "${positional[0]}"`);
+  console.log(`Edited block ${await tamperReceipt(step)} in ${resolve(dataDir, 'session.jsonl')}. Undo with: restore`);
+} else if (command === 'restore') {
+  console.log(`Restored block(s) ${(await restoreSession()).join(', ')} to their signed originals.`);
 } else {
-  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | disclose <step> | tamper]');
+  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | disclose <step> | tamper [step] | restore]');
   process.exitCode = 2;
 }
