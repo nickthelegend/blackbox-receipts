@@ -2,6 +2,22 @@
   "name": "@blackbox/proxy",
   "version": "0.1.0",
   "type": "module",
+  "main": "./dist/server.js",
+  "types": "./dist/server.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    },
+    "./store": {
+      "types": "./dist/store.d.ts",
+      "import": "./dist/store.js"
+    },
+    "./cli": {
+      "types": "./dist/cli.d.ts",
+      "import": "./dist/cli.js"
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "start": "cd ../.. && node packages/proxy/dist/server.js",

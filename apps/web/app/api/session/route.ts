@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { merkleRoot, proveNoSecrets, verifyChain } from '@blackbox/receipts';
-import { loadReceipts, signingKeys, sessionId, dataDir } from '@blackbox/proxy/dist/store.js';
+import { loadReceipts, signingKeys, sessionId, dataDir } from '@blackbox/proxy/store';
 import { existsSync } from 'node:fs';
 
 export const runtime = 'nodejs';
@@ -17,7 +17,7 @@ export async function GET() {
 }
 
 export async function DELETE() {
-  const { resetSession } = await import('@blackbox/proxy/dist/store.js');
+  const { resetSession } = await import('@blackbox/proxy/store');
   await resetSession();
   return NextResponse.json({ ok: true });
 }

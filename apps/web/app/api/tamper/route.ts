@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { dataDir, loadReceipts } from '@blackbox/proxy/dist/store.js';
+import { dataDir, loadReceipts } from '@blackbox/proxy/store';
 
 export const runtime = 'nodejs';
 

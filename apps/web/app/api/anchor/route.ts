@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { merkleRoot } from '@blackbox/receipts';
-import { dataDir, loadReceipts, signingKeys } from '@blackbox/proxy/dist/store.js';
+import { dataDir, loadReceipts, signingKeys } from '@blackbox/proxy/store';
 
 export const runtime = 'nodejs';
 
