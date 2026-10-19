@@ -15,6 +15,11 @@
       "source": "./src/store.ts",
       "import": "./dist/store.js"
     },
+    "./call": {
+      "types": "./dist/call.d.ts",
+      "source": "./src/call.ts",
+      "import": "./dist/call.js"
+    },
     "./cli": {
       "types": "./dist/cli.d.ts",
       "source": "./src/cli.ts",
@@ -28,7 +33,8 @@
     "prove": "cd ../.. && node packages/proxy/dist/cli.js prove",
     "verify-proof": "cd ../.. && node packages/proxy/dist/cli.js verify-proof",
     "prove-no-secrets": "cd ../.. && node packages/proxy/dist/cli.js prove",
-    "tamper": "cd ../.. && node packages/proxy/dist/cli.js tamper"
+    "tamper": "cd ../.. && node packages/proxy/dist/cli.js tamper",
+    "verify-export": "cd ../.. && node packages/proxy/dist/cli.js verify-export"
   },
   "dependencies": { "@blackbox/receipts": "workspace:*", "@modelcontextprotocol/sdk": "^1.25.2", "zod": "^4.1.12" }
 }

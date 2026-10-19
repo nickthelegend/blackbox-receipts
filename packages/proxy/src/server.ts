@@ -5,13 +5,13 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { addReceipt, isSecretPath, resetSession, safeFilePath, safePath } from './store.js';
+import { addReceipt, isSecretPath, resetSession, resumeSession, safeFilePath, safePath } from './store.js';
 
 const execFileAsync = promisify(execFile);
 const server = new Server({ name: 'blackbox-receipts-proxy', version: '0.1.0' }, { capabilities: { tools: {} } });
 const toolList = [
   { name: 'read_file', description: 'Read a UTF-8 text file from the current workspace. Secret paths are blocked and recorded.', inputSchema: { path: z.string() } },
-  { name: 'git', description: 'Run read-only git status, diff, log, or show in the current workspace.', inputSchema: { action: z.enum(['status', 'diff', 'log', 'show']), args: z.array(z.string()).default([]) } },
+  { name: 'git', description: 'Run read-only git status, diff, log, show (rev:path), or show_stat (files changed by one revision) in the current workspace.', inputSchema: { action: z.enum(['status', 'diff', 'log', 'show', 'show_stat']), args: z.array(z.string()).default([]) } },
   { name: 'shell', description: 'Run a shell command in the current workspace. Secret reads and production targets are blocked.', inputSchema: { command: z.string() } },
 ];
 
@@ -32,7 +32,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       if (isSecretPath(target.relativePath)) { secretsAccessed = true; throw new Error('Policy denied access to secret path'); }
       output = await readFile(target.path, 'utf8');
     } else if (name === 'git') {
-      const action = z.enum(['status', 'diff', 'log', 'show']).parse(args.action);
+      const action = z.enum(['status', 'diff', 'log', 'show', 'show_stat']).parse(args.action);
       const requested = z.array(z.string()).parse(args.args ?? []);
       permissions = ['workspace:git:read'];
       if (action === 'status' && requested.length) throw new Error('git status does not accept additional arguments');
@@ -46,12 +46,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const path = requested[0].split(':').at(-1)!;
         paths = [safeFilePath(path).relativePath];
       }
+      if (action === 'show_stat' && (requested.length > 1 || requested.some((rev) => !/^[A-Za-z0-9][A-Za-z0-9._/~^-]*$/.test(rev)))) throw new Error('git show_stat accepts at most one plain revision');
       if (paths.some(isSecretPath)) { secretsAccessed = true; throw new Error('Policy denied git access to a secret path'); }
       const gitArgs: Record<string, string[]> = {
         status: ['status', '--short'],
         diff: ['diff', '--', ...paths],
         log: ['log', '-n', '20', '--oneline'],
         show: ['show', requested[0]],
+        show_stat: ['show', '--stat', '--format=%H %s', requested[0] ?? 'HEAD', '--'],
       };
       output = (await execFileAsync('git', gitArgs[action], { cwd: process.cwd(), maxBuffer: 2_000_000 })).stdout;
     } else if (name === 'shell') {
@@ -88,5 +90,5 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 const transport = new StdioServerTransport();
-await resetSession();
+if (!resumeSession) await resetSession();
 await server.connect(transport);

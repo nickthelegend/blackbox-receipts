@@ -2,7 +2,7 @@ import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve, relative, isAbsolute, sep } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
-import { existsSync, realpathSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs';
 import { createReceipt, generateSigningKey, type Receipt, type Witness, sha256 } from '@blackbox/receipts';
 
 const currentDirectory = process.cwd();
@@ -17,7 +17,16 @@ const sessionFile = resolve(dataDir, 'session.jsonl');
 const witnessFile = resolve(dataDir, 'witness.jsonl');
 const keyFile = resolve(dataDir, 'signing-key.pem');
 const publicKeyFile = resolve(dataDir, 'public-key.pem');
-export const sessionId = process.env.RECEIPTS_SESSION_ID ?? randomUUID();
+// RECEIPTS_RESUME=1 appends to the existing session instead of starting a new one. One-shot MCP clients
+// (such as the `call` bridge used by GitLab Duo flows) start a proxy per tool call and rely on this.
+export const resumeSession = process.env.RECEIPTS_RESUME === '1';
+function lastSessionId(): string | undefined {
+  try {
+    const last = readFileSync(sessionFile, 'utf8').trim().split('\n').filter(Boolean).at(-1);
+    return last ? (JSON.parse(last) as Receipt).sessionId : undefined;
+  } catch { return undefined; }
+}
+export const sessionId = process.env.RECEIPTS_SESSION_ID ?? (resumeSession ? lastSessionId() : undefined) ?? randomUUID();
 
 export async function signingKeys() {
   await mkdir(dataDir, { recursive: true, mode: 0o700 });
