@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "engines": { "node": ">=20" },
+  "packageManager": "pnpm@10.29.2",
   "scripts": {
     "build": "pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/proxy build && pnpm --filter @blackbox/web build",
     "test": "pnpm --filter @blackbox/receipts test",

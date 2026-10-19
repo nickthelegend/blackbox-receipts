@@ -1,0 +1,57 @@
+# Build, test and verify Blackbox Receipts on GitLab.
+# - verify:live-session records a real session through the MCP proxy on this checkout and checks that the
+#   verifier PASSes it and FAILs a secret read, a tampered log and an empty session.
+# - verify:exported-receipts runs when a commit contains receipts/<session>/ exported by the Duo flow,
+#   and fails the pipeline unless every exported session verifies.
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_TAG
+
+stages: [build, test, verify]
+
+default:
+  image: node:22-bookworm
+  cache:
+    key:
+      files: [pnpm-lock.yaml]
+    paths: [.pnpm-store]
+  before_script:
+    - corepack enable
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install --frozen-lockfile
+
+build:
+  stage: build
+  script:
+    - pnpm -r build
+  artifacts:
+    paths:
+      - packages/receipts/dist
+      - packages/proxy/dist
+    expire_in: 1 day
+
+test:
+  stage: test
+  needs: []
+  script:
+    - pnpm test
+
+verify:live-session:
+  stage: verify
+  needs: [build]
+  script:
+    - bash scripts/ci/verify-live-session.sh
+
+verify:exported-receipts:
+  stage: verify
+  needs: [build]
+  rules:
+    - exists:
+        - receipts/*/session.jsonl
+  script:
+    # Set BLACKBOX_PUBLIC_KEY (CI/CD variable, PEM) to require that exports were signed by a known proxy key.
+    - node packages/proxy/dist/cli.js verify-export
