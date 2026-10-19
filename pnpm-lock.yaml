@@ -43,6 +43,8 @@ importers:
         specifier: ^19.1.9
         version: 19.3.0(@types/react@19.3.0)
 
+  packages/meterless: {}
+
   packages/proxy:
     dependencies:
       '@blackbox/receipts':
@@ -56,6 +58,8 @@ importers:
         version: 4.6.7
 
   packages/receipts: {}
+
+  packages/zetaris: {}
 
 packages:
 

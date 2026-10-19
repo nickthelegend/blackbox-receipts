@@ -71,9 +71,32 @@ Demo video: not recorded yet; add a share link here before submission.
 
 ## Sponsor technology
 
-- Open Agent: usable as a local MCP server with any MCP-capable agent; no sponsor-specific sign-up or API integration is included in this workspace.
+- Open Agent: usable as a local MCP server with any MCP-capable agent. Zetaris and Meterless client packages are included (see above). They have not been run against a live account, and they are not yet wired into the proxy.
 - GitLab Transcend: `.gitlab/duo/flows/blackbox-receipts.yaml` is a Duo Agent Platform custom flow whose agent reads the repo only through the receipts bridge (`packages/proxy/dist/call.js`, a one-shot MCP client to the proxy). Runner-executed flows can't attach MCP servers, so the bridge is how each step still reaches the proxy over MCP. The flow exports `receipts/<session>/`, pushes it, and posts its answer with step-cited evidence and the verbatim PASS/FAIL verdict. `.gitlab-ci.yml` builds, tests, records a real proxy session and runs the verifier, and verifies any exported Duo session. `.gitlab/duo/mcp.json` registers the proxy for Duo in the IDE. Setup steps: [docs/gitlab-setup.md](docs/gitlab-setup.md). **Not yet run on GitLab**; don't claim a Duo run until one has happened.
 - Walrus: the dashboard can upload the signed session payload to a configured publisher. No publisher endpoint or funding is bundled; it does not claim to have anchored when unavailable.
+
+## Open Agent integrations: Zetaris and Meterless
+
+Two workspace packages call each sponsor's real interface. Neither has mock responses: if configuration is missing, the constructor throws a `ZetarisConfigError` or `MeterlessConfigError` that names the missing variable. Neither is wired into the proxy or dashboard yet.
+
+**`packages/zetaris` (`@blackbox/zetaris`)** is a client for the Zetaris SaaS REST API, written against its OpenAPI spec ([Redoc](https://api.saas.enterprise.zetaris.com/redoc/index.html), [how to access the API](https://kbase.zetaris.com/knowledge/accessing-zetaris-using-api)).
+
+- Env vars: `ZETARIS_API_KEY` (from the Zetaris Console) and `ZETARIS_ORG_ID` (an integer from Zetaris Support/Admin) are required. `ZETARIS_BASE_URL` is optional and defaults to `https://api.saas.enterprise.zetaris.com`.
+- Each call sends `Authorization: Bearer <api key>`, `X-Org-ID` and a fresh `X-Request-ID` UUID.
+- Methods: `listDataMarts`, `listDataMartTables`, `listLightningDatabases`, `startSql`, `pageSql`, `closeSql`, and `querySql`, which follows every page and always closes the cursor. `login(username, password)` covers the Basic-auth JWT endpoint.
+
+**`packages/meterless` (`@blackbox/meterless`)** is a client for the Meterless Runtime (the Nightshift hotspot). The runtime is an OpenAI-compatible provider that runs on your own machine, so Meterless has **no hosted API or `METERLESS_API_KEY`**. The client follows the [Meterless provider contract](https://github.com/meterless/meterless/blob/main/docs/agent-ready/add-meterless-provider.md) (Runtime 0.90.0).
+
+- Token: set `METERLESS_TOKEN`, or set `METERLESS_STATE_DIR` and the client reads `<stateDir>/proxy-token`. The placeholder `rt-local` is rejected.
+- `METERLESS_BASE_URL` defaults to `http://127.0.0.1:8088/v1`. Any pasted form of the URL is normalised to `<host>/v1`.
+- Methods: `status()` returns `online`, `unauthorized` or `offline`, decided by `GET /v1/models` as the contract requires. `listModels()` returns the routing modes, such as `meterless/auto`. `chat(messages, model)` returns the reply text.
+- Every request sends `meterless-app: blackbox-receipts`, chat requests also send `meterless-scope: user`, and requests time out after 180 s.
+
+**Tests.** Run `pnpm test` (the files are `test/zetaris.test.ts` and `test/meterless.test.ts`).
+
+- Config and URL tests always run.
+- Live tests run only when the keys are set. Otherwise they are skipped and print a `⚠️ SKIPPING LIVE … TESTS` banner, so a green CI run never implies a live call happened.
+- The Zetaris SQL test also needs `ZETARIS_TEST_SQL`, a `SELECT` against your org.
 
 ## Limitations
 
