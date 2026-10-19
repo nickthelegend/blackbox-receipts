@@ -34,7 +34,7 @@ The dashboard and proxy share the repo's `.blackbox/` store. For another workspa
 ## Architecture
 
 - `packages/receipts` defines canonical receipt hashing, Ed25519 signing, chain verification, Merkle roots and proofs, and the selective-disclosure property query (`proveProperty`, `verifyPropertyProof`, `discloseStep`, `verifyDisclosure`).
-- `packages/proxy` exposes actual local file, Git, and shell operations over MCP, applies secret path/production target rules, and appends every successful or denied invocation to JSONL. Raw tool arguments go to a private `.blackbox/witness.jsonl`; receipts carry only their hash.
+- `packages/proxy` exposes actual local file, Git (including `show_stat`), and shell operations over MCP. `call.js` is a one-shot MCP client to it for environments without MCP support, and `RECEIPTS_RESUME=1` lets separate processes extend one session. The proxy applies secret path/production target rules, and appends every successful or denied invocation to JSONL. Raw tool arguments go to a private `.blackbox/witness.jsonl`; receipts carry only their hash.
 - `apps/web` is a responsive Next.js timeline and verifier. It polls the same local session and expands signed records. **Prove: no secrets read** runs the property query, and the tamper button alters a saved row to demonstrate detection.
 
 ## Prove a property: "the agent never read secrets"
@@ -52,6 +52,8 @@ pnpm --filter @blackbox/proxy prove           # PASS writes .blackbox/proof-no-s
 pnpm --filter @blackbox/proxy verify-proof    # or: node packages/proxy/dist/cli.js verify-proof <file> --public-key <pem> --root <hex>
 node packages/proxy/dist/cli.js prove --policy my-policy.json
 node packages/proxy/dist/cli.js disclose 3    # opening for one step only
+node packages/proxy/dist/cli.js export       # receipts, public key, verdict and proof into receipts/<session>/
+node packages/proxy/dist/cli.js verify-export # check every receipts/*/ export from its own files
 pnpm verify                                   # chain integrity only
 ```
 
@@ -70,7 +72,7 @@ Demo video: not recorded yet; add a share link here before submission.
 ## Sponsor technology
 
 - Open Agent: usable as a local MCP server with any MCP-capable agent; no sponsor-specific sign-up or API integration is included in this workspace.
-- GitLab Transcend: GitLab Duo Agent Platform work is not yet connected to this proxy. A real Duo flow requires a GitLab project, Agent Platform entitlement, configured flow and a network-reachable MCP endpoint. Do not claim a Duo run until that is configured and exercised.
+- GitLab Transcend: `.gitlab/duo/flows/blackbox-receipts.yaml` is a Duo Agent Platform custom flow whose agent reads the repo only through the receipts bridge (`packages/proxy/dist/call.js`, a one-shot MCP client to the proxy). Runner-executed flows can't attach MCP servers, so the bridge is how each step still reaches the proxy over MCP. The flow exports `receipts/<session>/`, pushes it, and posts its answer with step-cited evidence and the verbatim PASS/FAIL verdict. `.gitlab-ci.yml` builds, tests, records a real proxy session and runs the verifier, and verifies any exported Duo session. `.gitlab/duo/mcp.json` registers the proxy for Duo in the IDE. Setup steps: [docs/gitlab-setup.md](docs/gitlab-setup.md). **Not yet run on GitLab**; don't claim a Duo run until one has happened.
 - Walrus: the dashboard can upload the signed session payload to a configured publisher. No publisher endpoint or funding is bundled; it does not claim to have anchored when unavailable.
 
 ## Limitations
@@ -82,5 +84,7 @@ Demo video: not recorded yet; add a share link here before submission.
 - Glob and token matching is heuristic. A secret reached through an unlisted path or an obfuscated argument won't match. Receipts recorded before the witness log existed can't be proven and fail with "Raw arguments … are missing".
 - No TEE attestation.
 - No live GitLab Duo run or Walrus upload has been verified; the respective account/endpoint setup is required.
+- In the Duo flow, `run_command` can technically run any command. The prompt restricts workspace reads to the bridge, but a read that bypasses the bridge would leave no receipt. The flow's own git commands (commit and push of the export) are outside the chain by design.
+- Exported sessions include the signed receipts (tool names, paths, hashes), but never the raw arguments or the signing key. Each runner session uses a fresh key unless `BLACKBOX_PUBLIC_KEY` and `RECEIPTS_SIGNING_KEY` pinning is set up (untested on GitLab).
 
 MIT license.

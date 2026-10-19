@@ -18,4 +18,4 @@ The recorded 2-minute version for Open Agent is in `docs/demo-video-script.md`.
 
 ## GitLab Duo run
 
-This demo needs the GitLab Duo Agent Platform flow configured to use a network-reachable MCP proxy. Configure that endpoint and entitlement before presenting a Duo session. This repo does not include credentials or claim a completed Duo integration.
+Follow [gitlab-setup.md](gitlab-setup.md) to create and enable the custom flow. On a real MR, mention the flow's service account and show the note it posts (answer, step-cited "Why", PASS/FAIL line), then the `verify:exported-receipts` job on the pushed receipts branch. For the failure case, ask it to read `.env.example`, or edit a line of the exported `session.jsonl`, and show the red pipeline naming the step. Until such a run has happened on GitLab, don't present a Duo session.
