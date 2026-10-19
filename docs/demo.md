@@ -10,8 +10,10 @@
 
 - **0:00 — Why receipts?** An agent made a change. Who approved it, and did it access secrets? A trace is only useful if its integrity can be checked.
 - **0:20 — Real calls.** Invoke the MCP tools live and show signed entries arriving in the timeline. Expand a row to show its chain link and proxy signature.
-- **1:00 — Property proof.** Click **Verify session**; show that every receipt verifies and each receipt hash has a valid Merkle membership path under the displayed root.
-- **1:30 — Tamper evidence.** Click **Run tamper demo**; show the modified stored record identified as the first broken receipt.
+- **1:00 — Property proof.** Click **Prove: no secrets read**. Show PASS with a leaf, signature, Merkle path and commitment per step, and no raw args. Then have the agent read `.env.local` and prove again: FAIL names that step.
+- **1:30 — Tamper evidence.** Click **Run tamper demo**, then **Prove** again. The chain breaks at step 1 and the proof fails at that step.
+
+The recorded 2-minute version for Open Agent is in `docs/demo-video-script.md`.
 - **2:00 — Storage and trust limits.** Upload through the Walrus button only when a funded publisher is configured. Explain the proxy key is not a TEE and the root is not independently chain-anchored in this MVP.
 
 ## GitLab Duo run
