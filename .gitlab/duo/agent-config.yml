@@ -1,0 +1,21 @@
+# Execution environment for GitLab Duo flows that run on CI runners. GitLab reads this file only from
+# the default branch. Keys follow docs.gitlab.com/user/duo_agent_platform/flows/execution/agent-config-yaml/
+#
+# node:22-bookworm already includes git and curl, which the Duo CLI needs. setup_script runs before
+# the sandbox is applied, so the package install has registry access. The flow itself makes no network calls.
+image: node:22-bookworm
+
+setup_script:
+  - corepack enable
+  - pnpm config set store-dir .pnpm-store
+  - pnpm install --frozen-lockfile
+  # Only the receipt core and the proxy and bridge are needed by the flow, not the Next.js dashboard.
+  - pnpm --filter @blackbox/receipts build
+  - pnpm --filter @blackbox/proxy build
+
+cache:
+  key:
+    files:
+      - pnpm-lock.yaml
+  paths:
+    - .pnpm-store

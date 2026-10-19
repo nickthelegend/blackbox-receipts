@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "blackbox-receipts": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["packages/proxy/dist/server.js"],
+      "approvedTools": ["read_file", "git", "shell"]
+    }
+  }
+}
