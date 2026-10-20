@@ -184,3 +184,4 @@ label{font:9px var(--mono);letter-spacing:.1em;color:var(--dim)}
   *,*::before,*::after{animation:none!important;transition:none!important}
   .block-broken .glitch::before,.block-broken .glitch::after{display:none}
 }
+.block-picker{background:transparent;border:1px solid #35393d;color:#c2c4c1;border-radius:5px;padding:0 8px;font:11px var(--mono);min-height:36px}

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PropertyProof, Receipt } from '@blackbox/receipts';
 import './styles.css';
 
-type Session = { sessionId: string; receipts: Receipt[]; chain: { valid: boolean; brokenAt: number | null; reason: string | null }; root: string; publicKey: string; walrus: { root?: string; blob?: unknown } | null; walrusConfigured: boolean };
+type Session = { sessionId: string; receipts: Receipt[]; chain: { valid: boolean; brokenAt: number | null; reason: string | null }; root: string; publicKey: string; walrus: { root?: string; blob?: unknown } | null; walrusConfigured: boolean; tampered?: number[] };
 type ProofResult = { status: 'PASS' | 'FAIL'; step: number | null; reason: string | null; policyId: string; sessionRoot: string; steps?: number; root?: string; proof?: PropertyProof };
 
 const short = (value: string | null | undefined, size = 8) => (value ? `${value.slice(0, size)}…${value.slice(-4)}` : 'GENESIS');
@@ -13,6 +13,7 @@ const clock = (timestamp: string) => new Date(timestamp).toLocaleTimeString([], 
 export default function Home() {
   const [data, setData] = useState<Session | null>(null);
   const [busy, setBusy] = useState(false);
+  const [tamperStep, setTamperStep] = useState(1);
   const [message, setMessage] = useState('');
   const [expanded, setExpanded] = useState<number | null>(null);
   const [proofResult, setProofResult] = useState<ProofResult | null>(null);
@@ -44,7 +45,7 @@ export default function Home() {
     link.click();
     URL.revokeObjectURL(url);
   }
-  async function action(url: string) { setBusy(true); setMessage(''); try { const response = await fetch(url, { method: 'POST' }); const result = await response.json(); if (!response.ok) throw new Error(result.error ?? 'Request failed'); setMessage(url.includes('tamper') ? `Block ${result.editedStep} edited on disk. Verification now rejects its signature.` : 'Upload completed. Walrus returned a blob response.'); await refresh(); } catch (error) { setMessage(error instanceof Error ? error.message : String(error)); } finally { setBusy(false); } }
+  async function action(url: string, body?: unknown) { setBusy(true); setMessage(''); try { const response = await fetch(url, { method: 'POST', ...(body === undefined ? {} : { headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }) }); const result = await response.json(); if (!response.ok) throw new Error(result.error ?? 'Request failed'); setMessage(url.includes('restore') ? `Restored block(s) ${result.restoredSteps.join(', ')} to their signed originals.` : url.includes('tamper') ? `Block ${result.editedStep} edited on disk. Verification now rejects its signature.` : 'Upload completed. Walrus returned a blob response.'); await refresh(); } catch (error) { setMessage(error instanceof Error ? error.message : String(error)); } finally { setBusy(false); } }
 
   const receipts = data?.receipts ?? [];
   const valid = data?.chain.valid ?? false;
@@ -72,7 +73,9 @@ export default function Home() {
         <div className="hero-status-value">{state === 'idle' ? 'No blocks yet' : state === 'good' ? 'Verified' : `Broken at block ${String(brokenAt).padStart(2, '0')}`}</div>
         <div className="hero-status-foot">{state === 'idle' ? 'Connect an MCP client to begin' : state === 'good' ? `${receipts.length} Ed25519 signatures valid` : data?.chain.reason}</div>
         <div className="hero-actions">
-          <button className="button button-danger" disabled={!receipts.length || busy} onClick={() => void action('/api/tamper')}>Tamper a block <span aria-hidden>⌁</span></button>
+          <select className="block-picker" aria-label="Block to tamper" value={tamperStep} disabled={!receipts.length || busy} onChange={(event) => setTamperStep(Number(event.target.value))}>{receipts.map((receipt) => <option key={receipt.step} value={receipt.step}>Block {String(receipt.step).padStart(2, '0')}</option>)}</select>
+          <button className="button button-danger" disabled={!receipts.length || busy} onClick={() => void action('/api/tamper', { step: tamperStep })}>Tamper a block <span aria-hidden>⌁</span></button>
+          <button className="button button-ghost" disabled={!data?.tampered?.length || busy} onClick={() => void action('/api/restore')}>Restore <span aria-hidden>⟲</span></button>
           <button className="button button-ghost" disabled={!receipts.length || busy} onClick={() => void refresh()}>Re-verify <span aria-hidden>↻</span></button>
         </div>
       </div>

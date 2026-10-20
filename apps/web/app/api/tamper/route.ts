@@ -1,18 +1,18 @@
 import { NextResponse } from 'next/server';
-import { readFile, writeFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
-import { dataDir, loadReceipts } from '@blackbox/proxy/store';
+import { tamperReceipt } from '@blackbox/proxy/store';
 
 export const runtime = 'nodejs';
 
-export async function POST() {
-  const receipts = await loadReceipts();
-  if (!receipts.length) return NextResponse.json({ error: 'Record a real tool call before running the tamper demonstration.' }, { status: 409 });
-  const file = resolve(dataDir, 'session.jsonl');
-  const lines = (await readFile(file, 'utf8')).trim().split('\n');
-  const first = JSON.parse(lines[0]);
-  first.tool = `${first.tool}-edited`;
-  lines[0] = JSON.stringify(first);
-  await writeFile(file, `${lines.join('\n')}\n`);
-  return NextResponse.json({ editedStep: first.step });
+// Uses the same store function as `blackbox-receipts tamper <step>`, so the original line is
+// backed up and `restore` (CLI or /api/restore) can undo it.
+export async function POST(request: Request) {
+  let step = 1;
+  try {
+    const body = await request.json().catch(() => ({}));
+    if (body && body.step !== undefined) step = Number(body.step);
+    if (!Number.isInteger(step) || step < 1) return NextResponse.json({ error: `Block step must be a positive integer, got "${body.step}".` }, { status: 400 });
+    return NextResponse.json({ editedStep: await tamperReceipt(step) });
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 409 });
+  }
 }
