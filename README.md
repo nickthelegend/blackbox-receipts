@@ -71,13 +71,13 @@ Demo video: not recorded yet; add a share link here before submission.
 
 ## Sponsor technology
 
-- Open Agent: usable as a local MCP server with any MCP-capable agent. Zetaris and Meterless client packages are included (see above). They have not been run against a live account, and they are not yet wired into the proxy.
+- Open Agent: usable as a local MCP server with any MCP-capable agent. Zetaris and Meterless client packages are included (see below), and the dashboard has an Integrations live-check panel for both. No live call has run yet, and neither is used in the agent loop (the proxy or the agent's explanations).
 - GitLab Transcend: `.gitlab/duo/flows/blackbox-receipts.yaml` is a Duo Agent Platform custom flow whose agent reads the repo only through the receipts bridge (`packages/proxy/dist/call.js`, a one-shot MCP client to the proxy). Runner-executed flows can't attach MCP servers, so the bridge is how each step still reaches the proxy over MCP. The flow exports `receipts/<session>/`, pushes it, and posts its answer with step-cited evidence and the verbatim PASS/FAIL verdict. `.gitlab-ci.yml` builds, tests, records a real proxy session and runs the verifier, and verifies any exported Duo session. `.gitlab/duo/mcp.json` registers the proxy for Duo in the IDE. Setup steps: [docs/gitlab-setup.md](docs/gitlab-setup.md). **Not yet run on GitLab**; don't claim a Duo run until one has happened.
 - Walrus: the dashboard can upload the signed session payload to a configured publisher. No publisher endpoint or funding is bundled; it does not claim to have anchored when unavailable.
 
 ## Open Agent integrations: Zetaris and Meterless
 
-Two workspace packages call each sponsor's real interface. Neither has mock responses: if configuration is missing, the constructor throws a `ZetarisConfigError` or `MeterlessConfigError` that names the missing variable. Neither is wired into the proxy or dashboard yet.
+Two workspace packages call each sponsor's real interface. Neither has mock responses: if configuration is missing, the constructor throws a `ZetarisConfigError` or `MeterlessConfigError` that names the missing variable. The dashboard's Integrations panel (`apps/web/app/api/integrations/route.ts`) runs a live check for each (Zetaris: list data marts; Meterless: `GET /v1/models`) and shows missing keys, rejected keys or an offline runtime as red alerts. Neither is used in the agent loop yet: the proxy and the agent's explanations don't call them. No live call has run yet.
 
 **`packages/zetaris` (`@blackbox/zetaris`)** is a client for the Zetaris SaaS REST API, written against its OpenAPI spec ([Redoc](https://api.saas.enterprise.zetaris.com/redoc/index.html), [how to access the API](https://kbase.zetaris.com/knowledge/accessing-zetaris-using-api)).
 
@@ -97,6 +97,26 @@ Two workspace packages call each sponsor's real interface. Neither has mock resp
 - Config and URL tests always run.
 - Live tests run only when the keys are set. Otherwise they are skipped and print a `⚠️ SKIPPING LIVE … TESTS` banner, so a green CI run never implies a live call happened.
 - The Zetaris SQL test also needs `ZETARIS_TEST_SQL`, a `SELECT` against your org.
+
+## Submission status
+
+Done and in this repo:
+
+- MCP receipts proxy, verifier CLI, property proof and dashboard (see above).
+- Zetaris and Meterless clients, plus the dashboard live-check panel.
+- GitLab Duo flow: `.gitlab/duo/flows/blackbox-receipts.yaml`.
+- GitLab CI: `.gitlab-ci.yml`.
+
+Still missing:
+
+- A public GitLab repo for the Transcend entry.
+- A live GitLab Duo run, and visible pipeline history from it.
+- Zetaris and Meterless API keys/tokens, then one real call inside the agent loop and a live test that isn't skipped.
+- The demo videos (Open Agent and GitLab Transcend).
+
+## Pre-existing work
+
+All commits before 2026-10-22 00:00 UTC predate the Open Agent Hackathon build window and are pre-existing work.
 
 ## Limitations
 
