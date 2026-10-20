@@ -13,6 +13,8 @@ const clock = (timestamp: string) => new Date(timestamp).toLocaleTimeString([], 
 export default function Home() {
   const [data, setData] = useState<Session | null>(null);
   const [busy, setBusy] = useState(false);
+  const [integrations, setIntegrations] = useState<{ name: string; ok: boolean; detail: string }[] | null>(null);
+  useEffect(() => { fetch('/api/integrations', { cache: 'no-store' }).then((r) => r.json()).then((d) => setIntegrations(d.integrations)).catch((e) => setIntegrations([{ name: 'Integrations', ok: false, detail: String(e) }])); }, []);
   const [tamperStep, setTamperStep] = useState(1);
   const [message, setMessage] = useState('');
   const [expanded, setExpanded] = useState<number | null>(null);
@@ -134,7 +136,8 @@ export default function Home() {
         <button className="button button-primary" disabled={busy} onClick={() => void proveNoSecrets()}>Prove: no secrets read <span aria-hidden>↗</span></button>
         <div className="anchor-box"><div><div className="eyebrow">WALRUS STORAGE</div><strong>{data?.walrus ? 'Session blob stored' : data?.walrusConfigured ? 'Pin the session log' : 'Publisher not configured'}</strong>{data?.walrus && <code>{typeof blobId === 'string' ? blobId : JSON.stringify(blobId)?.slice(0, 50)}</code>}</div><button className="anchor-button" aria-label={data?.walrus ? 'Re-upload session to Walrus' : 'Upload session to Walrus'} disabled={busy || !data?.walrusConfigured} title={data?.walrusConfigured ? undefined : 'Set WALRUS_PUBLISHER_URL to a funded publisher endpoint to enable uploads'} onClick={() => void action('/api/anchor')}>{data?.walrus ? '↻' : '↑'}</button></div>
         {message && <div className="notice" role="status">{message}</div>}
-        <div className="disclaimer">Signatures prove what the proxy observed. They do not prove the proxy machine was uncompromised. TEE attestation is future work.</div>
+        <div className="integrations" aria-label="Integrations"><div className="eyebrow">INTEGRATIONS</div>{integrations === null ? <div className="integration">Checking…</div> : integrations.map((item) => <div key={item.name} className={`integration ${item.ok ? 'integration-ok' : 'integration-bad'}`} role={item.ok ? undefined : 'alert'}><b>{item.ok ? '●' : '!'} {item.name}</b><span>{item.detail}</span></div>)}</div>
+      <div className="disclaimer">Signatures prove what the proxy observed. They do not prove the proxy machine was uncompromised. TEE attestation is future work.</div>
       </aside>
     </section>
 
