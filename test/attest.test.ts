@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { publicKeyFromPem, verifyDigestSignature, type Receipt } from '../packages/verify/src/index.ts';
 import { connectProxy } from '../packages/proxy/src/client.ts';
 import { attestationDigest, type DiffAttestation } from '../packages/proxy/src/attest.ts';
-import { runScript } from './fixtures/run.ts';
+import { repoRoot, runScript } from './fixtures/run.ts';
 
 // Receipt-gated merge: a real git repo, an agent writing through the proxy's write_file, then
 // attest-diff over the change set.
@@ -77,4 +77,56 @@ test('attest-diff: a file written around the proxy (bypass) or deleted is red as
   assert.match(result.out, /FAIL unrecorded change: README\.md was deleted/);
   assert.match(result.out, /FAIL unrecorded change: src\/sneaky\.ts\n/);
   assert.match(result.out, /FAIL attest-diff: 2 of 4 changed file\(s\)/);
+});
+
+// The CI entry point (.github/workflows/attest-diff.yml and the GitLab attest-diff job) as a real
+// subprocess on real commits: it finds the request's exported session itself.
+const prScript = join(repoRoot, 'scripts/ci/attest-diff-pr.sh');
+function runPrScript(cwd: string, base: string, env: Record<string, string | undefined>): { code: number; out: string } {
+  const options = { cwd, encoding: 'utf8' as const, stdio: ['ignore', 'pipe', 'pipe'] as ['ignore', 'pipe', 'pipe'], env: { ...process.env, ...env, BLACKBOX_KEY_DIR: undefined, BLACKBOX_CLI: join(repoRoot, 'packages/proxy/src/cli.ts'), NODE_OPTIONS: `--conditions=source --import ${import.meta.resolve('tsx')}` } };
+  try { return { code: 0, out: execFileSync('bash', [prScript, base, 'ci-out'], options) }; } catch (error) {
+    const failure = error as { status: number; stdout: string; stderr: string };
+    return { code: failure.status, out: failure.stdout + failure.stderr };
+  }
+}
+const commitAll = (repo: Awaited<ReturnType<typeof agentRepo>>, message: string) => { repo.git('add', '-A'); repo.git('-c', 'user.name=t', '-c', 'user.email=t@t.invalid', 'commit', '-qm', message); };
+
+test('attest-diff-pr.sh: a committed agent export gates the request green; a human edit on the branch turns it red, named in the JUnit summary', async () => {
+  const repo = await agentRepo();
+  // The private store and the job's output folder stay out of commits, as a repo's .gitignore would keep them.
+  appendFileSync(join(repo.cwd, '.git/info/exclude'), '.blackbox/\nci-out/\n');
+  assert.equal(repo.cli('export', 'receipts/run').code, 1); // the denied .env write makes the prover FAIL; the receipts still gate the diff
+  commitAll(repo, 'agent change with its exported receipts');
+  const green = runPrScript(repo.cwd, repo.base, repo.env);
+  assert.equal(green.code, 0, green.out);
+  assert.match(green.out, /== attest-diff against [0-9a-f]{40} using receipts\/run\n/);
+  assert.match(green.out, /PASS attest-diff: 2 changed file\(s\)/);
+  assert.match(green.out, /: 2 test\(s\), 0 failure\(s\)\n {2}ok {3}src\/a\.ts\n {2}ok {3}src\/new\.ts\n/);
+  const attestation = JSON.parse(readFileSync(join(repo.cwd, 'ci-out/attest-diff.json'), 'utf8')) as DiffAttestation;
+  assert.equal(attestation.ok, true);
+  assert.equal(attestation.head, repo.git('rev-parse', 'HEAD'));
+
+  appendFileSync(join(repo.cwd, 'src/new.ts'), '// tweaked by hand\n');
+  commitAll(repo, 'human edit on the agent branch');
+  const red = runPrScript(repo.cwd, repo.base, repo.env);
+  assert.equal(red.code, 1, red.out);
+  assert.match(red.out, /: 2 test\(s\), 1 failure\(s\)\n {2}ok {3}src\/a\.ts\n {2}FAIL src\/new\.ts - src\/new\.ts changed after its recorded write \(step 2 wrote /);
+});
+
+test('attest-diff-pr.sh: a request with no exported session is not gated; two sessions in one request fail', async () => {
+  const repo = await agentRepo();
+  appendFileSync(join(repo.cwd, '.git/info/exclude'), '.blackbox/\nci-out/\n');
+  commitAll(repo, 'change without receipts');
+  const none = runPrScript(repo.cwd, repo.base, repo.env);
+  assert.equal(none.code, 0, none.out);
+  assert.match(none.out, /^NOT APPLICABLE attest-diff: this request adds no exported agent session/);
+  repo.cli('export', 'receipts/one');
+  repo.cli('export', 'receipts/two');
+  commitAll(repo, 'two exports');
+  const two = runPrScript(repo.cwd, repo.base, repo.env);
+  assert.equal(two.code, 1, two.out);
+  assert.match(two.out, /^FAIL attest-diff: this request adds 2 exported sessions \(receipts\/one receipts\/two\)/);
+  const badBase = runPrScript(repo.cwd, 'f'.repeat(40), repo.env);
+  assert.equal(badBase.code, 1);
+  assert.match(badBase.out, /is not a commit in this clone/);
 });

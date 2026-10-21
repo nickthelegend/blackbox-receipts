@@ -1,0 +1,38 @@
+# Receipt-gated merge on this repo's pull requests. When a pull request carries an agent's exported
+# session (receipts/<session>/session.jsonl, written by `blackbox-receipts export`), every other file it
+# changes must be exactly what a signed write_file step in that session produced: a human edit after the
+# agent's write, or a file written around the proxy, fails the job and is named in the JUnit report.
+# Pull requests without an exported session are not agent changes; the job says so and passes.
+name: attest-diff
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  attest-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/proxy build
+      - name: Every changed file must come from a signed write_file step
+        env:
+          # Optional repository variable (PEM): an export signed by any other proxy key fails.
+          BLACKBOX_PUBLIC_KEY: ${{ vars.BLACKBOX_PUBLIC_KEY }}
+        run: bash scripts/ci/attest-diff-pr.sh "${{ github.event.pull_request.base.sha }}" attest-diff
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: attest-diff
+          path: attest-diff/
+          if-no-files-found: ignore
