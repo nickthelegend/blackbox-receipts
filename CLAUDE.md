@@ -1,37 +1,26 @@
-# CLAUDE.md: guidance for coding agents
+# CLAUDE.md: notes for coding agents in this repo
 
-This repo holds the judged hackathon ideas and build plans. Each idea gets its **own build repo**. Read `README.md` (verdicts) and `ideas/<slug>.md` (plan) before writing code.
+Blackbox Receipts records signed, hash-linked receipts for an agent's MCP tool calls and proves
+properties of a session ("no secrets read") that anyone can check with the public key.
 
-## Build priority (do not reorder without Nick)
-1. **Blackbox Receipts:** Open Agent (sign-up Oct 20, sprint Oct 22–27) and GitLab Transcend (Oct 27).
-2. **TasteProbe:** Qloo and Nebius x NVIDIA (both Oct 30).
-3. **LEASH, stateless 2-rule version:** PayPal AI (Nov 12). **Do not build the rolling-cap nullifier circuit** before Nov 12.
-4. **Mnemosyne:** Walrus Total Recall (Nov 10), only if 1–3 are on track.
-5. **SensorSeal: CUT.** Don't start it.
+## Layout (pnpm workspace, TypeScript, Node 20+)
+- `packages/verify`: every check that needs no private key (chain, Merkle, seal, property proof, packs).
+  No `node:` imports; Ed25519 and SHA-256 from `@noble/*`. Runs in the CLI and in the browser.
+- `packages/receipts`: signing and proving (Node crypto, salted hashes, policy evaluation). Re-exports `@blackbox/verify`.
+- `packages/proxy`: the stdio MCP proxy (`server.js`, built-in `read_file`/`write_file`/`git`/`shell`, or
+  `--upstream "<cmd>"`), the store (lock, archive, seal, key in `~/.blackbox`), the CLI (`cli.js`), the one-shot
+  bridge (`call.js`) and the benchmark (`bench.js`).
+- `packages/zetaris`, `packages/meterless`: sponsor clients. No keys are configured; they report "Setup required".
+- `apps/web`: Next.js dashboard (local-only API) and the offline `/verify` page.
+- `test/`: node:test suites; fixtures in `test/fixtures` are for tests only.
 
-## Hard rule: no mock data in final demos
-- Demos, videos and submissions use **real** API calls, real agent runs, real proofs and real listings. No hardcoded responses, fake personas, seeded "example" receipts or `setTimeout` fake loaders.
-- Fixtures are fine **in tests only** (`/test/fixtures`), and must never be imported by app code.
-- If a dependency is unavailable (no API key, sandbox down), show an honest error or empty state and tell Nick. Don't fake it.
-- Before submitting, grep for `mock`, `fake`, `dummy`, `lorem` and `TODO` in `src/`. The verifier agent will audit this.
+## Commands
+`pnpm install && pnpm build`, then `pnpm test`, `pnpm typecheck`, `pnpm lint`,
+`bash scripts/ci/verify-live-session.sh`, `bash scripts/ci/verify-agent-demo.sh`.
+Live agent demo: `bash scripts/demo-agent.sh` (opencode + an OpenRouter free model; prints "Setup required" otherwise).
 
-## Stack suggestions
-- **Language:** TypeScript (Node 20+) everywhere unless the sponsor requires otherwise; Python is acceptable for TasteProbe stats.
-- **Web:** Next.js (App Router) + Tailwind + shadcn/ui; deploy on Vercel.
-- **Agents/tools:** MCP servers (`@modelcontextprotocol/sdk`). GitLab entries must use the GitLab Duo Agent Platform.
-- **ZK:** Noir (`nargo`) + `bb.js`; keep circuits minimal; Solidity verifiers via Foundry.
-- **Storage:** Postgres (Neon/Supabase) for indexes; Walrus for tamper-evident blobs or memory.
-- **Chains:** an EVM testnet for dev; whatever chain the sponsor requires for submission (Arc mainnet, Celo, Arbitrum).
-- **Sponsor requirements are non-negotiable:** Qloo API for TasteProbe-Qloo; an NVIDIA open model on Nebius for TasteProbe-Nebius; PayPal plus AI for LEASH-PayPal; Walrus Memory on mainnet plus Tatum for Mnemosyne.
-
-## Repo conventions
-- Repo names: `blackbox-receipts`, `tasteprobe`, `leash`, `mnemosyne` under `nickthelegend`. MIT license (GitLab Path B needs MIT).
-- Layout: `apps/web`, `packages/<core>`, `circuits/` (Noir), `contracts/` (Foundry), `test/`, `docs/demo.md`.
-- Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`, `chore:`). Small commits, **push often**; never force-push `main`.
-- Secrets live in `.env.local` only; commit `.env.example`. Never commit keys. Nick creates sponsor API keys himself.
-- Each repo README must include: a one-line pitch, an architecture diagram, setup steps, the demo video link, sponsor tech used, and honest limitations.
-- Tests: chain-verify (Blackbox), circuit pass/fail cases (LEASH) and stats (TasteProbe) must run in CI.
-
-## Scope discipline
-- Follow each plan's **cut order**. Never cut the item marked "never cut".
-- Treat deadlines as the listing dates, then confirm timezones on the event page. Aim to submit 12h early.
+## Rules
+- No mocks of external APIs and no fake success: missing keys stay "Setup required"; live tests skip loudly.
+- Never read or print signing keys, `.env` files or API keys. Tests use throwaway `BLACKBOX_KEY_DIR`s.
+- Receipts and exports under `receipts/` come from real runs only. Don't hand-edit them.
+- One logical change per commit; MIT, `Copyright (c) 2026 Nivesh Gajengi`.
