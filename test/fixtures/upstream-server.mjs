@@ -3,7 +3,7 @@
 // Hand-written JSON-RPC (no SDK), so the proxy is tested against an implementation it doesn't share.
 // Tools: echo {text}, add {a, b}, read_note {path} (reads a file under the cwd), fail {}.
 // If UPSTREAM_LOG is set, every tools/call it receives is appended there, so tests can prove that a
-// denied call never reached it.
+// denied call never reached it. UPSTREAM_NO_DELAY=1 turns off the random 0-5 ms reply delay (benchmark).
 import { appendFileSync, readFileSync } from 'node:fs';
 import { createInterface } from 'node:readline';
 
@@ -19,7 +19,7 @@ const text = (value, isError = false) => ({ content: [{ type: 'text', text: Stri
 
 async function callTool(name, args = {}) {
   if (process.env.UPSTREAM_LOG) appendFileSync(process.env.UPSTREAM_LOG, `${JSON.stringify({ name, args })}\n`);
-  await new Promise((done) => setTimeout(done, Math.random() * 5)); // finish out of order under load
+  if (!process.env.UPSTREAM_NO_DELAY) await new Promise((done) => setTimeout(done, Math.random() * 5)); // finish out of order under load
   if (name === 'echo') return text(args.text);
   if (name === 'add') return { ...text(args.a + args.b), structuredContent: { sum: args.a + args.b } };
   if (name === 'read_note') return text(readFileSync(args.path, 'utf8'));

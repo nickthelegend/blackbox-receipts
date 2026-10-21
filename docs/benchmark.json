@@ -1,0 +1,32 @@
+{
+  "measuredAt": "2026-10-21T04:29:36.151Z",
+  "machine": {
+    "cpu": "Apple M4",
+    "cores": 10,
+    "platform": "darwin arm64",
+    "node": "v26.5.0"
+  },
+  "upstream": "node \"test/fixtures/upstream-server.mjs\"",
+  "sessions": 20,
+  "callsPerSession": 25,
+  "callsMeasured": {
+    "direct": 500,
+    "proxied": 500
+  },
+  "msPerCall": {
+    "direct": {
+      "mean": 0.069,
+      "p50": 0.057,
+      "p95": 0.144,
+      "max": 0.56
+    },
+    "proxied": {
+      "mean": 0.766,
+      "p50": 0.616,
+      "p95": 1.596,
+      "max": 5.924
+    },
+    "overheadMean": 0.697,
+    "overheadP50": 0.558
+  }
+}

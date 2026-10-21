@@ -49,7 +49,8 @@
     "verify-proof": "cd ../.. && node packages/proxy/dist/cli.js verify-proof",
     "prove-no-secrets": "cd ../.. && node packages/proxy/dist/cli.js prove",
     "tamper": "cd ../.. && node packages/proxy/dist/cli.js tamper",
-    "verify-export": "cd ../.. && node packages/proxy/dist/cli.js verify-export"
+    "verify-export": "cd ../.. && node packages/proxy/dist/cli.js verify-export",
+    "bench": "cd ../.. && node packages/proxy/dist/bench.js"
   },
   "dependencies": {
     "@blackbox/receipts": "workspace:*",
