@@ -11,6 +11,8 @@ export type Receipt = {
   permissions: string[];
   cost: number | null;
   approver: string | null;
+  /** How the call ended: ran (ok), refused by the policy before running (denied), or failed (error). Absent on receipts written before this field existed. */
+  outcome?: 'ok' | 'denied' | 'error';
   resultHash: string;
   previousHash: string | null;
   hash: string;
@@ -26,7 +28,8 @@ export function sha256(value: string | Buffer): string {
 export function stableJson(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
   if (value && typeof value === 'object') {
-    return `{${Object.entries(value as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => `${JSON.stringify(key)}:${stableJson(item)}`).join(',')}}`;
+    // Keys with undefined values are dropped, as JSON.stringify does, so a receipt hashes the same before and after a JSON round trip.
+    return `{${Object.entries(value as Record<string, unknown>).filter(([, item]) => item !== undefined).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => `${JSON.stringify(key)}:${stableJson(item)}`).join(',')}}`;
   }
   return JSON.stringify(value) ?? 'null';
 }

@@ -133,7 +133,19 @@ export async function loadWitnesses(): Promise<Witness[]> {
   }
 }
 
-export async function addReceipt(tool: string, args: unknown, result: unknown, paths: string[], secretsAccessed: boolean, permissions: string[], approvedBy: string | null = null) {
+export type CallRecord = {
+  tool: string;
+  args: unknown;
+  result: unknown;
+  paths: string[];
+  secretsAccessed: boolean;
+  permissions: string[];
+  outcome: 'ok' | 'denied' | 'error';
+  /** Denial or error message. Private: stored in the witness, not the receipt. */
+  detail?: string;
+};
+
+export async function addReceipt({ tool, args, result, paths, secretsAccessed, permissions, outcome, detail }: CallRecord) {
   const keys = await signingKeys();
   return withSessionLock(async () => {
     const receipts = await loadReceipts();
@@ -143,10 +155,10 @@ export async function addReceipt(tool: string, args: unknown, result: unknown, p
     const receipt = createReceipt({
       sessionId: id, step: receipts.length + 1,
       timestamp: new Date().toISOString(), tool, argsHash: hashArgs(args, salt), paths,
-      secretsAccessed, permissions, cost: null, approver: approvedBy,
+      secretsAccessed, permissions, cost: null, approver: null, outcome,
       resultHash: hashResult(result, salt), previousHash: receipts.at(-1)?.hash ?? null,
     }, keys.privateKey);
-    await appendFile(witnessFile, `${JSON.stringify({ sessionId: id, step: receipt.step, args, salt } satisfies Witness)}\n`, { mode: 0o600 });
+    await appendFile(witnessFile, `${JSON.stringify({ sessionId: id, step: receipt.step, args, salt, detail } satisfies Witness)}\n`, { mode: 0o600 });
     await appendFile(sessionFile, `${JSON.stringify(receipt)}\n`, { mode: 0o600 });
     return receipt;
   });

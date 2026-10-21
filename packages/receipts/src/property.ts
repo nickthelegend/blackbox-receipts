@@ -102,9 +102,9 @@ function collectStrings(value: unknown, into: string[] = []): string[] {
   return into;
 }
 
-/** Every string that could name a path: receipt paths, each argument, its shell tokens and the path part of `rev:path`. */
-function pathCandidates(receipt: Receipt, args: unknown): string[] {
-  const candidates = new Set<string>(receipt.paths);
+/** Every string that could name a path: the recorded paths, each argument, its shell tokens and the path part of `rev:path`. */
+function pathCandidates(paths: string[], args: unknown): string[] {
+  const candidates = new Set<string>(paths);
   for (const text of collectStrings(args)) {
     for (const token of (text.match(/"[^"]*"|'[^']*'|[^\s]+/g) ?? []).map((item) => item.replace(/^["']|["']$/g, ''))) {
       candidates.add(token);
@@ -115,17 +115,27 @@ function pathCandidates(receipt: Receipt, args: unknown): string[] {
   return [...candidates].map(normalizePath).filter(Boolean);
 }
 
-/** Returns why a step violates the policy, or null when it satisfies it. */
-export function evaluateStep(receipt: Receipt, args: unknown, policy: SecretPolicy): string | null {
+/**
+ * Returns why a call violates the policy, or null. The proxy runs this before a call executes (and
+ * denies it), and the prover runs it again over the recorded receipt, so the two can't disagree.
+ */
+export function evaluateCall(tool: string, paths: string[], args: unknown, policy: SecretPolicy): string | null {
   const globs = policy.secretPathGlobs.map((glob) => ({ glob, regex: globToRegExp(glob) }));
-  for (const candidate of pathCandidates(receipt, args)) {
+  for (const candidate of pathCandidates(paths, args)) {
     const hit = globs.find(({ regex }) => regex.test(candidate));
-    if (hit) return `${receipt.tool} touched secret path matching "${hit.glob}"`;
+    if (hit) return `${tool} touched secret path matching "${hit.glob}"`;
   }
   const strings = collectStrings(args);
   for (const { name, pattern } of policy.secretArgPatterns) {
-    if (strings.some((text) => new RegExp(pattern).test(text))) return `${receipt.tool} arguments match secret pattern "${name}"`;
+    if (strings.some((text) => new RegExp(pattern).test(text))) return `${tool} arguments match secret pattern "${name}"`;
   }
+  return null;
+}
+
+/** Returns why a recorded step violates the policy, or null when it satisfies it. */
+export function evaluateStep(receipt: Receipt, args: unknown, policy: SecretPolicy): string | null {
+  const violation = evaluateCall(receipt.tool, receipt.paths, args, policy);
+  if (violation) return violation;
   if (receipt.secretsAccessed) return `${receipt.tool} was flagged by the proxy for secret access`;
   return null;
 }

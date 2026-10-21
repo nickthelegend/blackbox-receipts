@@ -60,7 +60,7 @@ test('bridge: a secret read is denied, recorded, and fails export and verify-exp
   ws.call('--new-session', 'read_file', '{"path":"notes.md"}');
   const denied = ws.call('read_file', '{"path":".env"}');
   assert.equal(denied.code, 1);
-  assert.match(denied.out, /DENIED or FAILED \(receipt recorded\): Policy denied access to secret path/);
+  assert.match(denied.out, /DENIED or FAILED \(receipt recorded\): Policy denied \(no-secrets-read\/v1\): read_file touched secret path matching "\.env\*"/);
   assert.doesNotMatch(denied.out, /do-not-read/);
   const exported = ws.cli(['export']);
   assert.equal(exported.code, 1);
