@@ -15,7 +15,6 @@ function prove(session: ReturnType<typeof buildSession>) {
 
 function provenBundle(session = buildSession(cleanCalls)): { session: ReturnType<typeof buildSession>; proof: PropertyProof } {
   const result = prove(session);
-  assert.equal(result.valid, true);
   if (!result.valid) throw new Error(result.reason);
   return { session, proof: result.proof };
 }

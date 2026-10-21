@@ -30,14 +30,17 @@ build:
     - pnpm -r build
   artifacts:
     paths:
+      - packages/verify/dist
       - packages/receipts/dist
       - packages/proxy/dist
     expire_in: 1 day
 
 test:
   stage: test
-  needs: []
+  needs: [build]
   script:
+    - pnpm typecheck
+    - pnpm lint
     - pnpm test
 
 verify:live-session:

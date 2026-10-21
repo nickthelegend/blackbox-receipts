@@ -17,6 +17,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r build
+      - run: pnpm typecheck
+      - run: pnpm lint
       # Chain verification, property proofs (clean / tampered / empty / secret path) and the verifier CLI.
       - run: pnpm test
       - run: bash scripts/ci/verify-live-session.sh

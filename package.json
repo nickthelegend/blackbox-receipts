@@ -11,11 +11,15 @@
     "build": "pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/proxy build && pnpm --filter @blackbox/zetaris build && pnpm --filter @blackbox/meterless build && pnpm --filter @blackbox/web build",
     "test": "pnpm --filter @blackbox/receipts test",
     "verify": "pnpm --filter @blackbox/proxy verify",
-    "dev": "pnpm --filter @blackbox/web dev"
+    "dev": "pnpm --filter @blackbox/web dev",
+    "typecheck": "tsc --noEmit -p packages/verify && tsc --noEmit -p packages/receipts && tsc --noEmit -p packages/proxy && tsc --noEmit -p packages/zetaris && tsc --noEmit -p packages/meterless && tsc -p test/tsconfig.json && tsc --noEmit -p apps/web",
+    "lint": "eslint ."
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
+    "@types/node": "^22.15.30",
+    "eslint": "10.11.0",
     "tsx": "^4.20.6",
-    "@types/node": "^22.15.30"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "8.71.1"
   }
 }
