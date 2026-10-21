@@ -1,6 +1,6 @@
 import { createPrivateKey, createPublicKey, sign, verify } from 'node:crypto';
 import { homedir } from 'node:os';
-import { merkleProof, merkleRoot, sha256, stableJson, verifyChain, verifyMerkleProof, type Receipt } from './index.js';
+import { argsMatch, merkleProof, merkleRoot, sha256, stableJson, verifyChain, verifyMerkleProof, type Receipt } from './index.js';
 
 // Selective-disclosure property proofs.
 //
@@ -36,8 +36,8 @@ export const defaultSecretPolicy: SecretPolicy = {
   ],
 };
 
-/** Raw arguments for one step, kept privately next to the receipt log. */
-export type Witness = { sessionId: string; step: number; args: unknown };
+/** Raw arguments for one step and the salt of its argsHash, kept privately next to the receipt log. */
+export type Witness = { sessionId: string; step: number; args: unknown; salt?: string; detail?: string };
 
 export type StepProof = {
   step: number;
@@ -62,7 +62,7 @@ export type PropertyProof = {
 export type PropertyFailure = { valid: false; step: number | null; reason: string };
 export type ProveResult = { valid: true; proof: PropertyProof } | PropertyFailure;
 export type VerifyPropertyResult = { valid: true; steps: number; root: string; policyHash: string; policyId: string } | PropertyFailure;
-export type Disclosure = { step: number; receipt: Receipt; args: unknown; salt: string };
+export type Disclosure = { step: number; receipt: Receipt; args: unknown; argsSalt?: string; salt: string };
 
 export function policyHash(policy: SecretPolicy): string {
   return sha256(stableJson(policy));
@@ -156,7 +156,7 @@ export function proveProperty(receipts: Receipt[], witnesses: Witness[], policy:
   for (const receipt of receipts) {
     const witness = witnessFor(witnesses, receipt);
     if (!witness) return { valid: false, step: receipt.step, reason: 'Raw arguments for this step are missing, so the policy cannot be evaluated' };
-    if (sha256(JSON.stringify(witness.args)) !== receipt.argsHash) return { valid: false, step: receipt.step, reason: 'Stored arguments do not match the signed argsHash' };
+    if (!argsMatch(receipt.argsHash, witness.args, witness.salt)) return { valid: false, step: receipt.step, reason: 'Stored arguments do not match the signed argsHash' };
     const violation = evaluateStep(receipt, witness.args, policy);
     if (violation) return { valid: false, step: receipt.step, reason: violation };
   }
@@ -210,18 +210,18 @@ export function discloseStep(receipts: Receipt[], witnesses: Witness[], step: nu
   const receipt = receipts.find((item) => item.step === step);
   const witness = receipt && witnessFor(witnesses, receipt);
   if (!receipt || !witness) throw new RangeError(`No receipt and arguments exist for step ${step}`);
-  return { step, receipt, args: witness.args, salt: stepSalt(privateKeyPem, policyHash(policy), receipt.hash) };
+  return { step, receipt, args: witness.args, argsSalt: witness.salt, salt: stepSalt(privateKeyPem, policyHash(policy), receipt.hash) };
 }
 
 export function verifyDisclosure(proof: PropertyProof, disclosure: Disclosure, publicKeyPem: string, expectedPolicyHash: string | null = DEFAULT_POLICY_HASH): VerifyPropertyResult {
   const base = verifyPropertyProof(proof, publicKeyPem, undefined, expectedPolicyHash);
   if (!base.valid) return base;
-  const { step, receipt, args, salt } = disclosure;
+  const { step, receipt, args, argsSalt, salt } = disclosure;
   const item = proof.steps.find((entry) => entry.step === step);
   if (!item) return { valid: false, step, reason: 'Step is not part of this proof' };
   const { hash, signature, ...input } = receipt;
   if (sha256(stableJson(input)) !== item.leaf || hash !== item.leaf || receipt.step !== step) return { valid: false, step, reason: 'Disclosed receipt does not match the proven leaf' };
-  if (sha256(JSON.stringify(args)) !== receipt.argsHash) return { valid: false, step, reason: 'Disclosed arguments do not match the signed argsHash' };
+  if (!argsMatch(receipt.argsHash, args, argsSalt)) return { valid: false, step, reason: 'Disclosed arguments do not match the signed argsHash' };
   if (commitmentFor(proof.policyHash, step, item.leaf, receipt.argsHash, salt) !== item.commitment) return { valid: false, step, reason: 'Disclosure does not open the property commitment' };
   const violation = evaluateStep(receipt, args, proof.policy);
   if (violation) return { valid: false, step, reason: violation };

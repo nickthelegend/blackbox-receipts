@@ -128,6 +128,6 @@ All commits before 2026-10-22 00:00 UTC predate the Open Agent Hackathon build w
 - No TEE attestation.
 - No live GitLab Duo run or Walrus upload has been verified; the respective account/endpoint setup is required.
 - In the Duo flow, `run_command` can technically run any command. The prompt restricts workspace reads to the bridge, but a read that bypasses the bridge would leave no receipt. The flow's own git commands (commit and push of the export) are outside the chain by design.
-- Exported sessions include the signed receipts (tool names, paths, hashes), but never the raw arguments or the signing key. Each runner session uses a fresh key unless `BLACKBOX_PUBLIC_KEY` and `RECEIPTS_SIGNING_KEY` pinning is set up (untested on GitLab).
+- **Exports reveal paths.** Every receipt carries the tool name and the paths it touched in clear text, plus timestamps and permissions; anyone holding an export sees which files the agent read. What stays private is the raw arguments and results: `argsHash` and `resultHash` are sha256 over a fresh per-step salt and canonical JSON, and the salt lives only in the private witness, so guessing a path or a short command doesn't reproduce the hash. Exports never include the raw arguments or the signing key. Each runner session uses a fresh key unless `BLACKBOX_PUBLIC_KEY` and `RECEIPTS_SIGNING_KEY` pinning is set up (untested on GitLab).
 
 MIT license.

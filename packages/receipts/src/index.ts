@@ -1,4 +1,4 @@
-import { createHash, createPrivateKey, createPublicKey, generateKeyPairSync, sign, verify } from 'node:crypto';
+import { createHash, createPrivateKey, createPublicKey, generateKeyPairSync, randomBytes, sign, verify } from 'node:crypto';
 
 export type Receipt = {
   sessionId: string;
@@ -29,6 +29,28 @@ export function stableJson(value: unknown): string {
     return `{${Object.entries(value as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => `${JSON.stringify(key)}:${stableJson(item)}`).join(',')}}`;
   }
   return JSON.stringify(value) ?? 'null';
+}
+
+/**
+ * Salted commitments to a call's arguments and result: sha256 over a fresh per-step salt and canonical
+ * JSON. The salt stays in the private witness, so a published receipt can't be matched against guessed
+ * low-entropy arguments (a file path, a short command). Receipts still show `tool` and `paths` in clear.
+ */
+export function newSalt(): string {
+  return randomBytes(16).toString('hex');
+}
+
+export function hashArgs(args: unknown, salt: string): string {
+  return sha256(`blackbox-args/v2|${salt}|${stableJson(args)}`);
+}
+
+export function hashResult(result: unknown, salt: string): string {
+  return sha256(`blackbox-result/v2|${salt}|${stableJson(result)}`);
+}
+
+/** Whether these raw arguments open a receipt's argsHash. Witnesses without a salt predate v2 hashing. */
+export function argsMatch(argsHash: string, args: unknown, salt?: string): boolean {
+  return salt ? hashArgs(args, salt) === argsHash : sha256(JSON.stringify(args)) === argsHash;
 }
 
 export function generateSigningKey(): { privateKey: string; publicKey: string } {

@@ -2,7 +2,7 @@
 import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createReceipt, generateSigningKey, sha256, type Receipt, type Witness } from '../../packages/receipts/src/index.ts';
+import { createReceipt, generateSigningKey, hashArgs, newSalt, sha256, type Receipt, type Witness } from '../../packages/receipts/src/index.ts';
 
 export type Call = { tool: string; args: Record<string, unknown>; paths?: string[]; secretsAccessed?: boolean };
 
@@ -20,13 +20,14 @@ export function buildSession(calls: Call[], sessionId = 'test-session') {
   const witnesses: Witness[] = [];
   calls.forEach((call, index) => {
     const step = index + 1;
+    const salt = newSalt();
     receipts.push(createReceipt({
       sessionId, step, timestamp: new Date(Date.UTC(2026, 9, 20, 12, 0, step)).toISOString(), tool: call.tool,
-      argsHash: sha256(JSON.stringify(call.args)), paths: call.paths ?? [], secretsAccessed: call.secretsAccessed ?? false,
+      argsHash: hashArgs(call.args, salt), paths: call.paths ?? [], secretsAccessed: call.secretsAccessed ?? false,
       permissions: [`workspace:${call.tool}`], cost: null, approver: null, resultHash: sha256(`result-${step}`),
       previousHash: receipts.at(-1)?.hash ?? null,
     }, keys.privateKey));
-    witnesses.push({ sessionId, step, args: call.args });
+    witnesses.push({ sessionId, step, args: call.args, salt });
   });
   return { keys, receipts, witnesses };
 }

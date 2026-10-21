@@ -3,7 +3,7 @@ import { resolve, relative, isAbsolute, sep } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
 import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs';
-import { createReceipt, createSeal, generateSigningKey, type Receipt, type Seal, type Witness, sha256 } from '@blackbox/receipts';
+import { createReceipt, createSeal, generateSigningKey, hashArgs, hashResult, newSalt, type Receipt, type Seal, type Witness } from '@blackbox/receipts';
 
 const currentDirectory = process.cwd();
 const monorepoRoot = existsSync(resolve(currentDirectory, 'apps/web/package.json')) && existsSync(resolve(currentDirectory, 'packages/proxy/package.json'))
@@ -139,13 +139,14 @@ export async function addReceipt(tool: string, args: unknown, result: unknown, p
     const receipts = await loadReceipts();
     // An existing log decides the session: a second writer continues that chain instead of forking it.
     const id = receipts[0]?.sessionId ?? sessionId;
+    const salt = newSalt();
     const receipt = createReceipt({
       sessionId: id, step: receipts.length + 1,
-      timestamp: new Date().toISOString(), tool, argsHash: sha256(JSON.stringify(args)), paths,
+      timestamp: new Date().toISOString(), tool, argsHash: hashArgs(args, salt), paths,
       secretsAccessed, permissions, cost: null, approver: approvedBy,
-      resultHash: sha256(JSON.stringify(result)), previousHash: receipts.at(-1)?.hash ?? null,
+      resultHash: hashResult(result, salt), previousHash: receipts.at(-1)?.hash ?? null,
     }, keys.privateKey);
-    await appendFile(witnessFile, `${JSON.stringify({ sessionId: id, step: receipt.step, args } satisfies Witness)}\n`, { mode: 0o600 });
+    await appendFile(witnessFile, `${JSON.stringify({ sessionId: id, step: receipt.step, args, salt } satisfies Witness)}\n`, { mode: 0o600 });
     await appendFile(sessionFile, `${JSON.stringify(receipt)}\n`, { mode: 0o600 });
     return receipt;
   });

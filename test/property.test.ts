@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { defaultSecretPolicy, discloseStep, policyHash, proveProperty, verifyDisclosure, verifyPropertyProof, type PropertyProof, type SecretPolicy } from '../packages/receipts/src/index.ts';
+import { argsMatch, defaultSecretPolicy, discloseStep, hashArgs, policyHash, sha256, proveProperty, verifyDisclosure, verifyPropertyProof, type PropertyProof, type SecretPolicy } from '../packages/receipts/src/index.ts';
 import { buildSession, cleanCalls, writeSessionDir, type Call } from './fixtures/session.ts';
 
 const secretCalls: Call[] = [cleanCalls[0], { tool: 'read_file', args: { path: '.env.local' }, paths: ['.env.local'], secretsAccessed: true }, cleanCalls[2]];
@@ -151,4 +151,14 @@ test('policy pinning: a proof made under a weaker policy fails verification, and
   const explicit = cli(dir, 'prove', '--policy', join(dir, 'empty.json'), '--expect-policy', join(dir, 'empty.json'));
   assert.equal(explicit.code, 0, explicit.out);
   assert.match(explicit.out, /^PASS no-secrets-read \[policy empty [0-9a-f]{12}\]/);
+});
+
+test('argsHash is salted: guessing the arguments does not reproduce it, the witness salt does', () => {
+  const session = buildSession(cleanCalls);
+  const receipt = session.receipts[1];
+  assert.notEqual(receipt.argsHash, sha256(JSON.stringify({ path: 'src/index.ts' })));
+  assert.notEqual(receipt.argsHash, hashArgs({ path: 'src/index.ts' }, ''));
+  assert.equal(hashArgs({ path: 'src/index.ts' }, session.witnesses[1].salt!), receipt.argsHash);
+  assert.equal(argsMatch(receipt.argsHash, { path: 'src/index.ts' }, session.witnesses[1].salt), true);
+  assert.equal(argsMatch(receipt.argsHash, { path: 'src/other.ts' }, session.witnesses[1].salt), false);
 });
