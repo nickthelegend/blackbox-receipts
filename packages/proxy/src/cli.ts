@@ -216,7 +216,7 @@ if (command === 'verify') {
   const files = integrity ? [] : checkDiff(process.cwd(), base, receipts, ignore);
   const ok = !integrity && files.every((file) => file.ok);
   const sessionId = receipts[0]?.sessionId ?? 'none';
-  for (const file of files) console.log(`${file.ok ? 'ok  ' : 'FAIL'} ${file.reason}`);
+  for (const file of files) console.log(file.ok ? `ok   ${file.path}: ${file.reason}` : `FAIL ${file.reason}`);
   const unrecorded = files.filter((file) => !file.ok).length;
   console.log(integrity ? `FAIL attest-diff: ${integrity}` : ok ? `PASS attest-diff: ${files.length} changed file(s) since ${base.slice(0, 12)}, each produced by a signed write_file step` : `FAIL attest-diff: ${unrecorded} of ${files.length} changed file(s) since ${base.slice(0, 12)} were not produced by a signed write_file step`);
   if (option('junit')) await writeFile(resolve(option('junit')!), junit(integrity ? [{ path: '(receipts)', change: 'modified', blob: null, step: null, ok: false, reason: integrity }] : files, base, sessionId));

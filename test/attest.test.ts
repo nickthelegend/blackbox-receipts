@@ -43,7 +43,7 @@ test('attest-diff: every change produced by a signed write_file step is green, w
   assert.equal(receipts[2].outcome, 'denied');
   const result = repo.cli('attest-diff', '--base', repo.base, '--junit', 'attest.xml', '--out', 'attest.json');
   assert.equal(result.code, 0, result.out);
-  assert.match(result.out, /ok {3}matches the write signed at step 1\nok {3}matches the write signed at step 2\nPASS attest-diff: 2 changed file\(s\)/);
+  assert.match(result.out, /ok {3}src\/a\.ts: matches the write signed at step 1\nok {3}src\/new\.ts: matches the write signed at step 2\nPASS attest-diff: 2 changed file\(s\)/);
   const xml = readFileSync(join(repo.cwd, 'attest.xml'), 'utf8');
   assert.match(xml, /tests="2" failures="0"/);
   const attestation = JSON.parse(readFileSync(join(repo.cwd, 'attest.json'), 'utf8')) as DiffAttestation;
