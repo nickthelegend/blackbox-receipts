@@ -36,6 +36,8 @@
 .vf-alert{margin:0 0 20px;padding:14px 18px;border-radius:4px;background:var(--bad-bg);border:1px solid var(--bad-line);color:#ffd3cf;overflow-wrap:anywhere}
 .vf-empty{padding:28px;border-radius:6px;border:1px solid var(--line);color:var(--muted);background:linear-gradient(180deg,var(--panel),transparent)}
 .vf-empty p{margin:0;max-width:640px}
+.vf-empty p + p{margin-top:10px}
+.vf-empty code{font-size:.9em;overflow-wrap:anywhere}
 .vf-empty-title{color:var(--text);font-size:20px;font-weight:500;margin-bottom:8px!important}
 
 .vf-result{border-radius:6px;background:var(--panel);border:1px solid var(--line);padding:28px;overflow:hidden}
@@ -109,8 +111,18 @@
   .vf-intro{padding:36px 0 22px}
   .vf-result{padding:18px;border-radius:6px}
   .vf-verdict{flex-direction:column;gap:12px}
-  .vf-step{grid-template-columns:30px minmax(0,1fr);gap:10px}
-  .vf-pill{grid-column:2;justify-self:start}
+  .vf-result{padding:16px}
+  .vf-checks{margin-top:18px;gap:6px}
+  .vf-checks li{gap:4px 10px;padding:10px 12px}
+  .vf-check-detail{font-size:14px}
+  .vf-tools{margin-top:18px;padding:14px}
+  .vf-steps-head{margin:24px 0 10px}
+  /* one card per receipt: number, tool and status on the first line, details under it */
+  .vf-step{grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:start;padding:10px 12px}
+  .vf-step-n{font-size:13px;line-height:1.6}
+  .vf-pill{padding:3px 8px;font-size:11px}
+  .vf-step-what code{font-size:12.5px;overflow-wrap:anywhere}
+  .vf-step-reason{font-size:13px}
   .vf-tools-row .vf-btn,.vf-tools-row .vf-select-wrap,.vf-tools-row .vf-select-wrap select{width:100%}
   .vf-sample-file{margin-left:0;width:100%}
 }

@@ -127,6 +127,7 @@ export default function VerifyPage() {
       {!loaded && !error && <section className="vf-empty" aria-label="No pack loaded">
         <p className="vf-empty-title">No pack loaded yet</p>
         <p>A pack holds a session&apos;s signed receipts, the proxy&apos;s public key, the seal and, when the prover passed, the proof. It never contains the private key or the agent&apos;s raw arguments.</p>
+        <p>From a terminal, the same checks run with <code>npx ./blackbox-verify-0.1.0.tgz pack.json</code> (the tarball is in the repo&apos;s <code>release/</code> folder).</p>
       </section>}
 
       {loaded && result && <section className={`vf-result vf-${tone}`} aria-live="polite" aria-labelledby="vf-verdict">

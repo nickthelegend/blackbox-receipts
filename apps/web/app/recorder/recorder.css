@@ -144,4 +144,11 @@
   .rc-row-out,.rc-row-seal{display:none}
   .rc-details,.rc-explain{padding-left:30px}
   .rc-lamps{grid-template-columns:repeat(2,minmax(0,1fr))}
+  /* flags slide left in proportion to their position, so a flag near the end stays inside the tape */
+  .rc .tape-flag,.rc .tape-flag.at-end{transform:translate(calc(var(--x) * -1%),4px);max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .rc-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .rc-controls .rc-select{grid-column:1/-1}
+  .rc-controls .btn{min-width:0;padding:0 10px}
+  .rc-kv div{grid-template-columns:minmax(0,1fr);gap:2px}
+  .rc-kv code{overflow-wrap:break-word}
 }
