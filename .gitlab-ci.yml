@@ -1,6 +1,7 @@
 # Build, test and verify Blackbox Receipts on GitLab.
 # - verify:live-session records a real session through the MCP proxy on this checkout and checks that the
 #   verifier PASSes it and FAILs a secret read, a tampered log and an empty session.
+# - verify:attest-diff gates merge requests that carry an agent export on its signed writes.
 # - verify:exported-receipts runs when a commit contains receipts/<session>/ exported by the Duo flow,
 #   and fails the pipeline unless every exported session verifies.
 workflow:
@@ -67,3 +68,24 @@ verify:exported-receipts:
   script:
     # Set BLACKBOX_PUBLIC_KEY (CI/CD variable, PEM) to require that exports were signed by a known proxy key.
     - node packages/proxy/dist/cli.js verify-export
+
+# Receipt-gated merge: on a merge request that carries an agent's exported session
+# (receipts/<session>/session.jsonl), every other changed file must be exactly what a signed write_file
+# step produced. Results show in the merge request's test report; the signed attestation is an artifact.
+# Merge requests without an exported session print NOT APPLICABLE and pass.
+verify:attest-diff:
+  stage: verify
+  needs: [build]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  variables:
+    GIT_DEPTH: 0
+  script:
+    # Set BLACKBOX_PUBLIC_KEY (CI/CD variable, PEM) to pin the proxy key.
+    - git fetch --quiet origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+    - bash scripts/ci/attest-diff-pr.sh "$CI_MERGE_REQUEST_DIFF_BASE_SHA" attest-diff
+  artifacts:
+    when: always
+    paths: [attest-diff/]
+    reports:
+      junit: attest-diff/attest-diff.xml
