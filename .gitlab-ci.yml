@@ -4,6 +4,8 @@
 # - verify:attest-diff gates merge requests that carry an agent export on its signed writes.
 # - verify:exported-receipts runs when a commit contains receipts/<session>/ exported by the Duo flow,
 #   and fails the pipeline unless every exported session verifies.
+# - pages publishes the static, read-only site (landing + offline /verify) to GitLab Pages from the
+#   default branch. The recorder dashboard and its API are local-only and are not part of it.
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -12,7 +14,7 @@ workflow:
     - if: $CI_COMMIT_BRANCH
     - if: $CI_COMMIT_TAG
 
-stages: [build, test, verify]
+stages: [build, test, verify, deploy]
 
 default:
   image: node:22-bookworm
@@ -90,3 +92,27 @@ verify:attest-diff:
     paths: [attest-diff/]
     reports:
       junit: attest-diff/attest-diff.xml
+
+# GitLab Pages: the landing (the recorded agent run, both exported packs verified in the browser) and the
+# offline /verify page, built as a static export by scripts/build-pages.mjs. No server, no API, no keys.
+# The base path comes from CI_PAGES_URL, so it works for <namespace>.gitlab.io/<project>/ and for a
+# unique-domain site served at the root. Runs on the default branch after the tests pass.
+pages:
+  stage: deploy
+  needs: [test]
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - pnpm --filter "@blackbox/web^..." build
+    - |
+      if [ -n "${CI_PAGES_URL:-}" ]; then
+        PAGES_BASE_PATH="$(node -e 'process.stdout.write(new URL(process.env.CI_PAGES_URL).pathname.replace(/\/+$/, ""))')"
+      else
+        PAGES_BASE_PATH="/$CI_PROJECT_NAME"
+      fi
+      export PAGES_BASE_PATH
+      echo "Pages URL: ${CI_PAGES_URL:-unknown}; base path: '${PAGES_BASE_PATH}'"
+    - NEXT_PUBLIC_REPO_URL="$CI_PROJECT_URL" node scripts/build-pages.mjs --out public
+    - test -s public/index.html && test -s public/verify/index.html
+  artifacts:
+    paths: [public]
