@@ -27,9 +27,9 @@ pnpm build
 pnpm test
 ```
 
-Start the local dashboard with `pnpm dev`. In a second terminal, start the MCP server with `pnpm --filter @blackbox/proxy start`. It exposes `read_file`, read-only `git` (`status`, `diff`, `log`, `show`), and workspace `shell` tools over stdio. Connect an MCP client to `packages/proxy/dist/server.js` (stdio) and use those tools. Receipts are stored in `.blackbox/session.jsonl`; the proxy creates a private Ed25519 key in `.blackbox/` on first run. The dashboard reads the same live store at `http://localhost:3000`.
+Start the local dashboard with `pnpm dev`. In a second terminal, start the MCP server with `pnpm --filter @blackbox/proxy start`. It exposes `read_file`, read-only `git` (`status`, `diff`, `log`, `show`), and workspace `shell` tools over stdio. Connect an MCP client to `packages/proxy/dist/server.js` (stdio) and use those tools. Receipts are stored in `.blackbox/session.jsonl`. On first run the proxy creates a private Ed25519 key in `~/.blackbox/signing-key.pem`, outside the workspace (set `BLACKBOX_KEY_DIR` to put it elsewhere, or pass the PEM in `RECEIPTS_SIGNING_KEY`); the public key is copied to `.blackbox/public-key.pem` and printed by `node packages/proxy/dist/cli.js public-key`. The dashboard reads the same live store at `http://localhost:3000`.
 
-The dashboard and proxy share the repo's `.blackbox/` store. For another workspace, run the proxy with that directory as its current working directory. Set `RECEIPTS_DIR` to choose a different local store. Keep `.blackbox/` private: the signing key grants the ability to sign records and must not be shared.
+The dashboard and proxy share the repo's `.blackbox/` store. For another workspace, run the proxy with that directory as its current working directory. Set `RECEIPTS_DIR` to choose a different local store. Keep `.blackbox/` private (it holds the raw-arguments witness) and keep `~/.blackbox/signing-key.pem` secret: it grants the ability to sign records. Older versions kept the key in the workspace's `.blackbox/`; the proxy now ignores that file and says so.
 
 ## Architecture
 

@@ -12,7 +12,7 @@ const tsx = import.meta.resolve('tsx');
 
 function run(script: string, cwd: string, dataDir: string, args: string[], env: Record<string, string> = {}): { code: number; out: string } {
   try {
-    const out = execFileSync(process.execPath, ['--conditions=source', '--import', tsx, join(repoRoot, script), ...args], { cwd, env: { ...process.env, RECEIPTS_DIR: dataDir, ...env }, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+    const out = execFileSync(process.execPath, ['--conditions=source', '--import', tsx, join(repoRoot, script), ...args], { cwd, env: { ...process.env, RECEIPTS_DIR: dataDir, BLACKBOX_KEY_DIR: join(dataDir, '..', '.test-keys'), ...env }, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
     return { code: 0, out };
   } catch (error) {
     const failure = error as { status: number; stdout: string; stderr: string };

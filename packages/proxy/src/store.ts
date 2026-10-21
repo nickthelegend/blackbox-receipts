@@ -1,5 +1,6 @@
 import { appendFile, link, mkdir, open, readFile, rename, rm, unlink, writeFile } from 'node:fs/promises';
-import { resolve, relative, isAbsolute, sep } from 'node:path';
+import { homedir } from 'node:os';
+import { join, resolve, relative, isAbsolute, sep } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
 import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs';
@@ -16,9 +17,15 @@ export const dataDir = resolve(monorepoRoot, process.env.RECEIPTS_DIR ?? '.black
 const sessionFile = resolve(dataDir, 'session.jsonl');
 // Raw tool arguments: the private witness for property proofs. Never served to the dashboard or included in proofs.
 const witnessFile = resolve(dataDir, 'witness.jsonl');
-const keyFile = resolve(dataDir, 'signing-key.pem');
+// The signing key lives outside the workspace (default ~/.blackbox/, or BLACKBOX_KEY_DIR), so an agent
+// working in the repo can't read it through ordinary file access and it can't be committed by mistake.
+// The public key is also copied next to the receipts, where exports and the dashboard pick it up.
+export const keyDir = resolve(process.env.BLACKBOX_KEY_DIR ?? join(homedir(), '.blackbox'));
+const keyFile = resolve(keyDir, 'signing-key.pem');
+const keyDirPublicKeyFile = resolve(keyDir, 'public-key.pem');
+export const publicKeyFile = resolve(dataDir, 'public-key.pem');
+const legacyKeyFile = resolve(dataDir, 'signing-key.pem');
 const sealFile = resolve(dataDir, 'seal.json');
-const publicKeyFile = resolve(dataDir, 'public-key.pem');
 // RECEIPTS_RESUME=1 appends to the existing session instead of starting a new one. One-shot MCP clients
 // (such as the `call` bridge used by GitLab Duo flows) start a proxy per tool call and rely on this.
 export const resumeSession = process.env.RECEIPTS_RESUME === '1';
@@ -47,13 +54,17 @@ async function loadOrCreateKeys(): Promise<Keys> {
   await mkdir(dataDir, { recursive: true, mode: 0o700 });
   if (process.env.RECEIPTS_SIGNING_KEY) {
     const privateKey = process.env.RECEIPTS_SIGNING_KEY;
-    return { privateKey, publicKey: createPublicKey(privateKey).export({ type: 'spki', format: 'pem' }).toString() };
+    const publicKey = createPublicKey(privateKey).export({ type: 'spki', format: 'pem' }).toString();
+    await writePublicKey(publicKeyFile, publicKey);
+    return { privateKey, publicKey };
   }
+  await mkdir(keyDir, { recursive: true, mode: 0o700 });
   let privateKey: string;
   try {
     privateKey = await readFile(keyFile, 'utf8');
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    if (legacyKeyFile !== keyFile && existsSync(legacyKeyFile)) console.error(`blackbox: ${legacyKeyFile} is a signing key left inside the workspace by an older version and is no longer used. Sessions it signed only verify with it; move it to ${keyFile} to keep using it, or delete it.`);
     const temp = `${keyFile}.${process.pid}.${randomUUID()}.tmp`;
     await writeFile(temp, generateSigningKey().privateKey, { mode: 0o600 });
     try { await link(temp, keyFile); } catch (linkError) {
@@ -63,13 +74,16 @@ async function loadOrCreateKeys(): Promise<Keys> {
   }
   // Always derived from the private key, so a stale or half-written public key file can't disagree with it.
   const publicKey = createPublicKey(privateKey).export({ type: 'spki', format: 'pem' }).toString();
-  const current = await readFile(publicKeyFile, 'utf8').catch(() => '');
-  if (current !== publicKey) {
-    const temp = `${publicKeyFile}.${process.pid}.${randomUUID()}.tmp`;
-    await writeFile(temp, publicKey, { mode: 0o644 });
-    await rename(temp, publicKeyFile);
-  }
+  await writePublicKey(keyDirPublicKeyFile, publicKey);
+  await writePublicKey(publicKeyFile, publicKey);
   return { privateKey, publicKey };
+}
+
+async function writePublicKey(file: string, publicKey: string) {
+  if ((await readFile(file, 'utf8').catch(() => '')) === publicKey) return;
+  const temp = `${file}.${process.pid}.${randomUUID()}.tmp`;
+  await writeFile(temp, publicKey, { mode: 0o644 });
+  await rename(temp, file);
 }
 
 // Every change to the log goes through one queue per process and one lock file across processes, so

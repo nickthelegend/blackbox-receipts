@@ -17,7 +17,8 @@ test('guard: *.pem and *.key reads are denied before running, recorded as denied
   writeFileSync(join(cwd, 'deploy/server.pem'), 'PEM-CANARY\n');
   writeFileSync(join(cwd, 'config/app.key'), 'KEY-CANARY\n');
   const dataDir = join(cwd, '.blackbox');
-  const client = await connectProxy({ cwd, env: { RECEIPTS_DIR: dataDir, RECEIPTS_RESUME: undefined } });
+  const env = { RECEIPTS_DIR: dataDir, BLACKBOX_KEY_DIR: mkdtempSync(join(tmpdir(), 'blackbox-keys-')), RECEIPTS_RESUME: undefined };
+  const client = await connectProxy({ cwd, env });
   const results = [];
   try {
     results.push(await client.callTool({ name: 'read_file', arguments: { path: 'notes.md' } }));
@@ -37,7 +38,7 @@ test('guard: *.pem and *.key reads are denied before running, recorded as denied
   // Guard and prover agree step by step on the policy rule itself, not just the denial flag.
   const verdicts = receipts.map((receipt, index) => evaluateStep({ ...receipt, secretsAccessed: false }, witnesses[index].args, defaultSecretPolicy));
   assert.deepEqual(verdicts, [null, 'read_file touched secret path matching "*.pem"', 'shell touched secret path matching "*.key"', null]);
-  const proved = runScript('packages/proxy/src/cli.ts', cwd, ['prove'], { RECEIPTS_DIR: dataDir });
+  const proved = runScript('packages/proxy/src/cli.ts', cwd, ['prove'], env);
   assert.equal(proved.code, 1);
   assert.match(proved.out, /^FAIL no-secrets-read at step 2 \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: read_file touched secret path matching "\*\.pem"/);
 });

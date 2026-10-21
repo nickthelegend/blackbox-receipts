@@ -8,6 +8,8 @@ set -euo pipefail
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 export RECEIPTS_DIR="$WORK/session"
+# A throwaway signing key for this run, outside the checkout (the default is ~/.blackbox/).
+export BLACKBOX_KEY_DIR="$WORK/keys"
 call() { node packages/proxy/dist/call.js "$@"; }
 cli() { node packages/proxy/dist/cli.js "$@"; }
 

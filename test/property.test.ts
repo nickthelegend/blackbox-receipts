@@ -89,7 +89,7 @@ test('selective disclosure opens exactly one step against the proof', () => {
 const repoRoot = resolve(import.meta.dirname, '..');
 function cli(dir: string, ...args: string[]): { code: number; out: string } {
   try {
-    const out = execFileSync(process.execPath, ['--conditions=source', '--import', 'tsx', 'packages/proxy/src/cli.ts', ...args], { cwd: repoRoot, env: { ...process.env, RECEIPTS_DIR: dir }, encoding: 'utf8' });
+    const out = execFileSync(process.execPath, ['--conditions=source', '--import', 'tsx', 'packages/proxy/src/cli.ts', ...args], { cwd: repoRoot, env: { ...process.env, RECEIPTS_DIR: dir, BLACKBOX_KEY_DIR: dir }, encoding: 'utf8' });
     return { code: 0, out };
   } catch (error) {
     const failure = error as { status: number; stdout: string; stderr: string };

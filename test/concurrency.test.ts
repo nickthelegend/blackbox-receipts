@@ -16,7 +16,7 @@ function workspace() {
   const cwd = mkdtempSync(join(tmpdir(), 'blackbox-concurrency-'));
   for (let index = 1; index <= 20; index++) writeFileSync(join(cwd, `note-${index}.md`), `note ${index}\n`);
   const dataDir = join(cwd, '.blackbox');
-  return { cwd, dataDir, env: { RECEIPTS_DIR: dataDir, RECEIPTS_RESUME: undefined } };
+  return { cwd, dataDir, env: { RECEIPTS_DIR: dataDir, BLACKBOX_KEY_DIR: mkdtempSync(join(tmpdir(), 'blackbox-keys-')), RECEIPTS_RESUME: undefined } };
 }
 
 function log(dataDir: string): { receipts: Receipt[]; publicKey: string } {
@@ -41,7 +41,7 @@ test('20 parallel calls through one proxy: steps 1..20, chain verifies', async (
 test('6 bridge processes at once on a fresh directory: one key, steps 1..6, chain verifies', async () => {
   const ws = workspace();
   const tsx = import.meta.resolve('tsx');
-  const env = { ...process.env, RECEIPTS_DIR: ws.dataDir, RECEIPTS_RESUME: '1' };
+  const env = { ...process.env, ...ws.env, RECEIPTS_RESUME: '1' };
   // No session and no signing key exist yet, so the processes also race to create the key.
   await Promise.all(Array.from({ length: 6 }, (_, index) => run(process.execPath, ['--conditions=source', '--import', tsx, join(repoRoot, 'packages/proxy/src/call.ts'), 'read_file', JSON.stringify({ path: `note-${index + 1}.md` })], { cwd: ws.cwd, env })));
   const { receipts, publicKey } = log(ws.dataDir);

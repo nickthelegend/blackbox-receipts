@@ -11,7 +11,7 @@ function workspace() {
   const cwd = mkdtempSync(join(tmpdir(), 'blackbox-lifecycle-'));
   writeFileSync(join(cwd, 'notes.md'), '# notes\n');
   const dataDir = join(cwd, '.blackbox');
-  return { cwd, dataDir, env: { RECEIPTS_DIR: dataDir, RECEIPTS_RESUME: undefined } };
+  return { cwd, dataDir, env: { RECEIPTS_DIR: dataDir, BLACKBOX_KEY_DIR: mkdtempSync(join(tmpdir(), 'blackbox-keys-')), RECEIPTS_RESUME: undefined } };
 }
 
 const readLog = (file: string) => readFileSync(file, 'utf8').trim().split('\n').filter(Boolean).map((line) => JSON.parse(line));
@@ -38,7 +38,7 @@ test('restarting the proxy archives the previous session with its raw arguments 
   assert.deepEqual(readdirSync(join(ws.dataDir, 'sessions')).filter((name) => name.endsWith('.jsonl') && !name.includes('witness')).length, 2);
 });
 
-const cli = (ws: ReturnType<typeof workspace>, ...args: string[]) => runScript('packages/proxy/src/cli.ts', ws.cwd, args, { RECEIPTS_DIR: ws.dataDir });
+const cli = (ws: ReturnType<typeof workspace>, ...args: string[]) => runScript('packages/proxy/src/cli.ts', ws.cwd, args, ws.env);
 const dropLastLine = (file: string) => { const lines = readFileSync(file, 'utf8').trim().split('\n'); writeFileSync(file, `${lines.slice(0, -1).join('\n')}\n`); };
 
 test('proxy shutdown seals the log; cutting the last receipt off is caught by the seal', async () => {
@@ -70,4 +70,18 @@ test('verify-export: dropping the last exported receipt fails on the seal; a mis
   const unsealed = cli(ws, 'verify-export', 'receipts/run');
   assert.equal(unsealed.code, 1);
   assert.match(unsealed.out, /Seal is missing/);
+});
+
+test('signing key lives in BLACKBOX_KEY_DIR, not the workspace; the public key is exported next to the receipts', async () => {
+  const ws = workspace();
+  await session(ws, 1);
+  const files = readdirSync(ws.dataDir);
+  assert.ok(files.includes('public-key.pem'));
+  assert.ok(!files.some((name) => name.includes('signing-key')));
+  assert.ok(readdirSync(ws.env.BLACKBOX_KEY_DIR).includes('signing-key.pem'));
+  const printed = cli(ws, 'public-key');
+  assert.equal(printed.code, 0);
+  assert.equal(printed.out, readFileSync(join(ws.dataDir, 'public-key.pem'), 'utf8'));
+  assert.equal(cli(ws, 'export', 'receipts/run').code, 0);
+  assert.ok(!readdirSync(join(ws.cwd, 'receipts/run')).some((name) => name.includes('signing-key')));
 });

@@ -137,6 +137,9 @@ if (command === 'verify') {
   if (!Number.isInteger(step) || step < 1) throw new Error('Usage: blackbox-receipts disclose <step>');
   const [receipts, witnesses, keys, policy] = await Promise.all([loadReceipts(), loadWitnesses(), signingKeys(), loadPolicy()]);
   console.log(JSON.stringify(discloseStep(receipts, witnesses, step, policy, keys.privateKey), null, 2));
+} else if (command === 'public-key') {
+  // The key that verifies this proxy's receipts. Safe to publish; the private key never leaves the key dir.
+  process.stdout.write((await signingKeys()).publicKey);
 } else if (command === 'tamper') {
   const step = Number(positional[0] ?? 1);
   if (!Number.isInteger(step) || step < 1) throw new Error(`tamper takes a block step number, got "${positional[0]}"`);
@@ -144,6 +147,6 @@ if (command === 'verify') {
 } else if (command === 'restore') {
   console.log(`Restored block(s) ${(await restoreSession()).join(', ')} to their signed originals.`);
 } else {
-  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | disclose <step> | tamper [step] | restore]\nVerdicts are judged against no-secrets-read/v1 unless you pin another policy with --expect-policy <file> or BLACKBOX_POLICY_HASH.');
+  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | disclose <step> | public-key | tamper [step] | restore]\nVerdicts are judged against no-secrets-read/v1 unless you pin another policy with --expect-policy <file> or BLACKBOX_POLICY_HASH.');
   process.exitCode = 2;
 }
