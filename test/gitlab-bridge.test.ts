@@ -46,13 +46,13 @@ test('bridge: separate processes extend one signed session; export and verify-ex
   const receipts = readFileSync(join(ws.cwd, sessionDir, 'session.jsonl'), 'utf8').trim().split('\n').map((line) => JSON.parse(line));
   assert.deepEqual(receipts.map((item) => item.step), [1, 2, 3]);
   assert.equal(new Set(receipts.map((item) => item.sessionId)).size, 1);
-  const exportedFiles = ['session.jsonl', 'public-key.pem', 'result.txt', 'proof-no-secrets.json'];
+  const exportedFiles = ['session.jsonl', 'public-key.pem', 'result.txt', 'seal.json', 'proof-no-secrets.json'];
   for (const file of exportedFiles) assert.ok(readFileSync(join(ws.cwd, sessionDir, file)));
   assert.throws(() => readFileSync(join(ws.cwd, sessionDir, 'signing-key.pem')));
   assert.throws(() => readFileSync(join(ws.cwd, sessionDir, 'witness.jsonl')));
   const verified = ws.cli(['verify-export']);
   assert.equal(verified.code, 0, verified.out);
-  assert.match(verified.out, /^PASS no-secrets-read: 3 receipts, chain intact, proof verified/);
+  assert.match(verified.out, /^PASS no-secrets-read: 3 receipts, chain intact, seal matches, proof verified/);
 });
 
 test('bridge: a secret read is denied, recorded, and fails export and verify-export at that step', () => {

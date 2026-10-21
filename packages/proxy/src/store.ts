@@ -3,7 +3,7 @@ import { resolve, relative, isAbsolute, sep } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
 import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs';
-import { createReceipt, generateSigningKey, type Receipt, type Witness, sha256 } from '@blackbox/receipts';
+import { createReceipt, createSeal, generateSigningKey, type Receipt, type Seal, type Witness, sha256 } from '@blackbox/receipts';
 
 const currentDirectory = process.cwd();
 const monorepoRoot = existsSync(resolve(currentDirectory, 'apps/web/package.json')) && existsSync(resolve(currentDirectory, 'packages/proxy/package.json'))
@@ -17,6 +17,7 @@ const sessionFile = resolve(dataDir, 'session.jsonl');
 // Raw tool arguments: the private witness for property proofs. Never served to the dashboard or included in proofs.
 const witnessFile = resolve(dataDir, 'witness.jsonl');
 const keyFile = resolve(dataDir, 'signing-key.pem');
+const sealFile = resolve(dataDir, 'seal.json');
 const publicKeyFile = resolve(dataDir, 'public-key.pem');
 // RECEIPTS_RESUME=1 appends to the existing session instead of starting a new one. One-shot MCP clients
 // (such as the `call` bridge used by GitLab Duo flows) start a proxy per tool call and rely on this.
@@ -150,25 +151,52 @@ export async function addReceipt(tool: string, args: unknown, result: unknown, p
   });
 }
 
+export async function loadSeal(): Promise<Seal | null> {
+  try { return JSON.parse(await readFile(sealFile, 'utf8')) as Seal; } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null;
+    throw error;
+  }
+}
+
+async function writeSeal(receipts: Receipt[]): Promise<Seal | null> {
+  if (!receipts.length) return null;
+  const seal = createSeal(receipts, (await signingKeys()).privateKey);
+  await writeFile(sealFile, `${JSON.stringify(seal, null, 2)}\n`, { mode: 0o600 });
+  return seal;
+}
+
+/** Signs the current length of the log into seal.json. The proxy calls this on shutdown. */
+export function sealSession(): Promise<Seal | null> {
+  return withSessionLock(async () => writeSeal(await loadReceipts()));
+}
+
 export const archiveDir = resolve(dataDir, 'sessions');
 
 /**
  * Starts a new session without losing the old one: the current log, its raw arguments (witness) and
- * any tamper backup move to sessions/<sessionId>.jsonl, .witness.jsonl and .tamper-backup.json.
+ * any tamper backup move to sessions/<sessionId>.jsonl, .witness.jsonl and .tamper-backup.json, with a
+ * fresh signed seal in .seal.json.
  * Returns the archived log's path, or null when the log was empty.
  */
 export function archiveSession(): Promise<string | null> {
   return withSessionLock(async () => {
     const receipts = await loadReceipts();
     if (!receipts.length) {
+      // A seal next to an empty log means a sealed session was emptied; keep that evidence aside.
+      const orphan = await loadSeal();
+      if (orphan) {
+        await mkdir(archiveDir, { recursive: true, mode: 0o700 });
+        await rename(sealFile, resolve(archiveDir, `${orphan.sessionId.replace(/[^A-Za-z0-9._-]/g, '_')}.${Date.now()}.orphan-seal.json`));
+      }
       await Promise.all([writeFile(sessionFile, '', { mode: 0o600 }), writeFile(witnessFile, '', { mode: 0o600 }), rm(tamperBackupFile, { force: true })]);
       return null;
     }
     await mkdir(archiveDir, { recursive: true, mode: 0o700 });
+    await writeSeal(receipts);
     const id = receipts[0].sessionId.replace(/[^A-Za-z0-9._-]/g, '_');
     let base = resolve(archiveDir, id);
     for (let copy = 2; existsSync(`${base}.jsonl`); copy++) base = resolve(archiveDir, `${id}-${copy}`);
-    const moves: [string, string][] = [[sessionFile, `${base}.jsonl`], [witnessFile, `${base}.witness.jsonl`], [tamperBackupFile, `${base}.tamper-backup.json`]];
+    const moves: [string, string][] = [[sessionFile, `${base}.jsonl`], [witnessFile, `${base}.witness.jsonl`], [sealFile, `${base}.seal.json`], [tamperBackupFile, `${base}.tamper-backup.json`]];
     for (const [from, to] of moves) {
       try { await rename(from, to); } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
     }

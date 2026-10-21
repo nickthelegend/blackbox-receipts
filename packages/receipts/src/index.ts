@@ -106,4 +106,41 @@ export function verifyMerkleProof(proof: ReturnType<typeof merkleProof>): boolea
   return value === proof.root;
 }
 
+/**
+ * A signed statement of how long a session is: its id, receipt count, last hash and Merkle root.
+ * The chain alone can't show that receipts were cut off the end (a shorter prefix still links up);
+ * the seal can. The proxy writes one on shutdown and `export` writes one into every export.
+ */
+export type Seal = { version: 1; sessionId: string; count: number; lastHash: string; root: string; sealedAt: string; signature: string };
+export type SealCheck = { valid: boolean; reason: string | null };
+
+function sealDigest(seal: Omit<Seal, 'signature'>): Buffer {
+  const { version, sessionId, count, lastHash, root, sealedAt } = seal;
+  return Buffer.from(sha256(stableJson({ kind: 'blackbox-seal', version, sessionId, count, lastHash, root, sealedAt })), 'hex');
+}
+
+export function createSeal(receipts: Receipt[], privateKeyPem: string, sealedAt = new Date().toISOString()): Seal {
+  if (!receipts.length) throw new RangeError('Cannot seal an empty session');
+  const unsigned = { version: 1 as const, sessionId: receipts[0].sessionId, count: receipts.length, lastHash: receipts.at(-1)!.hash, root: merkleRoot(receipts.map(({ hash }) => hash)), sealedAt };
+  return { ...unsigned, signature: sign(null, sealDigest(unsigned), createPrivateKey(privateKeyPem)).toString('base64') };
+}
+
+/**
+ * `exact`: the log must be exactly what was sealed (exports). `prefix`: the log may have grown since the
+ * seal was written (a live session), but it must still contain every sealed receipt unchanged.
+ */
+export function verifySeal(seal: Seal | null | undefined, receipts: Receipt[], publicKeyPem: string, mode: 'exact' | 'prefix' = 'exact'): SealCheck {
+  if (!seal) return { valid: false, reason: 'Seal is missing, so receipts removed from the end could not be detected' };
+  let signatureOk = false;
+  try { signatureOk = seal.version === 1 && verify(null, sealDigest(seal), createPublicKey(publicKeyPem), Buffer.from(seal.signature, 'base64')); } catch { signatureOk = false; }
+  if (!signatureOk) return { valid: false, reason: 'Seal signature is invalid' };
+  if (receipts.length && receipts[0].sessionId !== seal.sessionId) return { valid: false, reason: `Seal belongs to session ${seal.sessionId}, not ${receipts[0].sessionId}` };
+  if (receipts.length < seal.count) return { valid: false, reason: `Seal says ${seal.count} receipts ending at ${seal.lastHash.slice(0, 12)}, but the log has ${receipts.length}: receipts were removed from the end` };
+  if (mode === 'exact' && receipts.length > seal.count) return { valid: false, reason: `Seal says ${seal.count} receipts, but the log has ${receipts.length}: receipts were added after sealing` };
+  const sealed = receipts.slice(0, seal.count);
+  if (sealed.at(-1)?.hash !== seal.lastHash) return { valid: false, reason: `Seal's last hash does not match receipt ${seal.count}` };
+  if (merkleRoot(sealed.map(({ hash }) => hash)) !== seal.root) return { valid: false, reason: 'Seal root does not match the receipts it covers' };
+  return { valid: true, reason: null };
+}
+
 export * from './property.js';

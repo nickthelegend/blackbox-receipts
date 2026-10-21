@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createReceipt, generateSigningKey, merkleProof, verifyChain, verifyMerkleProof, type ReceiptInput } from '../packages/receipts/src/index.ts';
+import { createReceipt, createSeal, generateSigningKey, merkleProof, verifyChain, verifyMerkleProof, verifySeal, type ReceiptInput } from '../packages/receipts/src/index.ts';
 
 function receiptsFixture(secretsAccessed = false) {
   const keys = generateSigningKey();
@@ -35,4 +35,17 @@ test('generates membership proofs against the session root', () => {
   const { items } = receiptsFixture();
   const leaves = items.map(({ hash }) => hash);
   assert.ok(leaves.every((_, index) => verifyMerkleProof(merkleProof(leaves, index))));
+});
+
+test('seal: exact and prefix checks, forged seal and wrong key rejected', () => {
+  const { keys, items } = receiptsFixture();
+  const seal = createSeal(items, keys.privateKey);
+  assert.deepEqual(verifySeal(seal, items, keys.publicKey, 'exact'), { valid: true, reason: null });
+  assert.match(verifySeal(seal, items.slice(0, 2), keys.publicKey, 'prefix').reason!, /Seal says 3 receipts .* the log has 2: receipts were removed from the end/);
+  const shorter = createSeal(items.slice(0, 2), keys.privateKey);
+  assert.equal(verifySeal(shorter, items, keys.publicKey, 'prefix').valid, true);
+  assert.match(verifySeal(shorter, items, keys.publicKey, 'exact').reason!, /receipts were added after sealing/);
+  assert.equal(verifySeal({ ...seal, count: 2 }, items.slice(0, 2), keys.publicKey).reason, 'Seal signature is invalid');
+  assert.equal(verifySeal(seal, items, generateSigningKey().publicKey).reason, 'Seal signature is invalid');
+  assert.match(verifySeal(null, items, keys.publicKey).reason!, /Seal is missing/);
 });

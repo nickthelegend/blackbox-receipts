@@ -5,7 +5,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { addReceipt, archiveSession, isSecretPath, resumeSession, safeFilePath, safePath } from './store.js';
+import { addReceipt, archiveSession, isSecretPath, resumeSession, safeFilePath, safePath, sealSession } from './store.js';
 
 const execFileAsync = promisify(execFile);
 const server = new Server({ name: 'blackbox-receipts-proxy', version: '0.1.0' }, { capabilities: { tools: {} } });
@@ -17,8 +17,18 @@ const toolList = [
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: toolList.map(({ name, description, inputSchema }) => ({ name, description, inputSchema: { type: 'object', properties: Object.fromEntries(Object.entries(inputSchema).map(([key, schema]) => [key, { type: key === 'args' ? 'array' : 'string' }])), required: name === 'git' ? ['action'] : name === 'read_file' ? ['path'] : ['command'] } })) }));
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name, arguments: input = {} } = request.params;
+// Tool calls still running; shutdown waits for them so their receipts land before the seal.
+const inFlight = new Set<Promise<unknown>>();
+
+server.setRequestHandler(CallToolRequestSchema, (request) => {
+  const call = handleCall(request.params);
+  inFlight.add(call);
+  void call.finally(() => inFlight.delete(call));
+  return call;
+});
+
+async function handleCall(params: { name: string; arguments?: Record<string, unknown> }) {
+  const { name, arguments: input = {} } = params;
   const args = input as Record<string, unknown>;
   let output: unknown;
   let paths: string[] = [];
@@ -87,7 +97,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     await addReceipt(name, args, { error: message }, paths, secretsAccessed, permissions);
     return { isError: true, content: [{ type: 'text', text: message }] };
   }
-});
+}
+
+// On shutdown (client closed stdin, or SIGTERM/SIGINT) sign the session's final length into seal.json,
+// so receipts later cut off the end of the log are detected.
+let closing = false;
+async function shutdown() {
+  if (closing) return;
+  closing = true;
+  await Promise.race([Promise.allSettled([...inFlight]), new Promise((done) => setTimeout(done, 5000))]);
+  try { await sealSession(); } catch (error) { console.error(`blackbox: could not seal the session: ${error instanceof Error ? error.message : String(error)}`); }
+  process.exit(0);
+}
+process.stdin.on('end', () => void shutdown());
+process.on('SIGTERM', () => void shutdown());
+process.on('SIGINT', () => void shutdown());
 
 const transport = new StdioServerTransport();
 // A new proxy starts a new session; the previous one is archived under sessions/, never deleted.

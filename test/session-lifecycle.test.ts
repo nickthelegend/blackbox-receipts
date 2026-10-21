@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { verifyChain, type Receipt } from '../packages/receipts/src/index.ts';
 import { connectProxy } from '../packages/proxy/src/client.ts';
+import { runScript } from './fixtures/run.ts';
 
 function workspace() {
   const cwd = mkdtempSync(join(tmpdir(), 'blackbox-lifecycle-'));
@@ -35,4 +36,38 @@ test('restarting the proxy archives the previous session with its raw arguments 
   assert.deepEqual(witness.map((item) => [item.step, item.args.path]), [[1, 'notes.md'], [2, 'notes.md']]);
   await session(ws, 0);
   assert.deepEqual(readdirSync(join(ws.dataDir, 'sessions')).filter((name) => name.endsWith('.jsonl') && !name.includes('witness')).length, 2);
+});
+
+const cli = (ws: ReturnType<typeof workspace>, ...args: string[]) => runScript('packages/proxy/src/cli.ts', ws.cwd, args, { RECEIPTS_DIR: ws.dataDir });
+const dropLastLine = (file: string) => { const lines = readFileSync(file, 'utf8').trim().split('\n'); writeFileSync(file, `${lines.slice(0, -1).join('\n')}\n`); };
+
+test('proxy shutdown seals the log; cutting the last receipt off is caught by the seal', async () => {
+  const ws = workspace();
+  await session(ws, 3);
+  const seal = JSON.parse(readFileSync(join(ws.dataDir, 'seal.json'), 'utf8'));
+  assert.equal(seal.count, 3);
+  assert.equal(cli(ws, 'prove').code, 0);
+  dropLastLine(join(ws.dataDir, 'session.jsonl'));
+  const proved = cli(ws, 'prove');
+  assert.equal(proved.code, 1);
+  assert.match(proved.out, /^FAIL no-secrets-read.*: Seal says 3 receipts ending at [0-9a-f]{12}, but the log has 2: receipts were removed from the end/);
+  const verified = cli(ws, 'verify');
+  assert.equal(verified.code, 1);
+  assert.match(verified.out, /"seal": "BROKEN"/);
+});
+
+test('verify-export: dropping the last exported receipt fails on the seal; a missing seal fails too', async () => {
+  const ws = workspace();
+  await session(ws, 3);
+  const exported = cli(ws, 'export', 'receipts/run');
+  assert.equal(exported.code, 0, exported.out);
+  assert.match(cli(ws, 'verify-export', 'receipts/run').out, /^PASS .*3 receipts, chain intact, seal matches/);
+  dropLastLine(join(ws.cwd, 'receipts/run/session.jsonl'));
+  const truncated = cli(ws, 'verify-export', 'receipts/run');
+  assert.equal(truncated.code, 1);
+  assert.match(truncated.out, /^FAIL no-secrets-read.*: Seal says 3 receipts ending at [0-9a-f]{12}, but the log has 2: receipts were removed from the end/);
+  rmSync(join(ws.cwd, 'receipts/run/seal.json'));
+  const unsealed = cli(ws, 'verify-export', 'receipts/run');
+  assert.equal(unsealed.code, 1);
+  assert.match(unsealed.out, /Seal is missing/);
 });
