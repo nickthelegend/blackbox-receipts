@@ -2,7 +2,7 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
-import { createSeal, DEFAULT_POLICY_HASH, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, proveProperty, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
+import { createSeal, parsePack, PACK_FORMAT, verifyPack, type Pack, DEFAULT_POLICY_HASH, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, proveProperty, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
 import { explainSession } from './explain.js';
 import { loadReceipts, loadSeal, loadWitnesses, restoreSession, signingKeys, tamperReceipt, dataDir } from './store.js';
 
@@ -151,6 +151,37 @@ if (command === 'verify') {
   const markdown = explainSession({ receipts, witnesses, policy, verdict: line, chain, root: merkleRoot(receipts.map(({ hash }) => hash)), seal: sealText });
   if (option('out')) await writeFile(resolve(option('out')!), markdown);
   process.stdout.write(markdown);
+} else if (command === 'pack') {
+  // One JSON file a third party can check offline (CLI verify-pack, or the dashboard's /verify page):
+  // receipts, public key, seal, proof (on PASS) and the verdict. No private key, no raw arguments.
+  const from = option('from');
+  let pack: Pack;
+  if (from) {
+    const dir = resolve(from);
+    const read = (file: string) => readFile(join(dir, file), 'utf8');
+    const receipts = (await read('session.jsonl')).trim().split('\n').filter(Boolean).map((line) => JSON.parse(line) as Receipt);
+    const optional = async (file: string) => (existsSync(join(dir, file)) ? read(file) : null);
+    const [publicKey, seal, proof, verdict] = await Promise.all([read('public-key.pem'), optional('seal.json'), optional('proof-no-secrets.json'), optional('result.txt')]);
+    pack = { format: PACK_FORMAT, createdAt: new Date().toISOString(), sessionId: receipts[0]?.sessionId ?? '', publicKey, receipts, seal: seal ? JSON.parse(seal) as Seal : null, proof: proof ? JSON.parse(proof) as PropertyProof : null, verdict: verdict?.trim() ?? '' };
+  } else {
+    const { line, proof, receipts, publicKey, privateKey } = await proveCurrent();
+    if (!receipts.length) { console.log(line); process.exit(1); }
+    pack = { format: PACK_FORMAT, createdAt: new Date().toISOString(), sessionId: receipts[0].sessionId, publicKey, receipts, seal: createSeal(receipts, privateKey), proof, verdict: line };
+  }
+  const out = resolve(positional[0] ?? `blackbox-pack-${pack.sessionId.slice(0, 8)}.json`);
+  await writeFile(out, `${JSON.stringify(pack, null, 2)}\n`);
+  const check = verifyPack(pack, { expectedPolicyHash: pinned.hash, expectedPolicyId: pinned.id });
+  console.log(check.headline);
+  console.log(`pack written to ${relative(process.cwd(), out) || out} (${pack.receipts.length} receipts; no private key, no raw arguments)`);
+} else if (command === 'verify-pack') {
+  // Same checks the browser verifier runs (@blackbox/verify), from the pack file alone.
+  const file = resolve(positional[0] ?? '');
+  let pack: Pack;
+  try { pack = parsePack(await readFile(file, 'utf8')); } catch (error) { console.log(`FAIL: cannot read pack ${positional[0] ?? '(none given)'}: ${error instanceof Error ? error.message : String(error)}`); process.exit(1); }
+  const check = verifyPack(pack, { expectedPolicyHash: pinned.hash, expectedPolicyId: pinned.id, pinnedPublicKey: process.env.BLACKBOX_PUBLIC_KEY });
+  console.log(check.headline);
+  for (const item of check.checks) console.log(`  ${item.ok ? 'ok  ' : 'FAIL'} ${item.name}: ${item.detail}`);
+  if (!check.ok) process.exitCode = 1;
 } else if (command === 'public-key') {
   // The key that verifies this proxy's receipts. Safe to publish; the private key never leaves the key dir.
   process.stdout.write((await signingKeys()).publicKey);
@@ -161,6 +192,6 @@ if (command === 'verify') {
 } else if (command === 'restore') {
   console.log(`Restored block(s) ${(await restoreSession()).join(', ')} to their signed originals.`);
 } else {
-  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | explain [--out file.md] | disclose <step> | public-key | tamper [step] | restore]\nVerdicts are judged against no-secrets-read/v1 unless you pin another policy with --expect-policy <file> or BLACKBOX_POLICY_HASH.');
+  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | explain [--out file.md] | pack [out.json] [--from exportDir] | verify-pack <file> | disclose <step> | public-key | tamper [step] | restore]\nVerdicts are judged against no-secrets-read/v1 unless you pin another policy with --expect-policy <file> or BLACKBOX_POLICY_HASH.');
   process.exitCode = 2;
 }
