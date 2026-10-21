@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // Entry point of the Blackbox MCP proxy (stdio): `node dist/server.js [--cwd <workspace>]`.
 // Options are applied before the proxy modules load, so the store resolves paths in the right directory.
 const argv = process.argv.slice(2);

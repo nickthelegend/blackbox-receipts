@@ -4,6 +4,11 @@
   "type": "module",
   "main": "./dist/server.js",
   "types": "./dist/server.d.ts",
+  "bin": {
+    "blackbox-proxy": "./dist/server.js",
+    "blackbox-receipts": "./dist/cli.js",
+    "blackbox-call": "./dist/call.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/server.d.ts",
@@ -29,6 +34,11 @@
       "types": "./dist/client.d.ts",
       "source": "./src/client.ts",
       "import": "./dist/client.js"
+    },
+    "./upstream": {
+      "types": "./dist/upstream.d.ts",
+      "source": "./src/upstream.ts",
+      "import": "./dist/upstream.js"
     }
   },
   "scripts": {

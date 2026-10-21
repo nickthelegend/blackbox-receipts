@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // One-shot MCP client: `blackbox-call [--new-session] <tool> '<json args>'`.
 // Starts the Blackbox proxy over stdio, makes one real MCP tool call through it (so the call gets a
 // signed receipt), prints the tool output and exits non-zero if the proxy denied or failed the call.
