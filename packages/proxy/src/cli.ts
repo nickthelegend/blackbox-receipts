@@ -2,6 +2,7 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { createSeal, DEFAULT_POLICY_HASH, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, proveProperty, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
+import { explainSession } from './explain.js';
 import { loadReceipts, loadSeal, loadWitnesses, restoreSession, signingKeys, tamperReceipt, dataDir } from './store.js';
 
 const [command = 'verify', ...rest] = process.argv.slice(2);
@@ -137,6 +138,16 @@ if (command === 'verify') {
   if (!Number.isInteger(step) || step < 1) throw new Error('Usage: blackbox-receipts disclose <step>');
   const [receipts, witnesses, keys, policy] = await Promise.all([loadReceipts(), loadWitnesses(), signingKeys(), loadPolicy()]);
   console.log(JSON.stringify(discloseStep(receipts, witnesses, step, policy, keys.privateKey), null, 2));
+} else if (command === 'explain') {
+  // Step-cited markdown for a reviewer: the prover's verdict, then what each step did and why it failed.
+  const { line } = await proveCurrent();
+  const [receipts, witnesses, keys, policy, seal] = await Promise.all([loadReceipts(), loadWitnesses(), signingKeys(), loadPolicy(), loadSeal()]);
+  const chain = receipts.length ? verifyChain(receipts, keys.publicKey) : { valid: true, brokenAt: null, reason: null };
+  const sealed = seal ? verifySeal(seal, receipts, keys.publicKey, 'prefix') : null;
+  const sealText = !seal ? 'none yet (the proxy writes it when it shuts down)' : sealed!.valid ? `signed, covers ${seal.count} of ${receipts.length} receipts` : `BROKEN: ${sealed!.reason}`;
+  const markdown = explainSession({ receipts, witnesses, policy, verdict: line, chain, root: merkleRoot(receipts.map(({ hash }) => hash)), seal: sealText });
+  if (option('out')) await writeFile(resolve(option('out')!), markdown);
+  process.stdout.write(markdown);
 } else if (command === 'public-key') {
   // The key that verifies this proxy's receipts. Safe to publish; the private key never leaves the key dir.
   process.stdout.write((await signingKeys()).publicKey);
@@ -147,6 +158,6 @@ if (command === 'verify') {
 } else if (command === 'restore') {
   console.log(`Restored block(s) ${(await restoreSession()).join(', ')} to their signed originals.`);
 } else {
-  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | disclose <step> | public-key | tamper [step] | restore]\nVerdicts are judged against no-secrets-read/v1 unless you pin another policy with --expect-policy <file> or BLACKBOX_POLICY_HASH.');
+  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | explain [--out file.md] | disclose <step> | public-key | tamper [step] | restore]\nVerdicts are judged against no-secrets-read/v1 unless you pin another policy with --expect-policy <file> or BLACKBOX_POLICY_HASH.');
   process.exitCode = 2;
 }

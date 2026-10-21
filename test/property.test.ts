@@ -162,3 +162,16 @@ test('argsHash is salted: guessing the arguments does not reproduce it, the witn
   assert.equal(argsMatch(receipt.argsHash, { path: 'src/index.ts' }, session.witnesses[1].salt), true);
   assert.equal(argsMatch(receipt.argsHash, { path: 'src/other.ts' }, session.witnesses[1].salt), false);
 });
+
+test('explain: step-cited markdown with the verdict, each call, and why the failing step fails', () => {
+  const dir = writeSessionDir(buildSession(secretCalls));
+  const result = cli(dir, 'explain');
+  assert.equal(result.code, 0, result.out);
+  assert.match(result.out, /\*\*Verdict:\*\* `FAIL no-secrets-read at step 2 \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: read_file touched secret path matching "\.env\*"`/);
+  assert.match(result.out, /- \*\*step 1\*\* \d\d:\d\d:\d\d `git status` → recorded/);
+  assert.match(result.out, /- \*\*step 2\*\* \d\d:\d\d:\d\d `read_file \.env\.local` → recorded · receipt `[0-9a-f]{12}`/);
+  assert.match(result.out, /- \*\*step 3\*\* \d\d:\d\d:\d\d `shell ls -la src`/);
+  assert.match(result.out, /## Why\n\n- \*\*step 2\*\* `read_file \.env\.local` violates `no-secrets-read\/v1`: read_file touched secret path matching "\.env\*"\.(?: .*)? It came right after step 1 `git status`\./);
+  const clean = cli(writeSessionDir(buildSession(cleanCalls)), 'explain');
+  assert.match(clean.out, /No step touches a path or argument that `no-secrets-read\/v1` forbids\./);
+});
