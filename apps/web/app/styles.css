@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Manrope:wght@400;500;600&display=swap');
 
 /* Blackbox theme: flight-recorder near-black, black-box orange. */
 :root{
@@ -12,7 +12,7 @@
   --bad:#ff6a61;--bad-bg:rgba(255,90,82,.12);--bad-line:rgba(255,90,82,.4);
   --warn:#ffb27a;--warn-bg:rgba(255,107,26,.13);--warn-line:rgba(255,107,26,.42);
   --font:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --mono:'Fira Code',ui-monospace,SFMono-Regular,Menlo,monospace;
   color-scheme:light;
 }
 *{box-sizing:border-box}
