@@ -5,7 +5,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { addReceipt, isSecretPath, resetSession, resumeSession, safeFilePath, safePath } from './store.js';
+import { addReceipt, archiveSession, isSecretPath, resumeSession, safeFilePath, safePath } from './store.js';
 
 const execFileAsync = promisify(execFile);
 const server = new Server({ name: 'blackbox-receipts-proxy', version: '0.1.0' }, { capabilities: { tools: {} } });
@@ -90,5 +90,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 const transport = new StdioServerTransport();
-if (!resumeSession) await resetSession();
+// A new proxy starts a new session; the previous one is archived under sessions/, never deleted.
+if (!resumeSession) await archiveSession();
 await server.connect(transport);

@@ -15,8 +15,8 @@ export async function GET() {
   return NextResponse.json({ sessionId: receipts[0]?.sessionId ?? sessionId, receipts, chain, root, publicKey: keys.publicKey, walrus, walrusConfigured: Boolean(process.env.WALRUS_PUBLISHER_URL), tampered: await tamperedSteps() });
 }
 
+// Starts a new session. The current one is archived under sessions/<id>.jsonl, not deleted.
 export async function DELETE() {
-  const { resetSession } = await import('@blackbox/proxy/store');
-  await resetSession();
-  return NextResponse.json({ ok: true });
+  const { archiveSession } = await import('@blackbox/proxy/store');
+  return NextResponse.json({ ok: true, archived: await archiveSession() });
 }

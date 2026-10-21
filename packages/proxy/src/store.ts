@@ -150,9 +150,30 @@ export async function addReceipt(tool: string, args: unknown, result: unknown, p
   });
 }
 
-export async function resetSession() {
-  await withSessionLock(async () => {
-    await Promise.all([writeFile(sessionFile, '', { mode: 0o600 }), writeFile(witnessFile, '', { mode: 0o600 }), rm(tamperBackupFile, { force: true })]);
+export const archiveDir = resolve(dataDir, 'sessions');
+
+/**
+ * Starts a new session without losing the old one: the current log, its raw arguments (witness) and
+ * any tamper backup move to sessions/<sessionId>.jsonl, .witness.jsonl and .tamper-backup.json.
+ * Returns the archived log's path, or null when the log was empty.
+ */
+export function archiveSession(): Promise<string | null> {
+  return withSessionLock(async () => {
+    const receipts = await loadReceipts();
+    if (!receipts.length) {
+      await Promise.all([writeFile(sessionFile, '', { mode: 0o600 }), writeFile(witnessFile, '', { mode: 0o600 }), rm(tamperBackupFile, { force: true })]);
+      return null;
+    }
+    await mkdir(archiveDir, { recursive: true, mode: 0o700 });
+    const id = receipts[0].sessionId.replace(/[^A-Za-z0-9._-]/g, '_');
+    let base = resolve(archiveDir, id);
+    for (let copy = 2; existsSync(`${base}.jsonl`); copy++) base = resolve(archiveDir, `${id}-${copy}`);
+    const moves: [string, string][] = [[sessionFile, `${base}.jsonl`], [witnessFile, `${base}.witness.jsonl`], [tamperBackupFile, `${base}.tamper-backup.json`]];
+    for (const [from, to] of moves) {
+      try { await rename(from, to); } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
+    }
+    await Promise.all([writeFile(sessionFile, '', { mode: 0o600 }), writeFile(witnessFile, '', { mode: 0o600 })]);
+    return `${base}.jsonl`;
   });
 }
 
