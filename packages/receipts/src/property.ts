@@ -61,12 +61,15 @@ export type PropertyProof = {
 
 export type PropertyFailure = { valid: false; step: number | null; reason: string };
 export type ProveResult = { valid: true; proof: PropertyProof } | PropertyFailure;
-export type VerifyPropertyResult = { valid: true; steps: number; root: string; policyHash: string } | PropertyFailure;
+export type VerifyPropertyResult = { valid: true; steps: number; root: string; policyHash: string; policyId: string } | PropertyFailure;
 export type Disclosure = { step: number; receipt: Receipt; args: unknown; salt: string };
 
 export function policyHash(policy: SecretPolicy): string {
   return sha256(stableJson(policy));
 }
+
+/** Verifiers accept proofs made under this policy unless they pin another one explicitly. */
+export const DEFAULT_POLICY_HASH = policyHash(defaultSecretPolicy);
 
 function globToRegExp(glob: string): RegExp {
   const home = glob.startsWith('~/');
@@ -178,10 +181,16 @@ function signatureValid(publicKeyPem: string, hexDigest: string, signature: stri
   try { return verify(null, Buffer.from(hexDigest, 'hex'), createPublicKey(publicKeyPem), Buffer.from(signature, 'base64')); } catch { return false; }
 }
 
-/** Verifies a proof using only the proxy public key. Never needs receipt contents or raw args. */
-export function verifyPropertyProof(proof: PropertyProof, publicKeyPem: string, expectedRoot?: string): VerifyPropertyResult {
+/**
+ * Verifies a proof using only the proxy public key. Never needs receipt contents or raw args.
+ * The policy is pinned: a proof made under any policy other than `expectedPolicyHash` (default
+ * no-secrets-read/v1) fails, so a prover can't pass by proving against a weaker policy. Pass null to
+ * accept any policy (and then read `policyId` from the result).
+ */
+export function verifyPropertyProof(proof: PropertyProof, publicKeyPem: string, expectedRoot?: string, expectedPolicyHash: string | null = DEFAULT_POLICY_HASH): VerifyPropertyResult {
   if (proof?.version !== 1 || proof.property !== NO_SECRETS_PROPERTY) return { valid: false, step: null, reason: 'Unsupported proof format' };
   if (policyHash(proof.policy) !== proof.policyHash) return { valid: false, step: null, reason: 'Policy does not match its hash' };
+  if (expectedPolicyHash && proof.policyHash !== expectedPolicyHash) return { valid: false, step: null, reason: `Proof was made under policy "${proof.policy.id}" (${proof.policyHash.slice(0, 12)}), not the pinned policy (${expectedPolicyHash.slice(0, 12)})` };
   if (!proof.receiptCount || !proof.steps?.length) return { valid: false, step: null, reason: 'Proof covers no receipts' };
   if (proof.steps.length !== proof.receiptCount) return { valid: false, step: null, reason: `Proof covers ${proof.steps.length} of ${proof.receiptCount} receipts` };
   if (expectedRoot && expectedRoot !== proof.root) return { valid: false, step: null, reason: 'Proof root does not match the expected session root' };
@@ -193,7 +202,7 @@ export function verifyPropertyProof(proof: PropertyProof, publicKeyPem: string, 
     if (!/^[0-9a-f]{64}$/.test(item.commitment)) return { valid: false, step: item.step, reason: 'Property commitment is malformed' };
   }
   if (!signatureValid(publicKeyPem, statement(proof).toString('hex'), proof.attestation)) return { valid: false, step: null, reason: 'Proxy attestation over the property commitments is invalid' };
-  return { valid: true, steps: proof.steps.length, root: proof.root, policyHash: proof.policyHash };
+  return { valid: true, steps: proof.steps.length, root: proof.root, policyHash: proof.policyHash, policyId: proof.policy.id };
 }
 
 /** Opens one step's commitment for an auditor, revealing only that step's receipt and arguments. */
@@ -204,8 +213,8 @@ export function discloseStep(receipts: Receipt[], witnesses: Witness[], step: nu
   return { step, receipt, args: witness.args, salt: stepSalt(privateKeyPem, policyHash(policy), receipt.hash) };
 }
 
-export function verifyDisclosure(proof: PropertyProof, disclosure: Disclosure, publicKeyPem: string): VerifyPropertyResult {
-  const base = verifyPropertyProof(proof, publicKeyPem);
+export function verifyDisclosure(proof: PropertyProof, disclosure: Disclosure, publicKeyPem: string, expectedPolicyHash: string | null = DEFAULT_POLICY_HASH): VerifyPropertyResult {
+  const base = verifyPropertyProof(proof, publicKeyPem, undefined, expectedPolicyHash);
   if (!base.valid) return base;
   const { step, receipt, args, salt } = disclosure;
   const item = proof.steps.find((entry) => entry.step === step);

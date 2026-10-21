@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { defaultSecretPolicy, discloseStep, proveProperty, verifyDisclosure, verifyPropertyProof, type PropertyProof } from '../packages/receipts/src/index.ts';
+import { defaultSecretPolicy, discloseStep, policyHash, proveProperty, verifyDisclosure, verifyPropertyProof, type PropertyProof, type SecretPolicy } from '../packages/receipts/src/index.ts';
 import { buildSession, cleanCalls, writeSessionDir, type Call } from './fixtures/session.ts';
 
 const secretCalls: Call[] = [cleanCalls[0], { tool: 'read_file', args: { path: '.env.local' }, paths: ['.env.local'], secretsAccessed: true }, cleanCalls[2]];
@@ -22,7 +22,7 @@ function provenBundle(session = buildSession(cleanCalls)): { session: ReturnType
 
 test('clean chain: proof passes and reveals no raw arguments', () => {
   const { session, proof } = provenBundle();
-  assert.deepEqual(verifyPropertyProof(proof, session.keys.publicKey, proof.root), { valid: true, steps: 5, root: proof.root, policyHash: proof.policyHash });
+  assert.deepEqual(verifyPropertyProof(proof, session.keys.publicKey, proof.root), { valid: true, steps: 5, root: proof.root, policyHash: proof.policyHash, policyId: 'no-secrets-read/v1' });
   const published = JSON.stringify(proof);
   for (const hidden of ['src/index.ts', 'ls -la src', 'README.md', '"pwd"', 'argsHash', 'resultHash']) assert.equal(published.includes(hidden), false, `proof leaks ${hidden}`);
   assert.deepEqual(Object.keys(proof.steps[0]).sort(), ['commitment', 'inclusion', 'leaf', 'signature', 'step']);
@@ -101,16 +101,16 @@ test('verifier CLI: PASS on a clean chain, then verify-proof accepts the written
   const dir = writeSessionDir(buildSession(cleanCalls));
   const proved = cli(dir, 'prove');
   assert.equal(proved.code, 0, proved.out);
-  assert.match(proved.out, /^PASS no-secrets-read: 5\/5 receipts/);
+  assert.match(proved.out, /^PASS no-secrets-read \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: 5\/5 receipts/);
   const verified = cli(dir, 'verify-proof', join(dir, 'proof-no-secrets.json'), '--public-key', join(dir, 'public-key.pem'));
   assert.equal(verified.code, 0, verified.out);
-  assert.match(verified.out, /^PASS no-secrets-read: 5 receipts proven/);
+  assert.match(verified.out, /^PASS no-secrets-read \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: 5 receipts proven/);
   const proof = JSON.parse(readFileSync(join(dir, 'proof-no-secrets.json'), 'utf8')) as PropertyProof;
   proof.steps[1].inclusion[0].hash = 'f'.repeat(64);
   writeFileSync(join(dir, 'tampered-proof.json'), JSON.stringify(proof));
   const rejected = cli(dir, 'verify-proof', join(dir, 'tampered-proof.json'));
   assert.equal(rejected.code, 1);
-  assert.match(rejected.out, /^FAIL no-secrets-read at step 2: Merkle inclusion proof does not reach the session root/);
+  assert.match(rejected.out, /^FAIL no-secrets-read at step 2 \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: Merkle inclusion proof does not reach the session root/);
 });
 
 test('verifier CLI: FAIL on a tampered chain naming the step', () => {
@@ -118,17 +118,37 @@ test('verifier CLI: FAIL on a tampered chain naming the step', () => {
   assert.equal(cli(dir, 'tamper').code, 0);
   const result = cli(dir, 'prove');
   assert.equal(result.code, 1);
-  assert.match(result.out, /^FAIL no-secrets-read at step 1: Chain verification failed: Receipt contents were changed/);
+  assert.match(result.out, /^FAIL no-secrets-read at step 1 \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: Chain verification failed: Receipt contents were changed/);
 });
 
 test('verifier CLI: FAIL on an empty session', () => {
   const result = cli(writeSessionDir(buildSession([])), 'prove');
   assert.equal(result.code, 1);
-  assert.match(result.out, /^FAIL no-secrets-read: No receipts exist for this session/);
+  assert.match(result.out, /^FAIL no-secrets-read \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: No receipts exist for this session/);
 });
 
 test('verifier CLI: FAIL on a session that touched a secret path, naming the step', () => {
   const result = cli(writeSessionDir(buildSession(secretCalls)), 'prove');
   assert.equal(result.code, 1);
-  assert.match(result.out, /^FAIL no-secrets-read at step 2: read_file touched secret path matching "\.env\*"/);
+  assert.match(result.out, /^FAIL no-secrets-read at step 2 \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: read_file touched secret path matching "\.env\*"/);
+});
+
+test('policy pinning: a proof made under a weaker policy fails verification, and the CLI names both policies', () => {
+  const empty: SecretPolicy = { id: 'empty', secretPathGlobs: [], secretArgPatterns: [] };
+  const weak = buildSession(cleanCalls);
+  const result = proveProperty(weak.receipts, weak.witnesses, empty, weak.keys);
+  assert.equal(result.valid, true);
+  if (!result.valid) return;
+  const pinnedDefault = verifyPropertyProof(result.proof, weak.keys.publicKey);
+  assert.equal(pinnedDefault.valid, false);
+  if (!pinnedDefault.valid) assert.match(pinnedDefault.reason, /^Proof was made under policy "empty" \([0-9a-f]{12}\), not the pinned policy/);
+  assert.equal(verifyPropertyProof(result.proof, weak.keys.publicKey, undefined, policyHash(empty)).valid, true);
+  const dir = writeSessionDir(weak);
+  writeFileSync(join(dir, 'empty.json'), JSON.stringify(empty));
+  const weakProve = cli(dir, 'prove', '--policy', join(dir, 'empty.json'));
+  assert.equal(weakProve.code, 1);
+  assert.match(weakProve.out, /^FAIL no-secrets-read \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: Proof was made under policy "empty"/);
+  const explicit = cli(dir, 'prove', '--policy', join(dir, 'empty.json'), '--expect-policy', join(dir, 'empty.json'));
+  assert.equal(explicit.code, 0, explicit.out);
+  assert.match(explicit.out, /^PASS no-secrets-read \[policy empty [0-9a-f]{12}\]/);
 });

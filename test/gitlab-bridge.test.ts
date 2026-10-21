@@ -41,7 +41,7 @@ test('bridge: separate processes extend one signed session; export and verify-ex
   assert.equal(ws.call('shell', '{"command":"pwd"}').code, 0);
   const exported = ws.cli(['export']);
   assert.equal(exported.code, 0, exported.out);
-  assert.match(exported.out, /^PASS no-secrets-read: 3\/3 receipts/);
+  assert.match(exported.out, /^PASS no-secrets-read \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: 3\/3 receipts/);
   const sessionDir = exported.out.match(/exported 3 receipts to (\S+)/)![1];
   const receipts = readFileSync(join(ws.cwd, sessionDir, 'session.jsonl'), 'utf8').trim().split('\n').map((line) => JSON.parse(line));
   assert.deepEqual(receipts.map((item) => item.step), [1, 2, 3]);
@@ -52,7 +52,7 @@ test('bridge: separate processes extend one signed session; export and verify-ex
   assert.throws(() => readFileSync(join(ws.cwd, sessionDir, 'witness.jsonl')));
   const verified = ws.cli(['verify-export']);
   assert.equal(verified.code, 0, verified.out);
-  assert.match(verified.out, /^PASS no-secrets-read: 3 receipts, chain intact, seal matches, proof verified/);
+  assert.match(verified.out, /^PASS no-secrets-read \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: 3 receipts, chain intact, seal matches, proof verified/);
 });
 
 test('bridge: a secret read is denied, recorded, and fails export and verify-export at that step', () => {
@@ -64,10 +64,10 @@ test('bridge: a secret read is denied, recorded, and fails export and verify-exp
   assert.doesNotMatch(denied.out, /do-not-read/);
   const exported = ws.cli(['export']);
   assert.equal(exported.code, 1);
-  assert.match(exported.out, /^FAIL no-secrets-read at step 2: read_file touched secret path matching "\.env\*"/);
+  assert.match(exported.out, /^FAIL no-secrets-read at step 2 \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: read_file touched secret path matching "\.env\*"/);
   const verified = ws.cli(['verify-export']);
   assert.equal(verified.code, 1);
-  assert.match(verified.out, /^FAIL no-secrets-read: Export has no property proof\. Prover reported: FAIL no-secrets-read at step 2/);
+  assert.match(verified.out, /^FAIL no-secrets-read \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: Export has no property proof\. Prover reported: FAIL no-secrets-read at step 2/);
 });
 
 test('verify-export: FAIL on an edited exported receipt and on an unpinned key', () => {
@@ -87,7 +87,7 @@ test('verify-export: FAIL on an edited exported receipt and on an unpinned key',
   writeFileSync(file, `${lines.join('\n')}\n`);
   const tampered = ws.cli(['verify-export', 'receipts/run']);
   assert.equal(tampered.code, 1);
-  assert.match(tampered.out, /^FAIL no-secrets-read at step 2: Chain verification failed: Receipt contents were changed/);
+  assert.match(tampered.out, /^FAIL no-secrets-read at step 2 \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: Chain verification failed: Receipt contents were changed/);
 });
 
 test('verify-export: FAIL when nothing was exported', () => {

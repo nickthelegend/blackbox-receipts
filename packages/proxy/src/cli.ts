@@ -1,7 +1,7 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
-import { createSeal, defaultSecretPolicy, discloseStep, merkleRoot, proveProperty, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
+import { createSeal, DEFAULT_POLICY_HASH, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, proveProperty, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
 import { loadReceipts, loadSeal, loadWitnesses, restoreSession, signingKeys, tamperReceipt, dataDir } from './store.js';
 
 const [command = 'verify', ...rest] = process.argv.slice(2);
@@ -9,8 +9,20 @@ const option = (name: string) => { const index = rest.indexOf(`--${name}`); retu
 const positional = rest.filter((item, index) => !item.startsWith('--') && !rest[index - 1]?.startsWith('--'));
 const defaultProofFile = resolve(dataDir, 'proof-no-secrets.json');
 
+// The policy a verdict is judged against. Verifiers pin no-secrets-read/v1 unless told otherwise with
+// --expect-policy <file> or BLACKBOX_POLICY_HASH; proofs made under any other policy fail.
+async function loadPinnedPolicy(): Promise<{ id: string; hash: string }> {
+  const file = option('expect-policy');
+  if (file) { const policy = JSON.parse(await readFile(resolve(file), 'utf8')) as SecretPolicy; return { id: policy.id, hash: policyHash(policy) }; }
+  const hash = process.env.BLACKBOX_POLICY_HASH?.trim();
+  if (hash && hash !== DEFAULT_POLICY_HASH) return { id: 'pinned-by-hash', hash };
+  return { id: defaultSecretPolicy.id, hash: DEFAULT_POLICY_HASH };
+}
+const pinned = await loadPinnedPolicy();
+const policyTag = `[policy ${pinned.id} ${pinned.hash.slice(0, 12)}]`;
+
 function failLine(result: PropertyFailure) {
-  return `FAIL no-secrets-read${result.step === null ? '' : ` at step ${result.step}`}: ${result.reason}`;
+  return `FAIL no-secrets-read${result.step === null ? '' : ` at step ${result.step}`} ${policyTag}: ${result.reason}`;
 }
 
 function fail(result: PropertyFailure) {
@@ -27,9 +39,9 @@ async function proveCurrent(): Promise<{ line: string; proof: PropertyProof | nu
   if (sealed && !sealed.valid) return { line: failLine({ valid: false, step: null, reason: sealed.reason! }), proof: null, receipts, publicKey: keys.publicKey, privateKey: keys.privateKey };
   const result = proveProperty(receipts, witnesses, policy, keys);
   if (!result.valid) return { line: failLine(result), proof: null, receipts, publicKey: keys.publicKey, privateKey: keys.privateKey };
-  const check = verifyPropertyProof(result.proof, keys.publicKey);
+  const check = verifyPropertyProof(result.proof, keys.publicKey, undefined, pinned.hash);
   if (!check.valid) return { line: failLine(check), proof: null, receipts, publicKey: keys.publicKey, privateKey: keys.privateKey };
-  return { line: `PASS no-secrets-read: ${check.steps}/${result.proof.receiptCount} receipts satisfy policy ${policy.id} (${check.policyHash.slice(0, 12)})`, proof: result.proof, receipts, publicKey: keys.publicKey, privateKey: keys.privateKey };
+  return { line: `PASS no-secrets-read ${policyTag}: ${check.steps}/${result.proof.receiptCount} receipts satisfy the policy`, proof: result.proof, receipts, publicKey: keys.publicKey, privateKey: keys.privateKey };
 }
 
 /** Checks an exported session directory using only the files in it (no private key, no raw arguments). */
@@ -42,8 +54,8 @@ async function verifyExport(dir: string): Promise<string> {
     receipts = (await readFile(join(dir, 'session.jsonl'), 'utf8')).trim().split('\n').filter(Boolean).map((line) => JSON.parse(line) as Receipt);
     publicKey = await readFile(join(dir, 'public-key.pem'), 'utf8');
   } catch (error) { return failure(`Cannot read export: ${error instanceof Error ? error.message : String(error)}`); }
-  const pinned = process.env.BLACKBOX_PUBLIC_KEY;
-  if (pinned && pinned.trim() !== publicKey.trim()) return failure('Exported public key does not match the pinned BLACKBOX_PUBLIC_KEY');
+  const pinnedKey = process.env.BLACKBOX_PUBLIC_KEY;
+  if (pinnedKey && pinnedKey.trim() !== publicKey.trim()) return failure('Exported public key does not match the pinned BLACKBOX_PUBLIC_KEY');
   if (!receipts.length) return failure('No receipts exist for this session, so there is nothing to prove');
   const chain = verifyChain(receipts, publicKey);
   if (!chain.valid) return failure(`Chain verification failed: ${chain.reason}`, chain.brokenAt);
@@ -58,9 +70,9 @@ async function verifyExport(dir: string): Promise<string> {
   const proof = JSON.parse(await readFile(join(dir, 'proof-no-secrets.json'), 'utf8')) as PropertyProof;
   if (proof.sessionId !== receipts[0].sessionId) return failure('Proof belongs to a different session');
   const root = merkleRoot(receipts.map(({ hash }) => hash));
-  const check = verifyPropertyProof(proof, publicKey, root);
+  const check = verifyPropertyProof(proof, publicKey, root, pinned.hash);
   if (!check.valid) return `${failLine(check)} [${name}]`;
-  return `PASS no-secrets-read: ${check.steps} receipts, chain intact, seal matches, proof verified under root ${root} [${name}]`;
+  return `PASS no-secrets-read ${policyTag}: ${check.steps} receipts, chain intact, seal matches, proof verified under root ${root} [${name}]`;
 }
 
 async function loadPolicy(): Promise<SecretPolicy> {
@@ -106,7 +118,7 @@ if (command === 'verify') {
 } else if (command === 'verify-export') {
   const base = resolve('receipts');
   const dirs = positional.length ? positional.map((dir) => resolve(dir)) : existsSync(base) ? (await readdir(base, { withFileTypes: true })).filter((entry) => entry.isDirectory()).map((entry) => join(base, entry.name)) : [];
-  if (!dirs.length) { console.log('FAIL no-secrets-read: no exported sessions found under receipts/'); process.exitCode = 1; }
+  if (!dirs.length) { console.log(`FAIL no-secrets-read ${policyTag}: no exported sessions found under receipts/`); process.exitCode = 1; }
   for (const dir of dirs) {
     const line = await verifyExport(dir);
     console.log(line);
@@ -117,9 +129,9 @@ if (command === 'verify') {
   const publicKey = option('public-key') ? await readFile(resolve(option('public-key')!), 'utf8') : (await signingKeys()).publicKey;
   let proof: PropertyProof;
   try { proof = JSON.parse(await readFile(file, 'utf8')); } catch (error) { fail({ valid: false, step: null, reason: `Cannot read proof ${file}: ${error instanceof Error ? error.message : String(error)}` }); process.exit(); }
-  const result = verifyPropertyProof(proof, publicKey, option('root'));
+  const result = verifyPropertyProof(proof, publicKey, option('root'), pinned.hash);
   if (!result.valid) fail(result);
-  else console.log(`PASS no-secrets-read: ${result.steps} receipts proven under root ${result.root}`);
+  else console.log(`PASS no-secrets-read ${policyTag}: ${result.steps} receipts proven under root ${result.root}`);
 } else if (command === 'disclose') {
   const step = Number(positional[0]);
   if (!Number.isInteger(step) || step < 1) throw new Error('Usage: blackbox-receipts disclose <step>');
@@ -132,6 +144,6 @@ if (command === 'verify') {
 } else if (command === 'restore') {
   console.log(`Restored block(s) ${(await restoreSession()).join(', ')} to their signed originals.`);
 } else {
-  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | disclose <step> | tamper [step] | restore]');
+  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | disclose <step> | tamper [step] | restore]\nVerdicts are judged against no-secrets-read/v1 unless you pin another policy with --expect-policy <file> or BLACKBOX_POLICY_HASH.');
   process.exitCode = 2;
 }
