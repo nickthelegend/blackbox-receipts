@@ -26,7 +26,7 @@ export function Nav() {
       </ul>
       <Logo />
       <div className="act">
-        <a href="#verify" className="act-link">Verify</a>
+        <a href="/verify" className="act-link">Verify a pack</a>
         <a className="btn btn-white btn-sm" href="#app">Open recorder <Arrow /></a>
       </div>
     </div>

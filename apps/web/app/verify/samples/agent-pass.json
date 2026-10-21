@@ -1,0 +1,684 @@
+{
+  "format": "blackbox-pack/v1",
+  "createdAt": "2026-10-21T04:34:03.929Z",
+  "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+  "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEADQdIsxNOrlhC8zh2VTePyoiSNGFlALD5bO0DQegdgJI=\n-----END PUBLIC KEY-----\n",
+  "receipts": [
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 1,
+      "timestamp": "2026-10-21T04:24:04.908Z",
+      "tool": "shell",
+      "argsHash": "87c4daba9b97377eeaee46364a78b7bb7567384c0685955131b4c3c35e7f3cb4",
+      "paths": [
+        ""
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:shell:execute"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "def966ed4853bf049e3a458f88a1b167c1380e044d8ed3a8132ef542ce164b74",
+      "previousHash": null,
+      "hash": "904d5b38c548d66dda87959858bdb6988f03ca3b23a9e508d75d6f9f7b66f510",
+      "signature": "wBAWkqDv8cUs8FaS7CUHe3j7kBfToATWNBFOzTVv/ptRJLiGu2JxMNRX8wuuDeXeTBhMCp1MJhMWgvQisnRICw=="
+    },
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 2,
+      "timestamp": "2026-10-21T04:24:06.384Z",
+      "tool": "read_file",
+      "argsHash": "70c4662b3eed362eee1ab6ca4d6adaf8986361d22b7d3fe5a4f54328a835948d",
+      "paths": [
+        "README.md"
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:file:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "fa28c1a0ff1d9becc445b3133823c513ff9550bbd6d5953986d8488e63941a2c",
+      "previousHash": "904d5b38c548d66dda87959858bdb6988f03ca3b23a9e508d75d6f9f7b66f510",
+      "hash": "692bb48d950eeee7f457bd500da3682165a1f3f7b624d9840b48662f67abc119",
+      "signature": "Raz2f0CWzVdjbMQ/mU1NjIEun2NE6S1YqT2NfhMer0uY7nE+vAnYuAsYYRC1Ez5BHW+Vf6/C9kfeiCm4sQEjDw=="
+    },
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 3,
+      "timestamp": "2026-10-21T04:24:11.070Z",
+      "tool": "shell",
+      "argsHash": "b9b0a5051e012ea8480895cde4cd2f4a62750e8c9b116103104c6438e1fdc83c",
+      "paths": [
+        "src"
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:shell:execute"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "259e87118287ec3eccf59c2c9b9417adfdf8fb43562ff419cf9cee6e43ba0cab",
+      "previousHash": "692bb48d950eeee7f457bd500da3682165a1f3f7b624d9840b48662f67abc119",
+      "hash": "dc8b055647ea0cd016561c4f563645d0f2895ce4e19506afbed3bb6d03f0b6c3",
+      "signature": "fRh5FOyOIGM8CO28q1W5DuQ1O3oHPyWgiWfwwq+YEaxq2mcnnYsSt5ECf2UA0nNQlwd1YKiabphEzg033Y7kCA=="
+    },
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 4,
+      "timestamp": "2026-10-21T04:24:12.399Z",
+      "tool": "read_file",
+      "argsHash": "c19ee9deff34feadd01d0ce9345c7c06c7ecaef7d3b64af61e02b71e6c8db0b4",
+      "paths": [
+        "src/parse.ts"
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:file:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "6b52d671766ed7aa4d7cfae6842bd910dead34da78f61c3243674c4701d5384b",
+      "previousHash": "dc8b055647ea0cd016561c4f563645d0f2895ce4e19506afbed3bb6d03f0b6c3",
+      "hash": "8d722a6e33633c177197164b93d053e156fefb5108aab5279ad025f4abc11755",
+      "signature": "VDZU0E4L4cy9+Jgi/6uLRg3XmtQq+vwSaacj5Rx/wyd6+TeAYSOHTnzQp4Dj7schgq7AJ1RXCWt3v52IFpNKCg=="
+    },
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 5,
+      "timestamp": "2026-10-21T04:24:13.532Z",
+      "tool": "read_file",
+      "argsHash": "37283177f4fc2e129999ab035a08012c2da6aa9e2dccf6e763d1bda6ed2c8fe7",
+      "paths": [
+        "src/tally.ts"
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:file:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "202a8976e40a72dc5267b470be8c7ab239701a73c2dd418b9c5c5b6feb555153",
+      "previousHash": "8d722a6e33633c177197164b93d053e156fefb5108aab5279ad025f4abc11755",
+      "hash": "2a98c90e1f15236f09d965fc8400fe2293279b02a47bfb24273f0d9e14806b5d",
+      "signature": "dqXugrO20EcVakN2pmwbYuTxFowmA5X9TC7HbtyOaoEnpR6gC3BclQa+jFqZHhhGv6QoTMvzJhWoit2Ba4IzAQ=="
+    },
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 6,
+      "timestamp": "2026-10-21T04:24:15.190Z",
+      "tool": "git",
+      "argsHash": "3a13b8636cbbbed33fd5490fa46034a35086d87751d48b4722352ae2a79e679c",
+      "paths": [],
+      "secretsAccessed": false,
+      "permissions": [],
+      "cost": null,
+      "approver": null,
+      "outcome": "error",
+      "resultHash": "dcd943d32129a39b6e3bd6f4257d415a20943b65b1271448d531a1b60e986067",
+      "previousHash": "2a98c90e1f15236f09d965fc8400fe2293279b02a47bfb24273f0d9e14806b5d",
+      "hash": "fc6e39a1f61f253e61d62f70ebc240135e3ac6fca142670606ee72544e5dfe73",
+      "signature": "z0IaT+sfFhoAQVzBqWLlj7bBrN4yyaDui6LfOlE1nYqJwcFLQ2SS0+OTxrqXI5m/cNgRppz86FkfBNnauhVIDA=="
+    },
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 7,
+      "timestamp": "2026-10-21T04:24:17.296Z",
+      "tool": "git",
+      "argsHash": "07dccac6767f4b56205f4e373ec9678fcdba78c56ac988e0d7a4602f6649cd4f",
+      "paths": [],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:git:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "8e711ab21a64982d224f2bc2f46f9aa7f3c14f1ae853ee572b21958cbecfb009",
+      "previousHash": "fc6e39a1f61f253e61d62f70ebc240135e3ac6fca142670606ee72544e5dfe73",
+      "hash": "cb71dd7b09f8279cb6eff8875674e7d2b8dcb9b6e4910877dd639b7a29604f33",
+      "signature": "2EP9D3q0e72QPMl6DIDNT1JvNkWJtRjvV0OGE2Bmb4FKZlhZcOI57XKlR/Ef06TvFFpyYJuGuO3QcKMZjdA6Bw=="
+    },
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 8,
+      "timestamp": "2026-10-21T04:24:19.732Z",
+      "tool": "git",
+      "argsHash": "57f23e0e5172b9f13b6e729e32d5232997c7310d82508a5686b86132d4107fa2",
+      "paths": [],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:git:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "4242283a04bf7dfcc86eb8a8a9e33e2b92bcb92aa11cfab6717dc574f8bb18e9",
+      "previousHash": "cb71dd7b09f8279cb6eff8875674e7d2b8dcb9b6e4910877dd639b7a29604f33",
+      "hash": "ab819116b4306483c07e0e6b5495ef411e6b9e7d933163bafd06f82c63a4286e",
+      "signature": "j9bgWvFP0OA2Q/a7XnOFapHs3sB0tFkQZ0ZqH7LYcqqLADBcd33Kp7YETFdqAFNf5K9NUPwKJF6wqhWvEhizCg=="
+    },
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 9,
+      "timestamp": "2026-10-21T04:24:23.121Z",
+      "tool": "read_file",
+      "argsHash": "26739151aae7c2f4b55ded80af28ec8279aafbd3a4c65bba4b5a4f9d99698b9b",
+      "paths": [
+        "package.json"
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:file:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "21293f1981f38fd4a0cca4349aefafb65e53ea22731b631d4e716e7c3fe93e32",
+      "previousHash": "ab819116b4306483c07e0e6b5495ef411e6b9e7d933163bafd06f82c63a4286e",
+      "hash": "5d4ebe76544fa6480ec5690cad7b56567efbab8bea72c5a5c4deeae7edd55651",
+      "signature": "PvHeRYyUfuLywJVz6/wueUqVSs46GMk//GUfLPMIm8vtGVMLBs3eE+wEnXos+ptrNOZBkO4FbpDOh6F7v/z7Cg=="
+    },
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 10,
+      "timestamp": "2026-10-21T04:24:24.678Z",
+      "tool": "read_file",
+      "argsHash": "1c7455c7c8118d7650446b3a0c9fb3e63587d56c0b36a5081274bdb443b7510b",
+      "paths": [
+        ".gitignore"
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:file:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "f94bcc365883105abd2b7e656ce9755f5227d03b7fce060e3d413fb5c01c45f5",
+      "previousHash": "5d4ebe76544fa6480ec5690cad7b56567efbab8bea72c5a5c4deeae7edd55651",
+      "hash": "d3ba3494a94edb51d653de8a48420d8f22a06b03baa56b6ae2a399c6bf03797f",
+      "signature": "8WGHVmVfUBvBAtYe7bg+f3oSX6+WxI7eXgfF8GqR3xKUuodvOTnZ2nSFK99aPrx3T3iteTnusNtv5JNoBU4RBg=="
+    },
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 11,
+      "timestamp": "2026-10-21T04:24:27.872Z",
+      "tool": "shell",
+      "argsHash": "8d630f6e9999830e68dde373f4504c09810e9ccd497709c86825499adc473324",
+      "paths": [],
+      "secretsAccessed": false,
+      "permissions": [],
+      "cost": null,
+      "approver": null,
+      "outcome": "error",
+      "resultHash": "3114140997ad152e17a916f237e2c295faf2a9053c9b990a14242d6af2e7fbc6",
+      "previousHash": "d3ba3494a94edb51d653de8a48420d8f22a06b03baa56b6ae2a399c6bf03797f",
+      "hash": "7fc94d2c30003b33ed1cfbbf984ab5acb37079822a973441c7786f840d0aab5d",
+      "signature": "Tj0FXsUDEPJyu1xdZuS7EBDS4V0bhqARKjbJvUm1PLH1E7YEaAzaHNdkIQFL4I6uciMMkaFkmxKl/99pGtltBg=="
+    },
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 12,
+      "timestamp": "2026-10-21T04:24:33.388Z",
+      "tool": "git",
+      "argsHash": "c13034d625e28f68a660b3988b4f557921cbfabb1310b544b29d0ab4d2319960",
+      "paths": [],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:git:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "dae6ccbbeaff9b2afd0c407905f91d0057b4f943646ef9d970f35d05f5cb6bbf",
+      "previousHash": "7fc94d2c30003b33ed1cfbbf984ab5acb37079822a973441c7786f840d0aab5d",
+      "hash": "81b9ea3287f55392a35edfc6053d61756c77c9617e5f5a1c3e67882feca95e3c",
+      "signature": "Bn0+APSq6FqpFtY2zu+qIEetW8UfYygqUXqNIdlLeL0w4UrTPieuK8zJZpfgqbsogajwqMmdBNjZ+Fq5jl9DBA=="
+    },
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 13,
+      "timestamp": "2026-10-21T04:24:35.312Z",
+      "tool": "git",
+      "argsHash": "168bb54630f3d69662bef962338bbf82466f350f6192ff3033c79f13b97df7ec",
+      "paths": [],
+      "secretsAccessed": false,
+      "permissions": [],
+      "cost": null,
+      "approver": null,
+      "outcome": "error",
+      "resultHash": "93b9488476ed709553af5658c4f6400b7a710a351f49baad59bfd3d236040183",
+      "previousHash": "81b9ea3287f55392a35edfc6053d61756c77c9617e5f5a1c3e67882feca95e3c",
+      "hash": "e076d856da55b10a0eba149efb01b32f7d9fd768b9aaf187f31840cd884aba2b",
+      "signature": "Zfy2IrOu6R3Zg9uvJdr4JDnKP4d3O0Gh6u7CgCATuBS5HuorVf2lDSLzyzhVR6Y2ywIKBDpjjbuYsNtegU95Bw=="
+    },
+    {
+      "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+      "step": 14,
+      "timestamp": "2026-10-21T04:24:37.076Z",
+      "tool": "git",
+      "argsHash": "52d1c940d4cd954b0114481d379e7e3e08182d6d86169ae3880f0e593c676d8e",
+      "paths": [
+        "README.md"
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:git:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "9cff7c3615e27aa56412a13717f7eea33af62185dc06e7b87baab1586bb68eed",
+      "previousHash": "e076d856da55b10a0eba149efb01b32f7d9fd768b9aaf187f31840cd884aba2b",
+      "hash": "57a6857c4e14c5baaaa8df1c2ed867bdce013cf9a40fc367ec264c7936e29239",
+      "signature": "KKHYDXQJN/FY6i7FwZ8ZhoJiJKCtxnyhC7wtEp3y1rOTsZ0RjAJP3jFTe5olgcbMed8Za6EVER6qWH7ukVk8Cw=="
+    }
+  ],
+  "seal": {
+    "version": 1,
+    "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+    "count": 14,
+    "lastHash": "57a6857c4e14c5baaaa8df1c2ed867bdce013cf9a40fc367ec264c7936e29239",
+    "root": "1056243bb1ea97c3c5cc5d82b6ec2eb17f6ef73342b80cf33a3302debd14a1c3",
+    "sealedAt": "2026-10-21T04:24:44.522Z",
+    "signature": "DGJ1EhNTe1HyKfBKzXlwAEKx7xkfFTeDlR5iMRDb+b7+SJHAACLrk0rVM0su+luXigCcOYZ9DvPFmntnBTmhAA=="
+  },
+  "proof": {
+    "version": 1,
+    "property": "no-secrets-read",
+    "policy": {
+      "id": "no-secrets-read/v1",
+      "secretPathGlobs": [
+        ".env*",
+        "*.pem",
+        "*.key",
+        "id_rsa",
+        "id_ed25519",
+        "~/.ssh/**",
+        ".ssh/**",
+        "~/.aws/**",
+        ".aws/**",
+        "secrets/**",
+        ".blackbox/**",
+        "credentials.json"
+      ],
+      "secretArgPatterns": [
+        {
+          "name": "private-key-block",
+          "pattern": "-----BEGIN [A-Z ]*PRIVATE KEY-----"
+        },
+        {
+          "name": "aws-access-key-id",
+          "pattern": "\\bAKIA[0-9A-Z]{16}\\b"
+        },
+        {
+          "name": "github-token",
+          "pattern": "\\bgh[pousr]_[A-Za-z0-9]{36,}\\b"
+        },
+        {
+          "name": "gitlab-token",
+          "pattern": "\\bglpat-[A-Za-z0-9_-]{20,}\\b"
+        },
+        {
+          "name": "api-secret-key",
+          "pattern": "\\bsk-(?:ant-)?[A-Za-z0-9_-]{20,}\\b"
+        },
+        {
+          "name": "slack-token",
+          "pattern": "\\bxox[abprs]-[A-Za-z0-9-]{10,}\\b"
+        }
+      ]
+    },
+    "policyHash": "720836167c0f60751f90615f1a0303c1a9714b2b40e88faf41926b5acec5ca56",
+    "sessionId": "e51c6b41-baba-404e-97a9-9bb2270924a0",
+    "root": "1056243bb1ea97c3c5cc5d82b6ec2eb17f6ef73342b80cf33a3302debd14a1c3",
+    "receiptCount": 14,
+    "steps": [
+      {
+        "step": 1,
+        "leaf": "904d5b38c548d66dda87959858bdb6988f03ca3b23a9e508d75d6f9f7b66f510",
+        "signature": "wBAWkqDv8cUs8FaS7CUHe3j7kBfToATWNBFOzTVv/ptRJLiGu2JxMNRX8wuuDeXeTBhMCp1MJhMWgvQisnRICw==",
+        "inclusion": [
+          {
+            "hash": "692bb48d950eeee7f457bd500da3682165a1f3f7b624d9840b48662f67abc119",
+            "side": "right"
+          },
+          {
+            "hash": "8614c8a35f0f5ac1559e3977be6920b6c720403956a7a5e52634ec240e2d359b",
+            "side": "right"
+          },
+          {
+            "hash": "e2809d164aab2179393ff7e88960ad872e22cb39ab06de5a0d9a61e06837d9e1",
+            "side": "right"
+          },
+          {
+            "hash": "fb3123d18265b3abdd851a3339125c38c1fb52e6abffdcb0620bcc27204ff624",
+            "side": "right"
+          }
+        ],
+        "commitment": "b7af9af7e8d5da6c57459806efe109da6f68973ff9a65df4a59e5484da2c06d6"
+      },
+      {
+        "step": 2,
+        "leaf": "692bb48d950eeee7f457bd500da3682165a1f3f7b624d9840b48662f67abc119",
+        "signature": "Raz2f0CWzVdjbMQ/mU1NjIEun2NE6S1YqT2NfhMer0uY7nE+vAnYuAsYYRC1Ez5BHW+Vf6/C9kfeiCm4sQEjDw==",
+        "inclusion": [
+          {
+            "hash": "904d5b38c548d66dda87959858bdb6988f03ca3b23a9e508d75d6f9f7b66f510",
+            "side": "left"
+          },
+          {
+            "hash": "8614c8a35f0f5ac1559e3977be6920b6c720403956a7a5e52634ec240e2d359b",
+            "side": "right"
+          },
+          {
+            "hash": "e2809d164aab2179393ff7e88960ad872e22cb39ab06de5a0d9a61e06837d9e1",
+            "side": "right"
+          },
+          {
+            "hash": "fb3123d18265b3abdd851a3339125c38c1fb52e6abffdcb0620bcc27204ff624",
+            "side": "right"
+          }
+        ],
+        "commitment": "d649c90ea5f14d94d49faf2f37b3abac1684c38e05870d5bd72123704848b7f4"
+      },
+      {
+        "step": 3,
+        "leaf": "dc8b055647ea0cd016561c4f563645d0f2895ce4e19506afbed3bb6d03f0b6c3",
+        "signature": "fRh5FOyOIGM8CO28q1W5DuQ1O3oHPyWgiWfwwq+YEaxq2mcnnYsSt5ECf2UA0nNQlwd1YKiabphEzg033Y7kCA==",
+        "inclusion": [
+          {
+            "hash": "8d722a6e33633c177197164b93d053e156fefb5108aab5279ad025f4abc11755",
+            "side": "right"
+          },
+          {
+            "hash": "4c899afe64e6a3d998874fe217754668d57100f757d3cbdbdca91650981d4c84",
+            "side": "left"
+          },
+          {
+            "hash": "e2809d164aab2179393ff7e88960ad872e22cb39ab06de5a0d9a61e06837d9e1",
+            "side": "right"
+          },
+          {
+            "hash": "fb3123d18265b3abdd851a3339125c38c1fb52e6abffdcb0620bcc27204ff624",
+            "side": "right"
+          }
+        ],
+        "commitment": "a56c9d5d49b99921826ce9a2ce1f2810d86ba7b8734e9fc0c1866d32b51b5a75"
+      },
+      {
+        "step": 4,
+        "leaf": "8d722a6e33633c177197164b93d053e156fefb5108aab5279ad025f4abc11755",
+        "signature": "VDZU0E4L4cy9+Jgi/6uLRg3XmtQq+vwSaacj5Rx/wyd6+TeAYSOHTnzQp4Dj7schgq7AJ1RXCWt3v52IFpNKCg==",
+        "inclusion": [
+          {
+            "hash": "dc8b055647ea0cd016561c4f563645d0f2895ce4e19506afbed3bb6d03f0b6c3",
+            "side": "left"
+          },
+          {
+            "hash": "4c899afe64e6a3d998874fe217754668d57100f757d3cbdbdca91650981d4c84",
+            "side": "left"
+          },
+          {
+            "hash": "e2809d164aab2179393ff7e88960ad872e22cb39ab06de5a0d9a61e06837d9e1",
+            "side": "right"
+          },
+          {
+            "hash": "fb3123d18265b3abdd851a3339125c38c1fb52e6abffdcb0620bcc27204ff624",
+            "side": "right"
+          }
+        ],
+        "commitment": "8a5d0f6c4850face7e5fd57989e8f127af185e500dbcbe66bc887a1b89bbb637"
+      },
+      {
+        "step": 5,
+        "leaf": "2a98c90e1f15236f09d965fc8400fe2293279b02a47bfb24273f0d9e14806b5d",
+        "signature": "dqXugrO20EcVakN2pmwbYuTxFowmA5X9TC7HbtyOaoEnpR6gC3BclQa+jFqZHhhGv6QoTMvzJhWoit2Ba4IzAQ==",
+        "inclusion": [
+          {
+            "hash": "fc6e39a1f61f253e61d62f70ebc240135e3ac6fca142670606ee72544e5dfe73",
+            "side": "right"
+          },
+          {
+            "hash": "c5642ce81b83aad49d9a0a6940cc0cdea1d188b3704089b2c81d9967efe06ff4",
+            "side": "right"
+          },
+          {
+            "hash": "0878f56da7aa7b9b457a65aa48808ab14bc73d55b9b24942c0de2d85c4738b57",
+            "side": "left"
+          },
+          {
+            "hash": "fb3123d18265b3abdd851a3339125c38c1fb52e6abffdcb0620bcc27204ff624",
+            "side": "right"
+          }
+        ],
+        "commitment": "e24abb458ff4aafa5ae2ea1c9eb30e9a1c3f68a1de1577b329a026a03268e187"
+      },
+      {
+        "step": 6,
+        "leaf": "fc6e39a1f61f253e61d62f70ebc240135e3ac6fca142670606ee72544e5dfe73",
+        "signature": "z0IaT+sfFhoAQVzBqWLlj7bBrN4yyaDui6LfOlE1nYqJwcFLQ2SS0+OTxrqXI5m/cNgRppz86FkfBNnauhVIDA==",
+        "inclusion": [
+          {
+            "hash": "2a98c90e1f15236f09d965fc8400fe2293279b02a47bfb24273f0d9e14806b5d",
+            "side": "left"
+          },
+          {
+            "hash": "c5642ce81b83aad49d9a0a6940cc0cdea1d188b3704089b2c81d9967efe06ff4",
+            "side": "right"
+          },
+          {
+            "hash": "0878f56da7aa7b9b457a65aa48808ab14bc73d55b9b24942c0de2d85c4738b57",
+            "side": "left"
+          },
+          {
+            "hash": "fb3123d18265b3abdd851a3339125c38c1fb52e6abffdcb0620bcc27204ff624",
+            "side": "right"
+          }
+        ],
+        "commitment": "ac12ae2b1b82fe8a362bf84a17321bf73caf7abbe5c58ffcd2d76c21e06c8759"
+      },
+      {
+        "step": 7,
+        "leaf": "cb71dd7b09f8279cb6eff8875674e7d2b8dcb9b6e4910877dd639b7a29604f33",
+        "signature": "2EP9D3q0e72QPMl6DIDNT1JvNkWJtRjvV0OGE2Bmb4FKZlhZcOI57XKlR/Ef06TvFFpyYJuGuO3QcKMZjdA6Bw==",
+        "inclusion": [
+          {
+            "hash": "ab819116b4306483c07e0e6b5495ef411e6b9e7d933163bafd06f82c63a4286e",
+            "side": "right"
+          },
+          {
+            "hash": "21d7cdac6aad1de284d7507b391bceabe20a0d3172a92b7f60a5fc1eece7643e",
+            "side": "left"
+          },
+          {
+            "hash": "0878f56da7aa7b9b457a65aa48808ab14bc73d55b9b24942c0de2d85c4738b57",
+            "side": "left"
+          },
+          {
+            "hash": "fb3123d18265b3abdd851a3339125c38c1fb52e6abffdcb0620bcc27204ff624",
+            "side": "right"
+          }
+        ],
+        "commitment": "5571f0fdfbbbb6b2baf4aa6a462e86b58359fa5731b040b08a120965f588da27"
+      },
+      {
+        "step": 8,
+        "leaf": "ab819116b4306483c07e0e6b5495ef411e6b9e7d933163bafd06f82c63a4286e",
+        "signature": "j9bgWvFP0OA2Q/a7XnOFapHs3sB0tFkQZ0ZqH7LYcqqLADBcd33Kp7YETFdqAFNf5K9NUPwKJF6wqhWvEhizCg==",
+        "inclusion": [
+          {
+            "hash": "cb71dd7b09f8279cb6eff8875674e7d2b8dcb9b6e4910877dd639b7a29604f33",
+            "side": "left"
+          },
+          {
+            "hash": "21d7cdac6aad1de284d7507b391bceabe20a0d3172a92b7f60a5fc1eece7643e",
+            "side": "left"
+          },
+          {
+            "hash": "0878f56da7aa7b9b457a65aa48808ab14bc73d55b9b24942c0de2d85c4738b57",
+            "side": "left"
+          },
+          {
+            "hash": "fb3123d18265b3abdd851a3339125c38c1fb52e6abffdcb0620bcc27204ff624",
+            "side": "right"
+          }
+        ],
+        "commitment": "55f0fe05fb305efd78fae9f8bfff4feb24e1f51effd2635d1b2132dc2fb49194"
+      },
+      {
+        "step": 9,
+        "leaf": "5d4ebe76544fa6480ec5690cad7b56567efbab8bea72c5a5c4deeae7edd55651",
+        "signature": "PvHeRYyUfuLywJVz6/wueUqVSs46GMk//GUfLPMIm8vtGVMLBs3eE+wEnXos+ptrNOZBkO4FbpDOh6F7v/z7Cg==",
+        "inclusion": [
+          {
+            "hash": "d3ba3494a94edb51d653de8a48420d8f22a06b03baa56b6ae2a399c6bf03797f",
+            "side": "right"
+          },
+          {
+            "hash": "253f8a40fbec949acdf7fdc1c927246c2b02978eea5f50b433e2197db7a36fd8",
+            "side": "right"
+          },
+          {
+            "hash": "1032f5b11b439c253ba2c913ca57bb4a81696749273382da47d2d73ab943faef",
+            "side": "right"
+          },
+          {
+            "hash": "f0f770e3782d0139db48e690bc3f30d688ce6884d06e07281ab938afe24828d6",
+            "side": "left"
+          }
+        ],
+        "commitment": "ca830b6269afe8b68ae73f51519763e5a603bcaa8f1b8a8daed3fec75d18307b"
+      },
+      {
+        "step": 10,
+        "leaf": "d3ba3494a94edb51d653de8a48420d8f22a06b03baa56b6ae2a399c6bf03797f",
+        "signature": "8WGHVmVfUBvBAtYe7bg+f3oSX6+WxI7eXgfF8GqR3xKUuodvOTnZ2nSFK99aPrx3T3iteTnusNtv5JNoBU4RBg==",
+        "inclusion": [
+          {
+            "hash": "5d4ebe76544fa6480ec5690cad7b56567efbab8bea72c5a5c4deeae7edd55651",
+            "side": "left"
+          },
+          {
+            "hash": "253f8a40fbec949acdf7fdc1c927246c2b02978eea5f50b433e2197db7a36fd8",
+            "side": "right"
+          },
+          {
+            "hash": "1032f5b11b439c253ba2c913ca57bb4a81696749273382da47d2d73ab943faef",
+            "side": "right"
+          },
+          {
+            "hash": "f0f770e3782d0139db48e690bc3f30d688ce6884d06e07281ab938afe24828d6",
+            "side": "left"
+          }
+        ],
+        "commitment": "a3ba47a69f17bc91e2a4bd4ea2949384eb24089e4bdd92650b1e2c30382184ba"
+      },
+      {
+        "step": 11,
+        "leaf": "7fc94d2c30003b33ed1cfbbf984ab5acb37079822a973441c7786f840d0aab5d",
+        "signature": "Tj0FXsUDEPJyu1xdZuS7EBDS4V0bhqARKjbJvUm1PLH1E7YEaAzaHNdkIQFL4I6uciMMkaFkmxKl/99pGtltBg==",
+        "inclusion": [
+          {
+            "hash": "81b9ea3287f55392a35edfc6053d61756c77c9617e5f5a1c3e67882feca95e3c",
+            "side": "right"
+          },
+          {
+            "hash": "f08dabd329e1916d687dbe6c56663d43f7f9881eb1ac73a6d7b53e8e3d2c8f57",
+            "side": "left"
+          },
+          {
+            "hash": "1032f5b11b439c253ba2c913ca57bb4a81696749273382da47d2d73ab943faef",
+            "side": "right"
+          },
+          {
+            "hash": "f0f770e3782d0139db48e690bc3f30d688ce6884d06e07281ab938afe24828d6",
+            "side": "left"
+          }
+        ],
+        "commitment": "368de3f94c331cbdd1831eb5ba495b2a6d470ac18f3789ad43806adea3ba760e"
+      },
+      {
+        "step": 12,
+        "leaf": "81b9ea3287f55392a35edfc6053d61756c77c9617e5f5a1c3e67882feca95e3c",
+        "signature": "Bn0+APSq6FqpFtY2zu+qIEetW8UfYygqUXqNIdlLeL0w4UrTPieuK8zJZpfgqbsogajwqMmdBNjZ+Fq5jl9DBA==",
+        "inclusion": [
+          {
+            "hash": "7fc94d2c30003b33ed1cfbbf984ab5acb37079822a973441c7786f840d0aab5d",
+            "side": "left"
+          },
+          {
+            "hash": "f08dabd329e1916d687dbe6c56663d43f7f9881eb1ac73a6d7b53e8e3d2c8f57",
+            "side": "left"
+          },
+          {
+            "hash": "1032f5b11b439c253ba2c913ca57bb4a81696749273382da47d2d73ab943faef",
+            "side": "right"
+          },
+          {
+            "hash": "f0f770e3782d0139db48e690bc3f30d688ce6884d06e07281ab938afe24828d6",
+            "side": "left"
+          }
+        ],
+        "commitment": "ca9d2e2ed7839f3fdf477ad5094c7406f39873dc68d544da84e4c7945edaaa5c"
+      },
+      {
+        "step": 13,
+        "leaf": "e076d856da55b10a0eba149efb01b32f7d9fd768b9aaf187f31840cd884aba2b",
+        "signature": "Zfy2IrOu6R3Zg9uvJdr4JDnKP4d3O0Gh6u7CgCATuBS5HuorVf2lDSLzyzhVR6Y2ywIKBDpjjbuYsNtegU95Bw==",
+        "inclusion": [
+          {
+            "hash": "57a6857c4e14c5baaaa8df1c2ed867bdce013cf9a40fc367ec264c7936e29239",
+            "side": "right"
+          },
+          {
+            "hash": "9ca35a399d1a7b99d401b5eae8f3f53cdd34f7940bc364a6a042695a0da9ce5f",
+            "side": "right"
+          },
+          {
+            "hash": "2555b706b06e6e47cde7bf54ebb7c3cd95be3e8d890ac6c5961171f9e537424d",
+            "side": "left"
+          },
+          {
+            "hash": "f0f770e3782d0139db48e690bc3f30d688ce6884d06e07281ab938afe24828d6",
+            "side": "left"
+          }
+        ],
+        "commitment": "aef6bbc296a5a485d03dd5402c98635e94ed1e4134661b777b3fbccff8f07ddc"
+      },
+      {
+        "step": 14,
+        "leaf": "57a6857c4e14c5baaaa8df1c2ed867bdce013cf9a40fc367ec264c7936e29239",
+        "signature": "KKHYDXQJN/FY6i7FwZ8ZhoJiJKCtxnyhC7wtEp3y1rOTsZ0RjAJP3jFTe5olgcbMed8Za6EVER6qWH7ukVk8Cw==",
+        "inclusion": [
+          {
+            "hash": "e076d856da55b10a0eba149efb01b32f7d9fd768b9aaf187f31840cd884aba2b",
+            "side": "left"
+          },
+          {
+            "hash": "9ca35a399d1a7b99d401b5eae8f3f53cdd34f7940bc364a6a042695a0da9ce5f",
+            "side": "right"
+          },
+          {
+            "hash": "2555b706b06e6e47cde7bf54ebb7c3cd95be3e8d890ac6c5961171f9e537424d",
+            "side": "left"
+          },
+          {
+            "hash": "f0f770e3782d0139db48e690bc3f30d688ce6884d06e07281ab938afe24828d6",
+            "side": "left"
+          }
+        ],
+        "commitment": "290ee32ea47f6e68bee69b87845dfcffcee0d886a132d5a1fe5fac516f670f41"
+      }
+    ],
+    "attestation": "J9zjarLVvr5nDmUyQAokAPJO79ATWeyvnmCba8E0Q2UFuXLJ/8mSEJced5KZBl/3S/T/qRtaLMqS35h3zc6GBg=="
+  },
+  "verdict": "PASS no-secrets-read [policy no-secrets-read/v1 720836167c0f]: 14/14 receipts satisfy the policy"
+}

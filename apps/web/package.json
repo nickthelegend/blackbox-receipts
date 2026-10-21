@@ -3,7 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "scripts": { "dev": "next dev -p 3000", "build": "next build", "start": "next start -p 3000" },
-  "dependencies": { "@blackbox/receipts": "workspace:*", "@blackbox/proxy": "workspace:*", "@blackbox/zetaris": "workspace:*", "@blackbox/meterless": "workspace:*", "next": "^15.5.6", "react": "^19.1.1", "react-dom": "^19.1.1" },
-  "devDependencies": { "@types/react": "^19.1.14", "@types/react-dom": "^19.1.9" }
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000"
+  },
+  "dependencies": {
+    "@blackbox/meterless": "workspace:*",
+    "@blackbox/proxy": "workspace:*",
+    "@blackbox/receipts": "workspace:*",
+    "@blackbox/verify": "workspace:*",
+    "@blackbox/zetaris": "workspace:*",
+    "next": "^15.5.6",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.14",
+    "@types/react-dom": "^19.1.9"
+  }
 }

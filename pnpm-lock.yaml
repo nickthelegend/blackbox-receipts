@@ -29,6 +29,9 @@ importers:
       '@blackbox/receipts':
         specifier: workspace:*
         version: link:../../packages/receipts
+      '@blackbox/verify':
+        specifier: workspace:*
+        version: link:../../packages/verify
       '@blackbox/zetaris':
         specifier: workspace:*
         version: link:../../packages/zetaris
