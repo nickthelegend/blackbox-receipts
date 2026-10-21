@@ -7,6 +7,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { parsePack, verifyPack, type Pack, type PackResult, type StepStatus } from '@blackbox/verify';
 import { Logo } from '../components/brand';
+import { recorder, route } from '../site';
 import passSample from './samples/agent-pass.json';
 import failSample from './samples/agent-fail.json';
 import '../styles.css';
@@ -90,8 +91,8 @@ export default function VerifyPage() {
     <a className="skip" href="#vf-main">Skip to verifier</a>
     <header className="vf-top">
       <div className="vf-wrap vf-top-row">
-        <Logo href="/" />
-        <a className="vf-back" href="/recorder">Open recorder</a>
+        <Logo href={route('/')} />
+        <a className="vf-back" href={recorder.href}>{recorder.short}</a>
       </div>
     </header>
 

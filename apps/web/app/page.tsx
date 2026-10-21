@@ -6,6 +6,7 @@ import type { TapeStep } from './components/strip';
 import { loadFlight, type Flight } from './flight';
 import { Investigation } from './investigation';
 import { Playback } from './playback';
+import { recorder, route } from './site';
 import { TapeLog } from './tape-log';
 import './landing.css';
 
@@ -97,14 +98,14 @@ export default function Landing() {
     </div>
     <header className="ld-head">
       <div className="ld-wrap ld-head-row">
-        <Logo href="/" />
+        <Logo href={route('/')} />
         <nav aria-label="Sections" className="ld-nav">
           <a href="#playback">Playback</a>
           <a href="#investigation">Investigation</a>
           <a href="#limits">Limits</a>
-          <a href="/verify">Verify a pack</a>
+          <a href={route('/verify')}>Verify a pack</a>
         </nav>
-        <a className="btn btn-line btn-sm ld-head-cta" href="/recorder">Open recorder <Arrow /></a>
+        <a className="btn btn-line btn-sm ld-head-cta" href={recorder.href}>{recorder.short} <Arrow /></a>
       </div>
     </header>
 
@@ -116,7 +117,7 @@ export default function Landing() {
           <p className="ld-lead">An MCP proxy in front of your agent’s tools writes an Ed25519-signed, hash-chained receipt for every call. Edit, reorder or cut one off the end and verification names the step.</p>
           <div className="ld-cta">
             <a className="btn btn-accent" href="#playback">Play back a real run <Down /></a>
-            <a className="btn btn-line" href="/verify">Verify a pack</a>
+            <a className="btn btn-line" href={route('/verify')}>Verify a pack</a>
           </div>
         </div>
         <figure className="ld-unit">
@@ -175,7 +176,7 @@ export default function Landing() {
           <div className="ld-sec-head">
             <p className="stencil">02 · Investigation</p>
             <h2 id="inv-title">Don’t trust this page. Check the pack.</h2>
-            <p>Both runs, exported as <code>blackbox-pack/v1</code> files, are verified below in your browser by <code>@blackbox/verify</code>, the same code the CLI’s <code>verify-pack</code> runs. Nothing is uploaded. To check your own pack, <a href="/verify">drop it on the verifier</a>.</p>
+            <p>Both runs, exported as <code>blackbox-pack/v1</code> files, are verified below in your browser by <code>@blackbox/verify</code>, the same code the CLI’s <code>verify-pack</code> runs. Nothing is uploaded. To check your own pack, <a href={route('/verify')}>drop it on the verifier</a>.</p>
           </div>
           <Investigation />
         </div>
@@ -208,8 +209,8 @@ export default function Landing() {
           <div className="ld-install-box">
             <pre><code>pnpm --filter @blackbox/proxy start{'\n'}node packages/proxy/dist/server.js --upstream &quot;&lt;stdio MCP server&gt;&quot;{'\n'}pnpm dev   # dashboard at localhost:3000/recorder</code></pre>
             <div className="ld-cta">
-              <a className="btn btn-accent" href="/recorder">Open the recorder <Arrow /></a>
-              <a className="btn btn-line" href="/verify">Verify a pack</a>
+              <a className="btn btn-accent" href={recorder.href}>{recorder.long} <Arrow /></a>
+              <a className="btn btn-line" href={route('/verify')}>Verify a pack</a>
             </div>
           </div>
         </div>
