@@ -51,7 +51,7 @@ set +e
 node "$CLI" attest-diff --base "$BASE" --from "${SESSIONS[0]}" --junit "$OUT/attest-diff.xml" --out "$OUT/attest-diff.json"
 STATUS=$?
 set -e
-echo "== JUnit summary ($OUT/attest-diff.xml)"
+echo "== JUnit summary (attest-diff.xml)"
 node -e '
 const xml = require("node:fs").readFileSync(process.argv[1], "utf8");
 const suite = xml.match(/<testsuite name="([^"]*)" tests="(\d+)" failures="(\d+)"/);
