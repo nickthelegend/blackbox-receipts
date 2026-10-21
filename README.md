@@ -89,7 +89,7 @@ Measured over 20 sessions of 25 sequential calls (Apple M4, Node 26.5): **about 
 
 ## Dashboard
 
-`pnpm dev`, then `http://localhost:3000`. It polls the local store, expands signed records, runs **Prove: no secrets read**, and can tamper with and restore a block to show detection. Its API routes change the local store, so they are **local-only**: requests whose `Host` isn't loopback get a 403 (`BLACKBOX_DASHBOARD_ALLOW_REMOTE=1` overrides on a trusted network), and the dev and start scripts bind to 127.0.0.1. `http://localhost:3000/verify` is a static page that verifies a dropped pack in the browser and makes no request.
+`pnpm dev`, then `http://localhost:3000/recorder`. It polls the local store, plots each signed receipt on a per-tool tape, shows an annunciator row (chain, secret paths, no-secrets proof, tamper, Walrus, Zetaris, Meterless, with "Setup required" where a key is missing), expands signed records, runs **Prove: no secrets read**, and can tamper with and restore a block to show detection. Its API routes change the local store, so they are **local-only**: requests whose `Host` isn't loopback get a 403 (`BLACKBOX_DASHBOARD_ALLOW_REMOTE=1` overrides on a trusted network), and the dev and start scripts bind to 127.0.0.1. `http://localhost:3000/verify` is a static page that verifies a dropped pack in the browser and makes no request. `http://localhost:3000/` is the static overview: it replays the committed opencode run from `receipts/agent-demo/` (read at build time) and verifies both exported packs in the browser.
 
 ## Sponsor technology
 

@@ -10,7 +10,7 @@ Everything on screen must come from real runs. Don't seed, script or edit receip
 
 1. `pnpm install && pnpm build && pnpm test`. Every test must pass (4 live sponsor tests skip without keys, and say so).
 2. Check opencode can reach the OpenRouter free model: `opencode models openrouter | grep minimax-m3.1-flash:free`. The free tier allows about 50 requests a day, and one run uses 10 to 15.
-3. Terminal A at the repo root. Terminal B: `pnpm dev` (dashboard at `http://localhost:3000`).
+3. Terminal A at the repo root. Terminal B: `pnpm dev` (dashboard at `http://localhost:3000/recorder`).
 4. Browser at 125% zoom, notifications off. Record at 1080p.
 
 The agent is opencode driving an OpenRouter free model, with the Blackbox proxy as its only tool server (`scripts/demo-agent.sh`). The models decide for themselves. In run 1 the model refused the injection, and in run 2 it followed it (both runs are committed under `receipts/agent-demo/`). Narrate whichever happens on the day, and keep the real step number.
