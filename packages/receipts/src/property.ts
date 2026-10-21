@@ -1,6 +1,7 @@
-import { createPrivateKey, createPublicKey, sign, verify } from 'node:crypto';
+import { createPrivateKey, sign } from 'node:crypto';
 import { homedir } from 'node:os';
-import { argsMatch, merkleProof, merkleRoot, sha256, stableJson, verifyChain, verifyMerkleProof, type Receipt } from './index.js';
+import { merkleProof, merkleRoot, policyHash, proofStatement, stableJson, verifyChain, verifyPropertyProof, DEFAULT_POLICY_HASH, NO_SECRETS_PROPERTY, type PropertyFailure, type PropertyProof, type Receipt, type SecretPolicy, type VerifyPropertyResult } from '@blackbox/verify';
+import { argsMatch, sha256, signDigest } from './index.js';
 
 // Selective-disclosure property proofs.
 //
@@ -8,68 +9,16 @@ import { argsMatch, merkleProof, merkleRoot, sha256, stableJson, verifyChain, ve
 // policy over every step and publishes only: each receipt's leaf hash and proxy signature, a Merkle
 // inclusion path to the session root, and a salted per-step property commitment. Raw args, paths and
 // results stay private. Any single step can later be opened with `discloseStep` and checked with
-// `verifyDisclosure` without revealing the others.
+// `verifyDisclosure` without revealing the others. Proofs are verified by @blackbox/verify.
 //
 // Trust model: the policy evaluation is attested by the proxy key, the same key that signed the
 // receipts. This is not a zero-knowledge proof of the predicate; a Noir circuit would remove that trust.
 
-export const NO_SECRETS_PROPERTY = 'no-secrets-read' as const;
-
-export type SecretPolicy = {
-  id: string;
-  /** Globs matched against every path a step touched. `*` stays within a segment, `**` crosses segments, a leading `~/` means the home directory, other patterns match at any directory boundary. */
-  secretPathGlobs: string[];
-  /** Regular expressions (source strings) matched against every string argument, including shell commands. */
-  secretArgPatterns: { name: string; pattern: string }[];
-};
-
-export const defaultSecretPolicy: SecretPolicy = {
-  id: 'no-secrets-read/v1',
-  secretPathGlobs: ['.env*', '*.pem', '*.key', 'id_rsa', 'id_ed25519', '~/.ssh/**', '.ssh/**', '~/.aws/**', '.aws/**', 'secrets/**', '.blackbox/**', 'credentials.json'],
-  secretArgPatterns: [
-    { name: 'private-key-block', pattern: '-----BEGIN [A-Z ]*PRIVATE KEY-----' },
-    { name: 'aws-access-key-id', pattern: '\\bAKIA[0-9A-Z]{16}\\b' },
-    { name: 'github-token', pattern: '\\bgh[pousr]_[A-Za-z0-9]{36,}\\b' },
-    { name: 'gitlab-token', pattern: '\\bglpat-[A-Za-z0-9_-]{20,}\\b' },
-    { name: 'api-secret-key', pattern: '\\bsk-(?:ant-)?[A-Za-z0-9_-]{20,}\\b' },
-    { name: 'slack-token', pattern: '\\bxox[abprs]-[A-Za-z0-9-]{10,}\\b' },
-  ],
-};
-
 /** Raw arguments for one step and the salt of its argsHash, kept privately next to the receipt log. */
 export type Witness = { sessionId: string; step: number; args: unknown; salt?: string; detail?: string };
 
-export type StepProof = {
-  step: number;
-  leaf: string;
-  signature: string;
-  inclusion: { hash: string; side: 'left' | 'right' }[];
-  commitment: string;
-};
-
-export type PropertyProof = {
-  version: 1;
-  property: typeof NO_SECRETS_PROPERTY;
-  policy: SecretPolicy;
-  policyHash: string;
-  sessionId: string;
-  root: string;
-  receiptCount: number;
-  steps: StepProof[];
-  attestation: string;
-};
-
-export type PropertyFailure = { valid: false; step: number | null; reason: string };
 export type ProveResult = { valid: true; proof: PropertyProof } | PropertyFailure;
-export type VerifyPropertyResult = { valid: true; steps: number; root: string; policyHash: string; policyId: string } | PropertyFailure;
 export type Disclosure = { step: number; receipt: Receipt; args: unknown; argsSalt?: string; salt: string };
-
-export function policyHash(policy: SecretPolicy): string {
-  return sha256(stableJson(policy));
-}
-
-/** Verifiers accept proofs made under this policy unless they pin another one explicitly. */
-export const DEFAULT_POLICY_HASH = policyHash(defaultSecretPolicy);
 
 function globToRegExp(glob: string): RegExp {
   const home = glob.startsWith('~/');
@@ -149,11 +98,6 @@ function commitmentFor(digest: string, step: number, leaf: string, argsHash: str
   return sha256(stableJson({ property: NO_SECRETS_PROPERTY, policyHash: digest, step, leaf, argsHash, verdict: 'pass', salt }));
 }
 
-function statement(proof: Omit<PropertyProof, 'attestation'>): Buffer {
-  const { version, property, policyHash: digest, sessionId, root, receiptCount, steps } = proof;
-  return Buffer.from(sha256(stableJson({ version, property, policyHash: digest, sessionId, root, receiptCount, commitments: steps.map(({ step, commitment }) => ({ step, commitment })) })), 'hex');
-}
-
 function witnessFor(witnesses: Witness[], receipt: Receipt): Witness | undefined {
   return witnesses.find((item) => item.sessionId === receipt.sessionId && item.step === receipt.step);
 }
@@ -180,39 +124,7 @@ export function proveProperty(receipts: Receipt[], witnesses: Witness[], policy:
     commitment: commitmentFor(digest, receipt.step, receipt.hash, receipt.argsHash, stepSalt(keys.privateKey, digest, receipt.hash)),
   }));
   const unsigned = { version: 1 as const, property: NO_SECRETS_PROPERTY, policy, policyHash: digest, sessionId: receipts[0].sessionId, root: merkleRoot(leaves), receiptCount: receipts.length, steps };
-  return { valid: true, proof: { ...unsigned, attestation: sign(null, statement(unsigned), createPrivateKey(keys.privateKey)).toString('base64') } };
-}
-
-function leafIndex(path: StepProof['inclusion']): number {
-  return path.reduce((index, item, level) => index + (item.side === 'left' ? 2 ** level : 0), 0);
-}
-
-function signatureValid(publicKeyPem: string, hexDigest: string, signature: string): boolean {
-  try { return verify(null, Buffer.from(hexDigest, 'hex'), createPublicKey(publicKeyPem), Buffer.from(signature, 'base64')); } catch { return false; }
-}
-
-/**
- * Verifies a proof using only the proxy public key. Never needs receipt contents or raw args.
- * The policy is pinned: a proof made under any policy other than `expectedPolicyHash` (default
- * no-secrets-read/v1) fails, so a prover can't pass by proving against a weaker policy. Pass null to
- * accept any policy (and then read `policyId` from the result).
- */
-export function verifyPropertyProof(proof: PropertyProof, publicKeyPem: string, expectedRoot?: string, expectedPolicyHash: string | null = DEFAULT_POLICY_HASH): VerifyPropertyResult {
-  if (proof?.version !== 1 || proof.property !== NO_SECRETS_PROPERTY) return { valid: false, step: null, reason: 'Unsupported proof format' };
-  if (policyHash(proof.policy) !== proof.policyHash) return { valid: false, step: null, reason: 'Policy does not match its hash' };
-  if (expectedPolicyHash && proof.policyHash !== expectedPolicyHash) return { valid: false, step: null, reason: `Proof was made under policy "${proof.policy.id}" (${proof.policyHash.slice(0, 12)}), not the pinned policy (${expectedPolicyHash.slice(0, 12)})` };
-  if (!proof.receiptCount || !proof.steps?.length) return { valid: false, step: null, reason: 'Proof covers no receipts' };
-  if (proof.steps.length !== proof.receiptCount) return { valid: false, step: null, reason: `Proof covers ${proof.steps.length} of ${proof.receiptCount} receipts` };
-  if (expectedRoot && expectedRoot !== proof.root) return { valid: false, step: null, reason: 'Proof root does not match the expected session root' };
-  for (let index = 0; index < proof.steps.length; index++) {
-    const item = proof.steps[index];
-    if (item.step !== index + 1) return { valid: false, step: index + 1, reason: 'Step is missing or out of order' };
-    if (!signatureValid(publicKeyPem, item.leaf, item.signature)) return { valid: false, step: item.step, reason: 'Receipt signature is invalid' };
-    if (leafIndex(item.inclusion) !== index || !verifyMerkleProof({ leaf: item.leaf, path: item.inclusion, root: proof.root })) return { valid: false, step: item.step, reason: 'Merkle inclusion proof does not reach the session root' };
-    if (!/^[0-9a-f]{64}$/.test(item.commitment)) return { valid: false, step: item.step, reason: 'Property commitment is malformed' };
-  }
-  if (!signatureValid(publicKeyPem, statement(proof).toString('hex'), proof.attestation)) return { valid: false, step: null, reason: 'Proxy attestation over the property commitments is invalid' };
-  return { valid: true, steps: proof.steps.length, root: proof.root, policyHash: proof.policyHash, policyId: proof.policy.id };
+  return { valid: true, proof: { ...unsigned, attestation: signDigest(proofStatement(unsigned), keys.privateKey) } };
 }
 
 /** Opens one step's commitment for an auditor, revealing only that step's receipt and arguments. */

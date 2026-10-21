@@ -1,0 +1,23 @@
+{
+  "name": "@blackbox/verify",
+  "version": "0.1.0",
+  "description": "Dependency-light verifier for Blackbox Receipts: chains, seals, property proofs and packs. Runs in Node and in the browser (no node: imports).",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "source": "./src/index.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@noble/curves": "2.4.0",
+    "@noble/hashes": "2.4.0"
+  }
+}

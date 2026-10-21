@@ -11,6 +11,11 @@
       "import": "./dist/index.js"
     }
   },
-  "scripts": { "build": "tsc -p tsconfig.json", "test": "node --conditions=source --import tsx --test ../../test/*.test.ts" },
-  "dependencies": {}
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --conditions=source --import tsx --test ../../test/*.test.ts"
+  },
+  "dependencies": {
+    "@blackbox/verify": "workspace:*"
+  }
 }
