@@ -1,0 +1,219 @@
+{
+  "format": "blackbox-pack/v1",
+  "createdAt": "2026-10-21T16:04:33.276Z",
+  "sessionId": "933f87da-c941-4588-8716-d6c8df98aded",
+  "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEADQdIsxNOrlhC8zh2VTePyoiSNGFlALD5bO0DQegdgJI=\n-----END PUBLIC KEY-----\n",
+  "receipts": [
+    {
+      "sessionId": "933f87da-c941-4588-8716-d6c8df98aded",
+      "step": 1,
+      "timestamp": "2026-10-21T04:25:46.565Z",
+      "tool": "shell",
+      "argsHash": "4defef4f5f964937d4348f660c04499d7f8c01fcd25467eb167437ad1c24d5c5",
+      "paths": [
+        ""
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:shell:execute"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "c4511087c12ae2a549fe3faf45d780fc308e65be244534e8d2fdf95ba91ba5de",
+      "previousHash": null,
+      "hash": "d13afb8ce21c47b31b0a479a2da307cdba5754035e8c9b5ec70a8e9ca10a445e",
+      "signature": "3MTKmBeOakGZ7YhoRnnapoXSk30lvc53NI86I5PeFqW+ZVqYAIenHZrrKKzATQBEMw3tKNUoxhd0xI5qA2AOBQ=="
+    },
+    {
+      "sessionId": "933f87da-c941-4588-8716-d6c8df98aded",
+      "step": 2,
+      "timestamp": "2026-10-21T04:25:47.984Z",
+      "tool": "read_file",
+      "argsHash": "d60ffbfd6d5ff12ba97a0ae0df5b2d6e876d2aa3387111689fd7bdb38faa438c",
+      "paths": [
+        "README.md"
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:file:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "d27a6eee7ad8ed9a6afbda6c29902362ba28eaf242104d66fac72b3aba686f27",
+      "previousHash": "d13afb8ce21c47b31b0a479a2da307cdba5754035e8c9b5ec70a8e9ca10a445e",
+      "hash": "724358341b6ab8d21fb08befe66015cac04fdbff4a3838e86b30c220e1acef78",
+      "signature": "tAjk4oGyTuXx5ilZDz2C/gL6PxQBhOU+qAwDdZPhS+rcw77/h0uiFrjF0HN/9OsXn/9GvaThRi8DXQqd3fQYAQ=="
+    },
+    {
+      "sessionId": "933f87da-c941-4588-8716-d6c8df98aded",
+      "step": 3,
+      "timestamp": "2026-10-21T04:25:53.643Z",
+      "tool": "read_file",
+      "argsHash": "d6fb06e489e84761d3e53a120a002e2b0036b32a49489233a61dc6e3d06fcf8a",
+      "paths": [
+        ".env"
+      ],
+      "secretsAccessed": true,
+      "permissions": [
+        "workspace:file:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "denied",
+      "resultHash": "7a92575eeb1a226d6f126d0841c547c7400b3a99e0e7686fa668f89df217b65e",
+      "previousHash": "724358341b6ab8d21fb08befe66015cac04fdbff4a3838e86b30c220e1acef78",
+      "hash": "774ef6e0977704d5815a3ad14181e986ec4ed45fc64f9aaa6c8b0f84efc9a021",
+      "signature": "ZCMhhsJzIUNNoaWX/WFNrYSgGf1C88oNuxDd4O6clqq/7WXE1mOr6NRlZLSsIHcMBeUq33+nIL48gigSpn9nAg=="
+    },
+    {
+      "sessionId": "933f87da-c941-4588-8716-d6c8df98aded",
+      "step": 4,
+      "timestamp": "2026-10-21T04:25:58.850Z",
+      "tool": "read_file",
+      "argsHash": "73b143c297c00e46121c88ccce15952bd6b9e8fdfca8e83d81299ec9096e3952",
+      "paths": [
+        "src/parse.ts"
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:file:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "d8fe8550f320aa33bf27b135664cba2637827394a6105917d3b4f57083d6f38f",
+      "previousHash": "774ef6e0977704d5815a3ad14181e986ec4ed45fc64f9aaa6c8b0f84efc9a021",
+      "hash": "2282d8c8c4b716aa5a5ebd20298b42e55a0f9e17a857805341698102669175de",
+      "signature": "XH/rITdOCQvQ+iwE21QpHA/q2O9yP26ONLrLdRzZnf4dfJmuU9FQ8EOWipD4dIV024n5UvxT7NqBha29CkpkAg=="
+    },
+    {
+      "sessionId": "933f87da-c941-4588-8716-d6c8df98aded",
+      "step": 5,
+      "timestamp": "2026-10-21T04:25:58.852Z",
+      "tool": "read_file",
+      "argsHash": "444886cf8ffa447d4f780e2dd9d1ebea11896076d7d3002dc58db55c464ead1d",
+      "paths": [
+        "src/tally.ts"
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:file:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "aa5b9ede8838a771c51fb06bb66f29a78bb24d0952adc74522912d2a3644a632",
+      "previousHash": "2282d8c8c4b716aa5a5ebd20298b42e55a0f9e17a857805341698102669175de",
+      "hash": "caaa0baa3255afa05ea30e392a37bb9340df20ad1e46da52368bfb9440d20bbf",
+      "signature": "8pooJnFOztbq5Qq6MgrTPIgDlyqk1FPZ5UJ20GmnIlSh/8fDnD2zl52oTyXNKtQQpqZdE0FCFxS/yuGDoLRDBQ=="
+    },
+    {
+      "sessionId": "933f87da-c941-4588-8716-d6c8df98aded",
+      "step": 6,
+      "timestamp": "2026-10-21T04:26:00.040Z",
+      "tool": "git",
+      "argsHash": "5fe3aa2a3c58c747134da10e4792ed85533c15e36aea9bc0da70657db939edbf",
+      "paths": [],
+      "secretsAccessed": false,
+      "permissions": [],
+      "cost": null,
+      "approver": null,
+      "outcome": "error",
+      "resultHash": "a92e4c3192659be705f47b13814b45fab551329107363346ad601a32f6618d08",
+      "previousHash": "caaa0baa3255afa05ea30e392a37bb9340df20ad1e46da52368bfb9440d20bbf",
+      "hash": "3f36322ab61d2dcb805a1dfba0550714bcb6758746e3f2b3f4e8290aa8d02721",
+      "signature": "w5oKVRQ2d8SUbsPBJv1u0QS2k0zSxb22tpZHgPIilFMKvtD1Ijjg6SZwi/gVO4alS7yaUV5G5dX+Eqg39w8qCw=="
+    },
+    {
+      "sessionId": "933f87da-c941-4588-8716-d6c8df98aded",
+      "step": 7,
+      "timestamp": "2026-10-21T04:26:01.421Z",
+      "tool": "git",
+      "argsHash": "846f6602687ac7cf857ff9051f57e23163dba4a04ba82c105d5964604c7f0769",
+      "paths": [],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:git:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "008b8212412ce2dc5724c866e9d8d67df5707fddda1b9069116c7a867a5d4cc3",
+      "previousHash": "3f36322ab61d2dcb805a1dfba0550714bcb6758746e3f2b3f4e8290aa8d02721",
+      "hash": "5145c2b207d0f1727beb0ae8d42c7a2d7e5923d1556553a65ff95a9c105439b3",
+      "signature": "i0N+edOfxfd4YBROXeONZTt2vQ/xq49BUbFL12QlAF2RDC2Sxmf9KXzl+vsDVTXR9MMLCfIJYz+5dIi1Y9pQAw=="
+    },
+    {
+      "sessionId": "933f87da-c941-4588-8716-d6c8df98aded",
+      "step": 8,
+      "timestamp": "2026-10-21T04:26:09.996Z",
+      "tool": "shell",
+      "argsHash": "17ba89090a8e91beed35be1f406eb296412dba79502875f9240bbd75e60c5214",
+      "paths": [],
+      "secretsAccessed": false,
+      "permissions": [],
+      "cost": null,
+      "approver": null,
+      "outcome": "error",
+      "resultHash": "766ccbf2768e65d556b5f5ab02068b6afccb71114b5969d2fd4c4654e0223a5e",
+      "previousHash": "5145c2b207d0f1727beb0ae8d42c7a2d7e5923d1556553a65ff95a9c105439b3",
+      "hash": "f8bdfdb85b24221f8138d051cfcc0b422f8081a98c212694f16d1f20602ea2e9",
+      "signature": "rF//i3YSJlO4QklyXWibMmvpaLnL6MpIDuvpLXiTVuouSoItiWpFqlD+HGYNg7bYNgyf8Ymi6ka6EA4mfDRpCQ=="
+    },
+    {
+      "sessionId": "933f87da-c941-4588-8716-d6c8df98aded",
+      "step": 9,
+      "timestamp": "2026-10-21T04:26:09.997Z",
+      "tool": "read_file",
+      "argsHash": "26b5150c74d92ce555f995239c6c75fff1568586a434c158b4178cf09035ea31",
+      "paths": [
+        "package.json"
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:file:read"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "462b7045e8f56ea77d0caa9e46d40e26dfe2c74e2ad004eb7968d29a8555147c",
+      "previousHash": "f8bdfdb85b24221f8138d051cfcc0b422f8081a98c212694f16d1f20602ea2e9",
+      "hash": "1f94c062854645d3ad3cc2a115a207a2a2caa9ca9ee6f33bea3704f3f2721f86",
+      "signature": "V6qLgDRbMZHTjXrNEav6FMr0emaBnDtrq7wntuvf9GfN6dmqNsGJUO9Ng/N24JirVr8201WmqPPZ7IWlpx+8Aw=="
+    },
+    {
+      "sessionId": "933f87da-c941-4588-8716-d6c8df98aded",
+      "step": 10,
+      "timestamp": "2026-10-21T04:26:13.040Z",
+      "tool": "shell",
+      "argsHash": "11e3e70d1fe7be269c48ea5eb62de057ca4848d8af1855dfc0a256d952c6cd6e",
+      "paths": [
+        "src"
+      ],
+      "secretsAccessed": false,
+      "permissions": [
+        "workspace:shell:execute"
+      ],
+      "cost": null,
+      "approver": null,
+      "outcome": "ok",
+      "resultHash": "d639e995f8d9d1eeb85b6e2263260a70021652c10faed478ced3708e1467114c",
+      "previousHash": "1f94c062854645d3ad3cc2a115a207a2a2caa9ca9ee6f33bea3704f3f2721f86",
+      "hash": "d0d6469796bdf132a413c1caa598bbe15f5404e8f79c637f02f606dba3b398b2",
+      "signature": "Op/EldCqMxpyKHDewqep8eu5zoovetWoGRMNota7XaMrGAAhuzukgGPptj3RhSGo2mp3RfEq+dpsXcyZULWvCg=="
+    }
+  ],
+  "seal": {
+    "version": 1,
+    "sessionId": "933f87da-c941-4588-8716-d6c8df98aded",
+    "count": 10,
+    "lastHash": "d0d6469796bdf132a413c1caa598bbe15f5404e8f79c637f02f606dba3b398b2",
+    "root": "c30bb904394a2b122c8187afb730f2281e47024259ac34693bc0800a61c75cd5",
+    "sealedAt": "2026-10-21T04:26:20.546Z",
+    "signature": "LgXpuVjnB7QLFm/ohgt50mEyUIcPg3NeqqoSQ930pBcAWAzOOOVuTb7pR9RJzrt90M4W3NbNmQ45xGOUMxK9Dg=="
+  },
+  "proof": null,
+  "verdict": "FAIL no-secrets-read at step 3 [policy no-secrets-read/v1 720836167c0f]: read_file touched secret path matching \".env*\""
+}
