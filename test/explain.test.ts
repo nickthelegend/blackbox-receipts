@@ -17,7 +17,7 @@ function workspace() {
   const env = { RECEIPTS_DIR: join(cwd, '.blackbox'), BLACKBOX_KEY_DIR: mkdtempSync(join(tmpdir(), 'blackbox-keys-')), RECEIPTS_RESUME: undefined };
   return { cwd, env, cli: (...args: string[]) => runScript('packages/proxy/src/cli.ts', cwd, args, env) };
 }
-const text = (result: { content: unknown }) => (result.content as { text: string }[]).map((item) => item.text).join('\n');
+const text = (result: Record<string, unknown>) => ((result.content ?? []) as { text: string }[]).map((item) => item.text).join('\n');
 
 test('blackbox_explain (MCP): listed with the tools, explains one step citing its receipts, and is itself recorded', async () => {
   const ws = workspace();
