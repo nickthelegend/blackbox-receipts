@@ -1,0 +1,54 @@
+name: pages
+
+# Fallback host for the static, read-only site (GitLab Pages is the primary one, see .gitlab-ci.yml):
+# the landing (the recorded agent run, both exported packs verified in the browser) and the offline
+# /verify page, built by scripts/build-pages.mjs. The recorder dashboard and its API are local-only and
+# are not published. URL after the first run: https://nickthelegend.github.io/blackbox-receipts/
+# One-time setup: Settings -> Pages -> Source "GitHub Actions"
+# (or: gh api -X POST repos/nickthelegend/blackbox-receipts/pages -f build_type=workflow).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - id: pages
+        uses: actions/configure-pages@v5
+      - run: pnpm --filter "@blackbox/web^..." build
+      - name: Static export (landing + /verify)
+        run: node scripts/build-pages.mjs --out public --base-path "${{ steps.pages.outputs.base_path }}"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
