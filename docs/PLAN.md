@@ -1,5 +1,7 @@
 # Blackbox Receipts: build plan
 
+> Historical plan from 2026-10-19, kept for the record. What exists is described in the README. Not built: the Postgres index, EVM anchoring, YAML policy rules, and the `cost`/`approver` receipt fields (they stay `null`).
+
 **Targets:** Open Agent (sign up by **Oct 20**; sprint Oct 22–27; "The Agent That Can Explain Why" track) and GitLab Transcend (**Oct 27**, $45k, GitLab Duo Agent Platform). Later: Tatum x Walrus (Nov 10, 17:00 UTC), Decentralize AI (Feb 27, 2027).
 
 ## Weak spots to fix
