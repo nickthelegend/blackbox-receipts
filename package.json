@@ -12,7 +12,7 @@
     "test": "pnpm --filter @blackbox/receipts test",
     "verify": "pnpm --filter @blackbox/proxy verify",
     "dev": "pnpm --filter @blackbox/web dev",
-    "typecheck": "tsc --noEmit -p packages/verify && tsc --noEmit -p packages/receipts && tsc --noEmit -p packages/proxy && tsc --noEmit -p packages/zetaris && tsc --noEmit -p packages/meterless && tsc -p test/tsconfig.json && tsc --noEmit -p apps/web",
+    "typecheck": "tsc --noEmit -p packages/verify && tsc --noEmit -p packages/verify/tsconfig.bin.json && tsc --noEmit -p packages/receipts && tsc --noEmit -p packages/proxy && tsc --noEmit -p packages/zetaris && tsc --noEmit -p packages/meterless && tsc -p test/tsconfig.json && tsc --noEmit -p apps/web",
     "lint": "eslint ."
   },
   "devDependencies": {
