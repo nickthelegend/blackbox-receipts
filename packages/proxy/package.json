@@ -24,6 +24,11 @@
       "types": "./dist/cli.d.ts",
       "source": "./src/cli.ts",
       "import": "./dist/cli.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "source": "./src/client.ts",
+      "import": "./dist/client.js"
     }
   },
   "scripts": {
@@ -36,5 +41,9 @@
     "tamper": "cd ../.. && node packages/proxy/dist/cli.js tamper",
     "verify-export": "cd ../.. && node packages/proxy/dist/cli.js verify-export"
   },
-  "dependencies": { "@blackbox/receipts": "workspace:*", "@modelcontextprotocol/sdk": "^1.25.2", "zod": "^4.1.12" }
+  "dependencies": {
+    "@blackbox/receipts": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.25.2",
+    "zod": "^4.1.12"
+  }
 }
