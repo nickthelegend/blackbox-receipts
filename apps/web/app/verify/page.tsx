@@ -6,7 +6,7 @@
 // browser. The two samples are packs of real agent runs committed under receipts/agent-demo/.
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { parsePack, verifyPack, type Pack, type PackResult, type StepStatus } from '@blackbox/verify';
-import { Logo } from '../landing';
+import { Logo } from '../components/brand';
 import passSample from './samples/agent-pass.json';
 import failSample from './samples/agent-fail.json';
 import '../styles.css';
@@ -91,7 +91,7 @@ export default function VerifyPage() {
     <header className="vf-top">
       <div className="vf-wrap vf-top-row">
         <Logo href="/" />
-        <a className="vf-back" href="/#app">Open recorder</a>
+        <a className="vf-back" href="/recorder">Open recorder</a>
       </div>
     </header>
 

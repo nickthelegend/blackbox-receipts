@@ -1,0 +1,193 @@
+/* Landing: an equipment manual for a flight recorder. Placard strip, the unit with a parts list, the tape,
+   an investigation report with evidence tags, a riveted limitations placard. */
+.ld{background:var(--deep);color:var(--text)}
+.ld-wrap{max-width:1240px;margin:0 auto;padding:0 var(--gutter)}
+.ld code{font-family:var(--mono);font-size:.88em;overflow-wrap:anywhere}
+.ld h1,.ld h2{margin:0;font-weight:700;letter-spacing:-.045em;text-wrap:balance}
+.ld-muted{color:var(--dim)}
+
+/* placard strip + header */
+.ld-strip{background:var(--accent);color:var(--accent-ink);font:500 11.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.ld-strip-row{display:flex;flex-wrap:wrap;gap:6px 26px;padding-block:10px}
+.ld-strip b{font-weight:600}
+.ld-strip-alarm{margin-left:auto}
+.ld-head{border-bottom:1px solid var(--line)}
+.ld-head-row{display:flex;align-items:center;gap:32px;min-height:72px}
+.ld-nav{display:flex;gap:26px;margin-left:auto}
+.ld-nav a{font-size:14.5px;font-weight:600;color:var(--muted);text-decoration:none}
+.ld-nav a:hover{color:var(--text)}
+
+/* hero */
+.ld-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:56px;align-items:center;padding-block:72px 88px}
+.ld-kicker{color:var(--accent);margin:0 0 20px}
+.ld-hero h1{font-size:clamp(40px,5.4vw,74px);line-height:.98}
+.ld-lead{margin:26px 0 34px;max-width:46ch;font-size:clamp(17px,1.4vw,19px);line-height:1.55;color:var(--muted)}
+.ld-cta{display:flex;flex-wrap:wrap;gap:10px}
+.ld-unit{margin:0;padding:28px;border:1px solid var(--line-2);border-radius:6px;background:#0d1013}
+.unit{display:block;width:100%;height:auto;padding:12px;background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px,linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/28px 28px}
+.unit-stencil{font:800 30px var(--font);letter-spacing:.06em;fill:#1f0b00}
+.unit-stencil-sm{font-size:13px;font-weight:700;letter-spacing:.16em}
+.unit-plate{font:500 10.5px var(--mono);letter-spacing:.08em;fill:#ffb27a}
+.unit-callout circle{fill:var(--deep);stroke:var(--text);stroke-width:1.5}
+.unit-callout text{font:600 13px var(--mono);fill:var(--text);text-anchor:middle}
+.ld-unit figcaption{margin-top:22px;padding-top:18px;border-top:1px solid var(--line-2)}
+.ld-unit figcaption .stencil{margin:0 0 12px}
+.ld-parts{margin:0;padding:0;list-style:none;counter-reset:part;display:grid;grid-template-columns:1fr 1fr;gap:12px 24px}
+.ld-parts li{counter-increment:part;position:relative;padding-left:30px;font-size:13.5px;line-height:1.5;color:var(--muted)}
+.ld-parts li::before{content:counter(part);position:absolute;left:0;top:1px;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--text);font:600 11px var(--mono);color:var(--text)}
+.ld-parts b{display:block;color:var(--text);font-weight:700}
+
+/* sections */
+.ld-section{padding-block:88px;border-top:1px solid var(--line)}
+.ld-sec-head{max-width:760px;margin-bottom:36px}
+.ld-sec-head .stencil{margin:0 0 14px;color:var(--accent)}
+.ld-sec-head h2,.ld-placard h2,.ld-install h2{font-size:clamp(30px,3.6vw,48px);line-height:1.04}
+.ld-sec-head > p:last-child{margin:18px 0 0;color:var(--muted);font-size:16.5px;line-height:1.6}
+.ld-sec-head a,.ld-install a:not(.btn){color:var(--accent)}
+
+/* flight strip: an ATC-style progress strip of the session */
+.ld-flightstrip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:0 0 14px;border:1px solid var(--line-2);border-left:6px solid var(--accent);border-radius:4px;background:var(--panel)}
+.ld-flightstrip div{padding:12px 16px;border-left:1px solid var(--line);min-width:0}
+.ld-flightstrip div:first-child{border-left:0}
+.ld-flightstrip dt{font:600 10.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.ld-flightstrip dd{margin:4px 0 0;font:500 13.5px var(--mono);color:var(--text);overflow-wrap:anywhere}
+
+/* playback bar + the one animation */
+.pb-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:10px}
+.pb-rec{display:inline-flex;align-items:center;gap:8px;font:500 12px var(--mono);color:var(--dim)}
+.pb-rec i{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.pb-caution{margin-left:auto;padding:6px 10px;border-radius:3px;font:700 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;background:var(--bad);color:#fff}
+.pb-replay{padding:6px 12px;border-radius:4px;border:0;background:none;box-shadow:inset 0 0 0 1px var(--line-3);font:600 12px var(--mono);color:var(--text);cursor:pointer}
+.pb-replay:hover:not(:disabled){box-shadow:inset 0 0 0 1px var(--text)}
+.pb-replay:disabled{opacity:.4}
+.pb[data-play=ready] :is(.tape-mark,.tape-band,.tape-flag,.pb-caution){opacity:0}
+.pb[data-play=ready] .pb-caution{background:var(--panel-3);color:var(--dim)}
+.pb[data-play=ready] .tape-trace{clip-path:inset(0 100% 0 0)}
+@media (prefers-reduced-motion:no-preference){
+  .pb[data-play=run] .tape-head{animation:pb-sweep 6s linear both}
+  .pb[data-play=run] .tape-trace{animation:pb-trace 6s linear both}
+  .pb[data-play=run] :is(.tape-mark,.tape-band,.tape-flag){animation:pb-in .2s ease-out both;animation-delay:calc(var(--x) * 60ms)}
+  .pb[data-play=run] .pb-caution{animation:pb-lamp .2s ease-out both;animation-delay:calc(var(--x) * 60ms)}
+}
+@keyframes pb-sweep{0%{left:0;opacity:1}97%{left:100%;opacity:1}100%{left:100%;opacity:0}}
+@keyframes pb-trace{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes pb-in{from{opacity:0}to{opacity:1}}
+@keyframes pb-lamp{from{opacity:0;background:var(--panel-3);color:var(--dim)}to{opacity:1;background:var(--bad);color:#fff}}
+
+/* readout: tape log + cockpit voice */
+.ld-readout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:28px;margin-top:28px;align-items:start}
+.ld-log{list-style:none;margin:0;padding:0;border-top:1px solid var(--line-2)}
+.ld-log li{display:grid;grid-template-columns:30px 62px minmax(0,1fr) 60px;gap:4px 12px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line)}
+.ld-log-n{font:600 13px var(--mono);color:var(--accent)}
+.ld-log-t,.ld-log-out{font:400 12px var(--mono);color:var(--dim)}
+.ld-log-out{text-align:right}
+.ld-log-cmd{font-size:13px !important;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ld-log-note{grid-column:3/-1;font-size:13px;color:var(--muted)}
+.ld-log li.is-error .ld-log-out{color:var(--caution)}
+.ld-log li.is-alarm{margin:0 -12px;padding-inline:12px;background:var(--bad-bg);box-shadow:inset 3px 0 0 var(--bad)}
+.ld-log li.is-alarm .ld-log-n,.ld-log li.is-alarm .ld-log-out{color:var(--bad);font-weight:600}
+.ld-log li.is-alarm .ld-log-note{color:var(--text)}
+.ld-cvr{padding:22px;border:1px solid var(--line-2);border-radius:6px;background:var(--panel)}
+.ld-cvr .stencil{margin:0 0 10px}
+.ld-cvr blockquote{margin:0 0 12px;padding-left:14px;border-left:2px solid var(--accent);font-size:15px;line-height:1.55;color:var(--text)}
+.ld-verdict,.ld-control{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.ld-verdict-text{margin:0 0 8px;font:600 14px/1.45 var(--mono);color:var(--bad)}
+.ld-verdict p:not(.stencil),.ld-control p:not(.stencil){margin:0;font-size:14px;line-height:1.55}
+.ld-control p:not(.stencil){color:var(--muted)}
+.ld-control b{color:var(--ok);font:600 13px var(--mono)}
+
+/* investigation: evidence tags + report */
+.iv{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:24px;align-items:start}
+.iv-exhibits{display:grid;gap:12px}
+.iv-tag{position:relative;display:flex;flex-direction:column;gap:6px;padding:18px 18px 18px 42px;border:0;border-radius:4px 14px 14px 4px;background:#e9e2d6;color:#16130f;text-align:left;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.iv-tag-hole{position:absolute;left:14px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:var(--deep);box-shadow:0 0 0 3px #c9bfae}
+.iv-tag-id{font:700 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#7a6c58}
+.iv-tag strong{font-size:16px;font-weight:700;letter-spacing:-.02em}
+.iv-tag code{font-size:11.5px;color:#5c5246}
+.iv-tag.is-on{background:var(--accent);color:var(--accent-ink);box-shadow:none}
+.iv-tag.is-on .iv-tag-id,.iv-tag.is-on code{color:#4a1d02}
+.iv-tag.is-on .iv-tag-hole{box-shadow:0 0 0 3px #c9530f}
+.iv-report{min-height:300px;padding:26px;border:1px solid var(--line-2);border-radius:6px;background:var(--panel)}
+.iv-idle{display:flex;flex-direction:column;align-items:flex-start;gap:10px;justify-content:center;min-height:248px}
+.iv-idle p{margin:0;color:var(--muted)}
+.iv-error{margin:12px 0 0;padding:10px 12px;border-radius:4px;background:var(--bad-bg);border:1px solid var(--bad-line);font-size:14px}
+.iv-verdict{display:flex;gap:20px;align-items:flex-start}
+.iv-stamp{flex:none;padding:8px 14px;border:3px solid currentColor;border-radius:4px;font:800 26px/1 var(--font);letter-spacing:.12em;text-transform:uppercase;transform:rotate(-4deg)}
+.is-pass .iv-stamp{color:var(--ok)}
+.is-fail .iv-stamp{color:var(--bad)}
+.iv-headline{margin:0;font:600 15px/1.45 var(--mono);overflow-wrap:anywhere}
+.iv-meta{margin:6px 0 0;font-size:13px;color:var(--dim)}
+.iv-edit{margin:8px 0 0;font-size:13px;color:var(--caution)}
+.iv-checks{list-style:none;margin:22px 0 0;padding:0;border-top:1px solid var(--line)}
+.iv-checks li{display:grid;grid-template-columns:22px 210px minmax(0,1fr);gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.iv-checks li > span:first-child{font-weight:700}
+.iv-checks li.is-ok > span:first-child{color:var(--ok)}
+.iv-checks li.is-bad > span:first-child,.iv-checks li.is-bad b{color:var(--bad)}
+.iv-checks li > span:last-child{color:var(--muted)}
+.iv-cells{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;margin-top:18px}
+.iv-cell{display:flex;flex-direction:column;gap:2px;padding:8px;border-radius:3px;background:var(--panel-2);box-shadow:inset 0 0 0 1px var(--line)}
+.iv-cell b{font:600 13px var(--mono)}
+.iv-cell small{font-size:10.5px;color:var(--dim)}
+.iv-cell.is-flagged,.iv-cell.is-broken{background:var(--bad);box-shadow:none}
+.iv-cell.is-flagged small,.iv-cell.is-broken small{color:#fff}
+.iv-cell.is-untrusted{opacity:.45}
+.iv-tamper{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.iv-tamper label{display:block;margin-bottom:10px}
+.iv-tamper-row{display:flex;flex-wrap:wrap;gap:8px}
+.iv-tamper select{min-height:40px;padding:0 10px;border-radius:6px;border:0;background:#07090b;box-shadow:inset 0 0 0 1px var(--line-3);font:500 13px var(--mono);color:var(--text)}
+
+/* limitations placard: riveted plate */
+.ld-placard{position:relative;padding:44px;border-radius:8px;background:#e9e2d6;color:#16130f;
+  background-image:radial-gradient(circle,#b9ae9c 4px,transparent 4.5px),radial-gradient(circle,#b9ae9c 4px,transparent 4.5px),radial-gradient(circle,#b9ae9c 4px,transparent 4.5px),radial-gradient(circle,#b9ae9c 4px,transparent 4.5px);
+  background-size:18px 18px;background-repeat:no-repeat;background-position:14px 14px,calc(100% - 14px) 14px,14px calc(100% - 14px),calc(100% - 14px) calc(100% - 14px)}
+.ld-placard .stencil{margin:0 0 14px;color:#7a6c58}
+.ld-placard-head{padding-bottom:26px;border-bottom:2px solid #16130f}
+.ld-limits{margin:0;display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
+.ld-limits div{padding:20px 0;border-bottom:1px solid rgba(22,19,15,.16)}
+.ld-limits dt{display:flex;flex-direction:column;align-items:flex-start;gap:10px;font-weight:700;font-size:16px;letter-spacing:-.015em}
+.ld-limits dd{margin:8px 0 0;font-size:14.5px;line-height:1.6;color:#4b443b}
+.ld-tag{padding:3px 7px;border-radius:3px;font:700 10px/1.3 var(--mono);letter-spacing:.1em;text-transform:uppercase;box-shadow:inset 0 0 0 1.5px currentColor;color:#5c5246}
+.ld-tag.is-setup-required,.ld-tag.is-not-run-yet{background:#16130f;color:var(--caution);box-shadow:none}
+.ld-tag.is-by-design{color:#1d6b45}
+
+/* install + footer */
+.ld-install-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:48px;align-items:center}
+.ld-install .stencil{margin:0 0 14px;color:var(--accent)}
+.ld-install p:not(.stencil){color:var(--muted);font-size:16px;line-height:1.6}
+.ld-install-box pre{margin:0 0 18px;padding:20px;border-radius:6px;background:#07090b;border:1px solid var(--line-2);font:400 13px/1.8 var(--mono);color:var(--text);white-space:pre-wrap;overflow-wrap:anywhere}
+.ld-foot{border-top:1px solid var(--line);padding-block:28px 40px}
+.ld-foot-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 24px;color:var(--dim);font-size:13px}
+.ld-foot-row p{margin:0;max-width:66ch}
+
+@media (max-width:1000px){
+  .ld-hero{grid-template-columns:minmax(0,1fr);gap:40px;padding-block:48px 64px}
+  .ld-readout,.iv,.ld-install-row{grid-template-columns:minmax(0,1fr)}
+  .ld-flightstrip{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ld-flightstrip div:nth-child(4){border-left:0}
+  .ld-flightstrip div:nth-child(n+4){border-top:1px solid var(--line)}
+  .iv-exhibits{grid-template-columns:1fr 1fr}
+}
+@media (max-width:760px){
+  .ld-nav{display:none}
+  .ld-head-cta{margin-left:auto}
+  .ld-strip-row{gap:4px 16px;font-size:10.5px}
+  .ld-strip-alarm{margin-left:0}
+  .ld-unit{padding:16px}
+  .ld-parts{grid-template-columns:minmax(0,1fr)}
+  .ld-section{padding-block:60px}
+  .ld-flightstrip{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ld-flightstrip div:nth-child(n){border-left:1px solid var(--line);border-top:1px solid var(--line)}
+  .ld-flightstrip div:nth-child(odd){border-left:0}
+  .ld-flightstrip div:nth-child(-n+2){border-top:0}
+  .ld-log li{grid-template-columns:26px minmax(0,1fr) auto;grid-template-areas:'n cmd out' 'n t t' 'n note note';gap:2px 10px}
+  .ld-log-n{grid-area:n}.ld-log-cmd{grid-area:cmd}.ld-log-out{grid-area:out}.ld-log-t{grid-area:t}.ld-log-note{grid-area:note}
+  .ld-log li.is-alarm{margin:0 -8px;padding-inline:8px}
+  .iv-exhibits{grid-template-columns:minmax(0,1fr)}
+  .iv-report{padding:18px}
+  .iv-verdict{flex-direction:column;gap:14px}
+  .iv-checks li{grid-template-columns:22px minmax(0,1fr);gap:2px 10px}
+  .iv-checks li > span:last-child{grid-column:2}
+  .ld-placard{padding:32px 20px}
+  .ld-limits{grid-template-columns:minmax(0,1fr)}
+  .pb-caution{margin-left:0}
+}
