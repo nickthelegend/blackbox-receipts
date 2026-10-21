@@ -37,7 +37,7 @@ export function HeroCopy() {
   return <div className="hero-copy">
     <p className="kicker"><span className="kicker-dot" aria-hidden />Flight recorder for AI agents</p>
     <h1 className="h-hero">Every agent action, signed and chained.</h1>
-    <p className="lead">An MCP proxy writes an Ed25519-signed, hash-chained receipt for every tool call. Edit one and verification names the broken block.</p>
+    <p className="lead">An MCP proxy in front of your agent’s tools writes an Ed25519-signed, hash-chained receipt for every call. Edit, reorder or cut one off the end and verification names the step.</p>
     <div className="cta">
       <a className="btn btn-accent" href="#app">Open the recorder <Arrow /></a>
       <a className="btn btn-ghost-light" href="#how">How it works</a>
@@ -58,9 +58,9 @@ export function Bento() {
           <div className="ui">
             <div className="ui-label">Fields in each signed receipt</div>
             <div className="chips mono-chips">
-              {['tool', 'paths', 'argsHash', 'resultHash', 'previousHash', 'timestamp', 'signature'].map((field) => <span key={field} className={field === 'signature' ? 'on' : undefined}>{field}</span>)}
+              {['tool', 'paths', 'outcome', 'argsHash', 'resultHash', 'previousHash', 'timestamp', 'signature'].map((field) => <span key={field} className={field === 'signature' ? 'on' : undefined}>{field}</span>)}
             </div>
-            <p className="ui-note">Raw arguments go to a private witness file. The receipt carries only their hash.</p>
+            <p className="ui-note">Raw arguments go to a private witness file. The receipt carries only a salted hash of them; paths stay readable.</p>
           </div>
         </article>
         <article className="card c-deep">
@@ -82,7 +82,7 @@ export function Bento() {
             <div className="outcome"><span className="tag tag-ok">PASS</span><code>no-secrets-read: N/N receipts</code></div>
             <div className="outcome"><span className="tag tag-no">FAIL</span><code>at step K: Chain verification failed</code></div>
             <div className="outcome"><span className="tag tag-no">FAIL</span><code>read_file touched secret path</code></div>
-            <p className="ui-note">Ed25519 · SHA-256 · Merkle inclusion paths</p>
+            <p className="ui-note">Ed25519 · SHA-256 · Merkle paths · signed seal. <a href="/verify">Verify a pack in your browser</a></p>
           </div>
         </article>
       </div>
@@ -91,6 +91,7 @@ export function Bento() {
 }
 
 const faqs: [string, string][] = [
+  ['Can the agent rewrite its own log?', 'Not without the proxy’s signing key, which lives outside the workspace (~/.blackbox) and is never exposed to the agent’s tools. Editing, reordering or deleting receipts, or cutting them off the end, is detected and named. Whoever holds the key could sign a different log, so publish the public key and pin it when you verify.'],
   ['What does a receipt actually prove?', 'That this proxy observed and signed the call. It does not prove the host machine was uncompromised. There is no TEE attestation yet.'],
   ['Is the property proof zero knowledge?', 'No. It is selective disclosure with a trusted attester. The verifier checks signatures, Merkle inclusion and the proxy’s attestation, but it trusts the proxy key for the policy verdict over hidden args.'],
   ['Is the shell tool a sandbox?', 'No. It is a demo policy guard: shell accepts only direct pwd, ls and cat, and secret-path checks are glob heuristics. Use an isolated workspace.'],

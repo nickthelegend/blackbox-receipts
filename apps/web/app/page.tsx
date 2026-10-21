@@ -234,7 +234,8 @@ export default function Home() {
               <dl className="kv">
                 <div><dt>Start</dt><dd><code>pnpm --filter @blackbox/proxy start</code></dd></div>
                 <div><dt>Transport</dt><dd><code>stdio · packages/proxy/dist/server.js</code></dd></div>
-                <div><dt>Tools</dt><dd className="chips-sm"><span>read_file</span><span>git</span><span>shell</span></dd></div>
+                <div><dt>Tools</dt><dd className="chips-sm"><span>read_file</span><span>write_file</span><span>git</span><span>shell</span></dd></div>
+                <div><dt>Or proxy</dt><dd><code>server.js --upstream &quot;&lt;any stdio MCP server&gt;&quot;</code></dd></div>
                 <div><dt>Store</dt><dd><code>.blackbox/session.jsonl</code></dd></div>
               </dl>
             </div>
