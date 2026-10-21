@@ -11,3 +11,7 @@ coverage/
 .pnpm-store/
 *.tsbuildinfo
 .demo/
+
+# Static Pages build (scripts/build-pages.mjs): scratch stage and exported site.
+apps/web/.pages-build/
+/public/

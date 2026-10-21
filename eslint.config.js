@@ -2,7 +2,7 @@
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['**/node_modules/**', '**/dist/**', 'apps/web/.next/**', 'apps/web/next-env.d.ts', '.demo/**', '.loom/**', '.pnpm-store/**', 'receipts/**'] },
+  { ignores: ['**/node_modules/**', '**/dist/**', 'apps/web/.next/**', 'apps/web/.pages-build/**', 'public/**', 'apps/web/next-env.d.ts', '.demo/**', '.loom/**', '.pnpm-store/**', 'receipts/**'] },
   ...tseslint.configs.recommended,
   {
     rules: {

@@ -12,6 +12,7 @@
     "test": "pnpm --filter @blackbox/receipts test",
     "verify": "pnpm --filter @blackbox/proxy verify",
     "dev": "pnpm --filter @blackbox/web dev",
+    "build:pages": "pnpm --filter \"@blackbox/web^...\" build && node scripts/build-pages.mjs",
     "typecheck": "tsc --noEmit -p packages/verify && tsc --noEmit -p packages/verify/tsconfig.bin.json && tsc --noEmit -p packages/receipts && tsc --noEmit -p packages/meterless && tsc --noEmit -p packages/proxy && tsc --noEmit -p packages/zetaris && tsc -p test/tsconfig.json && tsc --noEmit -p apps/web",
     "lint": "eslint ."
   },
