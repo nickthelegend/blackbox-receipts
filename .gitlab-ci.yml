@@ -46,6 +46,15 @@ verify:live-session:
   script:
     - bash scripts/ci/verify-live-session.sh
 
+verify:agent-demo:
+  stage: verify
+  needs: [build]
+  rules:
+    - exists:
+        - receipts/agent-demo/*/session.jsonl
+  script:
+    - bash scripts/ci/verify-agent-demo.sh
+
 verify:exported-receipts:
   stage: verify
   needs: [build]

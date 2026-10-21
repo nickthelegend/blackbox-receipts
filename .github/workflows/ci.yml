@@ -20,3 +20,5 @@ jobs:
       # Chain verification, property proofs (clean / tampered / empty / secret path) and the verifier CLI.
       - run: pnpm test
       - run: bash scripts/ci/verify-live-session.sh
+      # Committed live agent runs (receipts/agent-demo/) still verify as recorded.
+      - run: bash scripts/ci/verify-agent-demo.sh
