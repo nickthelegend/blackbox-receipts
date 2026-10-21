@@ -1,4 +1,5 @@
-# Example (not active in this repo): gate a pull request on Blackbox receipts.
+# Example for another repo (this repo runs the gate itself: .github/workflows/attest-diff.yml and the
+# verify:attest-diff job in .gitlab-ci.yml): gate a pull request on Blackbox receipts.
 # Copy to .github/workflows/ in a repo whose agent works through the Blackbox proxy (write_file) and
 # commits its export under receipts/<session>/. The job fails, naming each file, if any change in the PR
 # was not produced by a signed write_file step: a human edit, or an agent that wrote around the proxy.
@@ -13,7 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       # Install Blackbox Receipts however you vendor it; here, a checkout built next to the repo.
-      - run: git clone --depth 1 https://github.com/nickthelegend/blackbox-receipts ../blackbox && cd ../blackbox && corepack enable && pnpm install --frozen-lockfile && pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/proxy build
+      - run: git clone --depth 1 https://github.com/nickthelegend/blackbox-receipts ../blackbox && cd ../blackbox && corepack enable && pnpm install --frozen-lockfile && pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/meterless build && pnpm --filter @blackbox/proxy build
       - name: Every changed file must come from a signed write
         env:
           # Pin the proxy's public key (PEM) so an export signed by any other key fails.

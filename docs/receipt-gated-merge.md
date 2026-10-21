@@ -25,9 +25,19 @@ and the command's own output files are ignored. `--junit` writes one test case p
 reports; `--out` writes a JSON attestation (base, HEAD, session, Merkle root, per-file verdicts) signed
 with the key of whoever runs the command, whose public key it embeds.
 
-CI job examples: [examples/ci/receipt-gated-merge.github.yml](../examples/ci/receipt-gated-merge.github.yml)
+In this repo the gate runs as `.github/workflows/attest-diff.yml` (pull requests) and the
+`verify:attest-diff` job in `.gitlab-ci.yml` (merge requests; not run yet, as the GitLab project doesn't
+exist). Both call `scripts/ci/attest-diff-pr.sh <base> [out-dir]`, which picks the exported session the
+request adds at `receipts/<session>/session.jsonl` (deeper folders such as `receipts/agent-demo/` are not
+a request's own session), prints NOT APPLICABLE and passes when there is none, fails when there are two,
+and otherwise runs `attest-diff --from` it and prints the JUnit summary.
+
+`bash scripts/demo-attest-diff.sh` shows all three outcomes on real branches in a temp clone of this repo
+(agent change green, human commit on the agent's file red, file written around the proxy red); its
+output from one run is in [`receipts/attest-diff-demo/`](../receipts/attest-diff-demo/).
+
+For another repo, adapt the examples in [examples/ci/receipt-gated-merge.github.yml](../examples/ci/receipt-gated-merge.github.yml)
 and [examples/ci/receipt-gated-merge.gitlab-ci.yml](../examples/ci/receipt-gated-merge.gitlab-ci.yml).
-They are examples only; neither runs in this repo.
 
 Limits: the gate proves where each changed byte came from, not that the change is good. It trusts the
 proxy key (pin it). Renames show up as a delete plus an add, so a rename fails unless the new file was
