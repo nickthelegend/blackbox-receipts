@@ -39,6 +39,16 @@
       "types": "./dist/upstream.d.ts",
       "source": "./src/upstream.ts",
       "import": "./dist/upstream.js"
+    },
+    "./explain": {
+      "types": "./dist/explain.d.ts",
+      "source": "./src/explain.ts",
+      "import": "./dist/explain.js"
+    },
+    "./report": {
+      "types": "./dist/report.d.ts",
+      "source": "./src/report.ts",
+      "import": "./dist/report.js"
     }
   },
   "scripts": {

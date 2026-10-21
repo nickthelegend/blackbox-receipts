@@ -77,11 +77,12 @@
 /* readout: tape log + cockpit voice */
 .ld-readout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:28px;margin-top:28px;align-items:start}
 .ld-log{list-style:none;margin:0;padding:0;border-top:1px solid var(--line-2)}
-.ld-log li{display:grid;grid-template-columns:30px 62px minmax(0,1fr) 60px;gap:4px 12px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line)}
+.ld-log li{display:grid;grid-template-columns:30px 62px minmax(0,1fr) 60px 52px;gap:4px 12px;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--line)}
 .ld-log-n{font:600 13px var(--mono);color:var(--accent)}
 .ld-log-t,.ld-log-out{font:400 12px var(--mono);color:var(--dim)}
 .ld-log-out{text-align:right}
 .ld-log-cmd{font-size:13px !important;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ld-log-why{justify-self:end;align-self:center}
 .ld-log-note{grid-column:3/-1;font-size:13px;color:var(--muted)}
 .ld-log li.is-error .ld-log-out{color:var(--caution)}
 .ld-log li.is-alarm{margin:0 -12px;padding-inline:12px;background:var(--bad-bg);box-shadow:inset 3px 0 0 var(--bad)}
@@ -179,8 +180,8 @@
   .ld-flightstrip div:nth-child(n){border-left:1px solid var(--line);border-top:1px solid var(--line)}
   .ld-flightstrip div:nth-child(odd){border-left:0}
   .ld-flightstrip div:nth-child(-n+2){border-top:0}
-  .ld-log li{grid-template-columns:26px minmax(0,1fr) auto;grid-template-areas:'n cmd out' 'n t t' 'n note note';gap:2px 10px}
-  .ld-log-n{grid-area:n}.ld-log-cmd{grid-area:cmd}.ld-log-out{grid-area:out}.ld-log-t{grid-area:t}.ld-log-note{grid-area:note}
+  .ld-log li{grid-template-columns:26px minmax(0,1fr) auto;grid-template-areas:'n cmd out' 'n t why' 'n note note';gap:2px 10px}
+  .ld-log-n{grid-area:n}.ld-log-cmd{grid-area:cmd}.ld-log-out{grid-area:out}.ld-log-t{grid-area:t}.ld-log-note{grid-area:note}.ld-log-why{grid-area:why}
   .ld-log li.is-alarm{margin:0 -8px;padding-inline:8px}
   .iv-exhibits{grid-template-columns:minmax(0,1fr)}
   .iv-report{padding:18px}

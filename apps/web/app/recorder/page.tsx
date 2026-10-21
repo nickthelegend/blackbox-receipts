@@ -8,6 +8,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PropertyProof, Receipt } from '@blackbox/receipts';
 import { Logo, Mark } from '../components/brand';
 import { Tape, type TapeStep, type TapeTone } from '../components/strip';
+import { ExplainDrawer } from '../components/explain-drawer';
+import type { Explanation } from '@blackbox/proxy/explain';
 import './recorder.css';
 
 type Session = { sessionId: string; receipts: Receipt[]; chain: { valid: boolean; brokenAt: number | null; reason: string | null }; root: string; publicKey: string; walrus: { root?: string; blob?: unknown } | null; walrusConfigured: boolean; tampered?: number[] };
@@ -52,6 +54,10 @@ export default function Recorder() {
   const [showKey, setShowKey] = useState(false);
   const [proofResult, setProofResult] = useState<ProofResult | null>(null);
   const lastBroken = useRef<number | null>(null);
+  const [explanation, setExplanation] = useState<Explanation | null>(null);
+  const [explainError, setExplainError] = useState('');
+  const [explainStep, setExplainStep] = useState<number | null>(null);
+  const closeExplain = useCallback(() => setExplainStep(null), []);
 
   useEffect(() => {
     fetch('/api/integrations', { cache: 'no-store' })
@@ -68,6 +74,18 @@ export default function Recorder() {
     } catch (error) { setData(null); setLoadError(`Could not load the session: ${errorText(error)}`); }
   }, []);
   useEffect(() => { void refresh(); const timer = setInterval(() => void refresh(), 3000); return () => clearInterval(timer); }, [refresh]);
+
+  // The explanation follows the log: fetched again whenever the root or the break changes.
+  const explainKey = data ? `${data.root}:${data.chain.brokenAt ?? ''}:${data.receipts.length}` : '';
+  useEffect(() => {
+    if (!explainKey || explainKey.endsWith(':0')) { setExplanation(null); return; }
+    let live = true;
+    fetch('/api/explain', { cache: 'no-store' })
+      .then(async (response) => { const body = await response.json(); if (!response.ok) throw new Error(body.error ?? `Explain request failed (${response.status})`); if (live) { setExplanation(body); setExplainError(''); } })
+      .catch((error) => { if (live) { setExplanation(null); setExplainError(errorText(error)); } });
+    return () => { live = false; };
+  }, [explainKey]);
+  const explainOf = (step: number, hash: string) => explanation?.steps.find((item) => item.step === step && item.receipt === hash) ?? null;
 
   // When verification first detects a broken block, bring its log row on screen.
   const brokenAt = data?.chain.brokenAt ?? null;
@@ -225,6 +243,11 @@ export default function Recorder() {
                   <span className="rc-row-seal"><code>{short(receipt.previousHash, 6)}</code><span aria-hidden> → </span><code>{short(receipt.hash, 6)}</code></span>
                   <span className={`rc-pill is-${STATUS_TONE[status]}`}>{STATUS_LABEL[status]}</span>
                 </button>
+                {open && <div className="rc-explain">
+                  {explainOf(receipt.step, receipt.hash)
+                    ? <button type="button" className="why-btn" aria-haspopup="dialog" onClick={() => setExplainStep(receipt.step)}>Explain why · step {pad(receipt.step)}</button>
+                    : <span className="rc-note">{explainError ? `Explanation unavailable: ${explainError}` : 'Explanation loading…'}</span>}
+                </div>}
                 {open && <dl className="rc-details">
                   <div><dt>Receipt hash</dt><dd><code>{receipt.hash}</code></dd></div>
                   <div><dt>Previous</dt><dd><code>{receipt.previousHash ?? 'GENESIS'}</code></dd></div>
@@ -261,6 +284,7 @@ export default function Recorder() {
             <span className="stencil">Policy proof · {proofResult?.policyId ?? 'no-secrets-read/v1'}</span>
             <h2>{!proofResult ? 'Did the agent read secrets?' : stale ? 'Proof is stale' : proofPass ? 'Pass: no secrets read' : failedStep === null ? 'Fail: property not proven' : `Fail at block ${pad(failedStep)}`}</h2>
             <p>{!proofResult ? 'Checks every step against secret path globs (.env*, *.pem, ~/.ssh/**) and secret patterns in tool args. Reveals inclusion paths and commitments, never the args.' : stale ? 'The log changed after this proof ran. Run it again to cover the current chain.' : proofPass ? `All ${proofResult.steps} signed blocks satisfy the policy, verified from the public key alone.` : proofResult.reason}</p>
+            {failedStep !== null && data && explainOf(failedStep, receipts.find((receipt) => receipt.step === failedStep)?.hash ?? '') && <button type="button" className="why-btn rc-why-proof" aria-haspopup="dialog" onClick={() => setExplainStep(failedStep)}>Explain why block {pad(failedStep)} fails</button>}
             {proofPass && <div className="rc-proof"><code>{proofResult?.steps} / {receipts.length} leaves · root {proofResult?.root?.slice(0, 16)}…</code><button type="button" className="rc-link" onClick={downloadProof}>Download proof JSON</button></div>}
             <button type="button" className="btn btn-accent rc-wide" disabled={busy || !receipts.length} onClick={() => void proveNoSecrets()}>Prove: no secrets read</button>
           </section>
@@ -283,7 +307,7 @@ export default function Recorder() {
           <dl className="rc-kv">
             <div><dt>Start</dt><dd><code>pnpm --filter @blackbox/proxy start</code></dd></div>
             <div><dt>Transport</dt><dd><code>stdio · packages/proxy/dist/server.js</code></dd></div>
-            <div><dt>Tools</dt><dd><code>read_file · write_file · git · shell</code></dd></div>
+            <div><dt>Tools</dt><dd><code>read_file · write_file · git · shell · blackbox_explain</code></dd></div>
             <div><dt>Or proxy</dt><dd><code>server.js --upstream &quot;&lt;any stdio MCP server&gt;&quot;</code></dd></div>
             <div><dt>Store</dt><dd><code>.blackbox/session.jsonl</code></dd></div>
           </dl>
@@ -299,6 +323,8 @@ export default function Recorder() {
           <p className="rc-fine">Setup: docs/gitlab-setup.md. No Duo run or pipeline history exists yet.</p>
         </div>
       </section>
+
+      <ExplainDrawer step={explanation && explainStep !== null ? explanation.steps.find((item) => item.step === explainStep) ?? null : null} verdict={explanation?.verdict ?? ''} source="Live: /api/explain runs the same explainer as blackbox-receipts explain --json over the local store." onClose={closeExplain} onSelect={setExplainStep} />
 
       <footer className="rc-foot">
         <p>Signatures prove what the proxy observed. They do not prove the proxy machine was uncompromised. TEE attestation is future work.</p>

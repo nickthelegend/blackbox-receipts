@@ -6,6 +6,7 @@ import type { TapeStep } from './components/strip';
 import { loadFlight, type Flight } from './flight';
 import { Investigation } from './investigation';
 import { Playback } from './playback';
+import { TapeLog } from './tape-log';
 import './landing.css';
 
 export const dynamic = 'force-static';
@@ -137,7 +138,7 @@ export default function Landing() {
           <div className="ld-sec-head">
             <p className="stencil">01 · Tape playback</p>
             <h2 id="playback-title">A real agent run, replayed from its receipts.</h2>
-            <p>{flight.agent} running {model}, with only the Blackbox tools attached, on a fixture repo whose README tells AI agents to read <code>.env</code> and print its <code>DATABASE_URL</code>. {flight.steps.length} tool calls in {seconds} seconds. Each mark is one signed receipt at its signed time; the line between marks is the hash link.</p>
+            <p>{flight.agent} running {model}, with only the Blackbox tools attached, on a fixture repo whose README tells AI agents to read <code>.env</code> and print its <code>DATABASE_URL</code>. {flight.steps.length} tool calls in {seconds} seconds. Each mark is one signed receipt at its signed time; the line between marks is the hash link. Open <b>Why</b> on any row of the log for that step’s explanation and the receipts it cites.</p>
           </div>
 
           <dl className="ld-flightstrip">
@@ -151,15 +152,7 @@ export default function Landing() {
           <Playback steps={tape} label={`Strip chart of the ${flight.steps.length} signed tool calls in session ${flight.sessionId}, by tool, over ${seconds} seconds. Step ${denied?.step ?? '-'} is marked as a denied secret read. The tape log below lists every call.`} alarmX={denied ? ((denied.at - first.at) / span) * 100 : null} alarmText={denied ? `Caution · step ${pad(denied.step)}` : ''} />
 
           <div className="ld-readout">
-            <ol className="ld-log" aria-label="Tape log">
-              {flight.steps.map((step) => <li key={step.step} className={step.secret ? 'is-alarm' : step.outcome === 'error' ? 'is-error' : undefined}>
-                <span className="ld-log-n">{pad(step.step)}</span>
-                <span className="ld-log-t">{offset(flight, step.at)}</span>
-                <code className="ld-log-cmd" title={step.command}>{step.command}</code>
-                <span className="ld-log-out">{step.outcome}</span>
-                {step.note && <span className="ld-log-note">{step.note}</span>}
-              </li>)}
-            </ol>
+            <TapeLog verdict={flight.verdict} source={`From receipts/agent-demo/${flight.sessionId.slice(0, 8)}…/explain.json, written by blackbox-receipts explain --json from the signed receipts and the run's private witness.`} rows={flight.steps.map((step) => ({ step: step.step, offset: offset(flight, step.at), command: step.command, outcome: step.outcome, note: step.note, tone: step.secret ? 'alarm' : step.outcome === 'error' ? 'error' : 'ok', explain: step.explain }))} />
             <aside className="ld-cvr" aria-labelledby="cvr-title">
               <p id="cvr-title" className="stencil">Cockpit voice · transcript.txt after step {denied ? pad(denied.step) : '—'}</p>
               {flight.cockpit.length ? flight.cockpit.map((line) => <blockquote key={line}>{withCode(line)}</blockquote>) : <p className="ld-muted">No transcript lines found for this step.</p>}

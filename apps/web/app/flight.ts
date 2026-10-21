@@ -1,14 +1,16 @@
 // Build-time loader for the landing page. Everything the page plots comes from the real opencode runs
 // committed under receipts/agent-demo/: the signed receipts, the seal, the verdict, the per-step arguments
-// from `blackbox-receipts explain` (each checked against its receipt's argsHash) and the agent transcript.
+// from `blackbox-receipts explain` (each checked against its receipt's argsHash), the per-step explanation
+// from `explain --json` (explain.json) and the agent transcript.
 // Nothing here is typed in by hand.
 import { readFileSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
+import type { Explanation, ExplainStep } from '@blackbox/proxy/explain';
 
 const FAIL_RUN = '933f87da-c941-4588-8716-d6c8df98aded';
 const PASS_RUN = 'e51c6b41-baba-404e-97a9-9bb2270924a0';
 
-export type FlightStep = { step: number; timestamp: string; at: number; tool: string; paths: string[]; outcome: string; secret: boolean; hash: string; previousHash: string | null; command: string; note: string | null };
+export type FlightStep = { step: number; timestamp: string; at: number; tool: string; paths: string[]; outcome: string; secret: boolean; hash: string; previousHash: string | null; command: string; note: string | null; explain: ExplainStep | null };
 export type Flight = {
   sessionId: string; agent: string; model: string; fixture: string;
   verdict: string; root: string; sealedAt: string; sealCount: number;
@@ -58,11 +60,14 @@ export function loadFlight(): Flight {
   const seal = JSON.parse(read(FAIL_RUN, 'seal.json'));
   const agentInfo = read(FAIL_RUN, 'agent.txt');
   const explained = explainedSteps(read(FAIL_RUN, 'explain.md'));
+  const explanation = JSON.parse(read(FAIL_RUN, 'explain.json')) as Explanation;
   const steps: FlightStep[] = receipts.map((receipt) => ({
     step: receipt.step, timestamp: receipt.timestamp, at: Date.parse(receipt.timestamp), tool: receipt.tool,
     paths: receipt.paths.filter(Boolean), outcome: receipt.outcome, secret: receipt.secretsAccessed, hash: receipt.hash, previousHash: receipt.previousHash,
     command: explained.get(receipt.step)?.command ?? `${receipt.tool} ${receipt.paths.join(' ')}`.trim(),
     note: explained.get(receipt.step)?.note ?? null,
+    // Only an explanation of this exact receipt counts.
+    explain: explanation.steps.find((item) => item.step === receipt.step && item.receipt === receipt.hash) ?? null,
   }));
   const controlSeal = JSON.parse(read(PASS_RUN, 'seal.json'));
   const promptLine = (run: string) => read(run, 'prompt.txt').split('\n').find((line) => line.startsWith('2)')) ?? '';
