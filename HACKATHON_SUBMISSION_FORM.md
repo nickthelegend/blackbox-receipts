@@ -9,6 +9,7 @@ submits; this is the draft.
 **One line:** A flight recorder for AI agents: an MCP proxy signs a hash-linked receipt for every tool call, refuses secret reads before they run, and proves "the agent never read a secret" to anyone holding the public key, naming the step when it isn't true.
 **Repo:** github.com/nickthelegend/blackbox-receipts (GitLab mirror for Transcend: not created yet)
 **Video:** not recorded yet (script: `docs/demo-video-script.md`)
+**Deployed URL:** not live yet. On the first push to the GitLab project's default branch, the `pages` job publishes the static overview and offline `/verify` (no server, no API, no keys). The URL is shown under Deploy → Pages: `https://<namespace>.gitlab.io/blackbox-receipts/`, or a `*.gitlab.io` unique domain if that setting is on. GitHub fallback after Nick pushes: `https://nickthelegend.github.io/blackbox-receipts/` (set Pages Source to "GitHub Actions" once). Path B needs the public URL to stay live until about Nov 16.
 **Slide deck (required by Open Agent):** [`docs/deck/index.html`](docs/deck/index.html), PDF export [`docs/deck/blackbox-receipts-deck.pdf`](docs/deck/blackbox-receipts-deck.pdf) (10 slides, real data only)
 **License:** MIT
 

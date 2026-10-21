@@ -117,6 +117,10 @@ Measured over 20 sessions of 25 sequential calls (Apple M4, Node 26.5): **about 
 
 `pnpm dev`, then `http://localhost:3000/recorder`. It polls the local store, plots each signed receipt on a per-tool tape, shows an annunciator row (chain, secret paths, no-secrets proof, tamper, Walrus, Zetaris, Meterless, with "Setup required" where a key is missing), expands signed records with an **Explain why** step drawer, runs **Prove: no secrets read**, and can tamper with and restore a block to show detection. Its API routes change the local store, so they are **local-only**: requests whose `Host` isn't loopback get a 403 (`BLACKBOX_DASHBOARD_ALLOW_REMOTE=1` overrides on a trusted network), and the dev and start scripts bind to 127.0.0.1. `http://localhost:3000/verify` is a static page that verifies a dropped pack in the browser and makes no request. `http://localhost:3000/` is the static overview: it replays the committed opencode run from `receipts/agent-demo/` (read at build time) and verifies both exported packs in the browser.
 
+### Static site (GitLab Pages / GitHub Pages)
+
+`pnpm build:pages` builds the workspace packages, then `scripts/build-pages.mjs` exports a static, read-only copy of the overview and the offline `/verify` page to `public/`. Pass `--base-path /blackbox-receipts` (or set `PAGES_BASE_PATH`) when the site is served under a sub-path. The recorder and its API are left out because they are local-only, so the static site's recorder links point to [Setup](#setup) instead. The `pages` job in `.gitlab-ci.yml` publishes it from the default branch after the tests pass, and it reads the base path from `CI_PAGES_URL`. `.github/workflows/pages.yml` is the GitHub Pages fallback (`https://nickthelegend.github.io/blackbox-receipts/` after the push; set Settings → Pages → Source to "GitHub Actions" first). Nothing has been published yet.
+
 ## Sponsor technology
 
 - **Open Agent (Wildcard):** usable as a local MCP proxy with any MCP-capable agent; the committed agent runs used opencode. Zetaris and Meterless client packages are included (see below), and the dashboard has an Integrations live-check panel for both. **Setup required:** no keys are configured, no live call has run, and neither is used in the agent loop.
@@ -164,6 +168,7 @@ Done and in this repo:
 - Slide deck: [`docs/deck/index.html`](docs/deck/index.html) and [PDF](docs/deck/blackbox-receipts-deck.pdf).
 - Zetaris and Meterless clients, plus the dashboard live-check panel.
 - GitLab Duo flow and GitLab CI (including the merge-request attest-diff job).
+- Static Pages build of the overview and `/verify` (`pnpm build:pages`), with a GitLab `pages` job and a GitHub Pages fallback workflow. Not published yet.
 
 Still missing:
 
