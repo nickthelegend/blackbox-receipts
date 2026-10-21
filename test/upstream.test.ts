@@ -29,7 +29,8 @@ test('upstream: tools/list passes through; calls are forwarded, recorded, and a 
   const client = await ws.connect();
   try {
     const listed = await client.listTools();
-    assert.deepEqual(listed.tools.map((tool) => tool.name), ['echo', 'add', 'read_note', 'fail']);
+    // The upstream's tools pass through; the proxy adds its own blackbox_explain after them.
+    assert.deepEqual(listed.tools.map((tool) => tool.name), ['echo', 'add', 'read_note', 'fail', 'blackbox_explain']);
     assert.deepEqual(listed.tools[1].inputSchema, { type: 'object', properties: { a: { type: 'number' }, b: { type: 'number' } }, required: ['a', 'b'] });
     const echoed = await client.callTool({ name: 'echo', arguments: { text: 'hi' } });
     assert.deepEqual(echoed.content, [{ type: 'text', text: 'hi' }]);

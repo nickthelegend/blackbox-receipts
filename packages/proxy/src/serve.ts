@@ -4,11 +4,13 @@
 // any stdio MCP server given with `--upstream "<command>"` (or BLACKBOX_UPSTREAM).
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { CallToolRequestSchema, ListToolsRequestSchema, type CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ListToolsRequestSchema, type CallToolResult, type Tool } from '@modelcontextprotocol/sdk/types.js';
 import { defaultSecretPolicy, evaluateCall } from '@blackbox/receipts';
 import { textOf, type Backend, type Planned } from './backend.js';
 import { builtinBackend } from './builtin.js';
 import { connectUpstream } from './upstream.js';
+import { renderExplanation, renderStep } from './explain.js';
+import { explainCurrent } from './report.js';
 import { addReceipt, archiveSession, isSecretPath, resumeSession, sealSession } from './store.js';
 
 const argv = process.argv.slice(2);
@@ -37,7 +39,18 @@ try {
 }
 
 const server = new Server({ name: 'blackbox-receipts-proxy', version: '0.2.0' }, { capabilities: { tools: {} } });
-server.setRequestHandler(ListToolsRequestSchema, (request) => backend.listTools(request.params?.cursor));
+// The proxy's own tool, next to the backend's: the step-cited explanation of the session so far. It is
+// answered by the proxy (never forwarded upstream) and recorded like any other call.
+const EXPLAIN_TOOL = 'blackbox_explain';
+const explainTool: Tool = {
+  name: EXPLAIN_TOOL,
+  description: 'Explain this session from its signed receipts: the prover\'s no-secrets-read verdict and, for each recorded call, why it was allowed, refused or failed, citing the receipts it rests on. Pass step to explain one call. Covers the calls recorded before this one; this call is recorded too.',
+  inputSchema: { type: 'object', properties: { step: { type: 'integer', minimum: 1, description: 'Explain only this step' } } },
+};
+server.setRequestHandler(ListToolsRequestSchema, async (request) => {
+  const listed = await backend.listTools(request.params?.cursor);
+  return request.params?.cursor ? listed : { ...listed, tools: [...listed.tools, explainTool] };
+});
 
 // Tool calls still running; shutdown waits for them so their receipts land before the seal.
 const inFlight = new Set<Promise<unknown>>();
@@ -48,7 +61,28 @@ server.setRequestHandler(CallToolRequestSchema, (request) => {
   return call;
 });
 
+async function explainCall(args: Record<string, unknown>): Promise<CallToolResult> {
+  const step = args.step;
+  let result: CallToolResult;
+  let outcome: 'ok' | 'error' = 'ok';
+  if (step !== undefined && !(Number.isInteger(step) && (step as number) >= 1)) { result = { isError: true, content: [{ type: 'text', text: `step must be a positive integer, got ${JSON.stringify(step)}` }] }; outcome = 'error'; }
+  else {
+    try {
+      const model = await explainCurrent();
+      const missing = step !== undefined && !model.steps.some((item) => item.step === step);
+      result = { isError: missing || undefined, content: [{ type: 'text', text: step === undefined ? renderExplanation(model) : renderStep(model, step as number) }] };
+      if (missing) outcome = 'error';
+    } catch (error) {
+      result = { isError: true, content: [{ type: 'text', text: `Could not explain the session: ${error instanceof Error ? error.message : String(error)}` }] };
+      outcome = 'error';
+    }
+  }
+  await addReceipt({ tool: EXPLAIN_TOOL, args, result: textOf(result), paths: [], secretsAccessed: false, permissions: ['blackbox:explain'], outcome, detail: outcome === 'error' ? textOf(result) : undefined });
+  return result;
+}
+
 async function handleCall(name: string, args: Record<string, unknown>): Promise<CallToolResult> {
+  if (name === EXPLAIN_TOOL) return explainCall(args);
   let planned: Planned | null = null;
   try {
     planned = await backend.plan(name, args);
