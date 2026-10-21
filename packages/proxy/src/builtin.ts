@@ -1,5 +1,7 @@
 // The default backend: read_file, read-only git and a restricted shell over the current workspace.
-import { readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirname } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { z } from 'zod';
@@ -8,9 +10,16 @@ import type { Backend, Planned } from './backend.js';
 import { safeFilePath, safePath } from './store.js';
 
 const execFileAsync = promisify(execFile);
+const MAX_WRITE_BYTES = 1_000_000;
+
+/** The id `git hash-object` gives these bytes (SHA-1 object format, no filters). */
+export function gitBlobId(content: Buffer): string {
+  return createHash('sha1').update(`blob ${content.length}\0`).update(content).digest('hex');
+}
 
 const tools: Tool[] = [
   { name: 'read_file', description: 'Read a UTF-8 text file from the current workspace. Secret paths are blocked and recorded.', inputSchema: { type: 'object', properties: { path: { type: 'string' } }, required: ['path'] } },
+  { name: 'write_file', description: 'Write a UTF-8 text file in the current workspace (creating folders as needed). The receipt records the file\'s git blob id, so `blackbox-receipts attest-diff` can check a diff against the log. Secret paths are blocked.', inputSchema: { type: 'object', properties: { path: { type: 'string' }, content: { type: 'string' } }, required: ['path', 'content'] } },
   { name: 'git', description: 'Run read-only git status, diff, log, show (rev:path), or show_stat (files changed by one revision) in the current workspace.', inputSchema: { type: 'object', properties: { action: { type: 'string', enum: ['status', 'diff', 'log', 'show', 'show_stat'] }, args: { type: 'array', items: { type: 'string' } } }, required: ['action'] } },
   { name: 'shell', description: 'Run a shell command in the current workspace (only pwd, ls and cat). Secret reads and production targets are blocked.', inputSchema: { type: 'object', properties: { command: { type: 'string' } }, required: ['command'] } },
 ];
@@ -20,6 +29,16 @@ function planBuiltin(name: string, args: Record<string, unknown>): Omit<Planned,
   if (name === 'read_file') {
     const target = safePath(z.string().parse(args.path));
     return { paths: [target.relativePath], permissions: ['workspace:file:read'], run: () => readFile(target.path, 'utf8') };
+  }
+  if (name === 'write_file') {
+    const target = safePath(z.string().parse(args.path));
+    const content = Buffer.from(z.string().parse(args.content), 'utf8');
+    if (content.length > MAX_WRITE_BYTES) throw new Error(`write_file accepts at most ${MAX_WRITE_BYTES} bytes`);
+    return { paths: [target.relativePath], permissions: ['workspace:file:write'], run: async () => {
+      await mkdir(dirname(target.path), { recursive: true });
+      await writeFile(target.path, content);
+      return { written: target.relativePath, bytes: content.length, blob: gitBlobId(content) };
+    } };
   }
   if (name === 'git') {
     const action = z.enum(['status', 'diff', 'log', 'show', 'show_stat']).parse(args.action);
@@ -68,7 +87,8 @@ export const builtinBackend: Backend = {
     const planned = planBuiltin(name, args);
     return { ...planned, run: async () => {
       const output = await planned.run();
-      return { result: { content: [{ type: 'text', text: typeof output === 'string' ? output : JSON.stringify(output) }] }, recorded: output };
+      const written = name === 'write_file' ? output as { written: string; blob: string } : null;
+      return { result: { content: [{ type: 'text', text: typeof output === 'string' ? output : JSON.stringify(output) }] }, recorded: output, artifacts: written ? [{ path: written.written, blob: written.blob }] : undefined };
     } };
   },
 };

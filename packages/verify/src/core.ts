@@ -21,6 +21,8 @@ export type Receipt = {
   approver: string | null;
   /** How the call ended: ran (ok), refused by the policy before running (denied), or failed (error). Absent on receipts written before this field existed. */
   outcome?: 'ok' | 'denied' | 'error';
+  /** Files a write produced, with their git blob ids (`git hash-object`), so a diff can be checked against the log. */
+  artifacts?: { path: string; blob: string }[];
   resultHash: string;
   previousHash: string | null;
   hash: string;

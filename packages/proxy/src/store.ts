@@ -157,9 +157,11 @@ export type CallRecord = {
   outcome: 'ok' | 'denied' | 'error';
   /** Denial or error message. Private: stored in the witness, not the receipt. */
   detail?: string;
+  /** Files written by the call and their git blob ids; signed into the receipt. */
+  artifacts?: { path: string; blob: string }[];
 };
 
-export async function addReceipt({ tool, args, result, paths, secretsAccessed, permissions, outcome, detail }: CallRecord) {
+export async function addReceipt({ tool, args, result, paths, secretsAccessed, permissions, outcome, detail, artifacts }: CallRecord) {
   const keys = await signingKeys();
   return withSessionLock(async () => {
     const receipts = await loadReceipts();
@@ -169,7 +171,7 @@ export async function addReceipt({ tool, args, result, paths, secretsAccessed, p
     const receipt = createReceipt({
       sessionId: id, step: receipts.length + 1,
       timestamp: new Date().toISOString(), tool, argsHash: hashArgs(args, salt), paths,
-      secretsAccessed, permissions, cost: null, approver: null, outcome,
+      secretsAccessed, permissions, cost: null, approver: null, outcome, artifacts,
       resultHash: hashResult(result, salt), previousHash: receipts.at(-1)?.hash ?? null,
     }, keys.privateKey);
     await appendFile(witnessFile, `${JSON.stringify({ sessionId: id, step: receipt.step, args, salt, detail } satisfies Witness)}\n`, { mode: 0o600 });

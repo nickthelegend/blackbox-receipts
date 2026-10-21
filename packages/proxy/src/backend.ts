@@ -8,7 +8,7 @@ export type Planned = {
   permissions: string[];
   productionTarget?: boolean;
   /** Runs the call. `recorded` is what the receipt's salted resultHash commits to. */
-  run: () => Promise<{ result: CallToolResult; recorded: unknown }>;
+  run: () => Promise<{ result: CallToolResult; recorded: unknown; artifacts?: { path: string; blob: string }[] }>;
 };
 
 export type Backend = {

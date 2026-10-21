@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { join, relative, resolve } from 'node:path';
-import { createSeal, parsePack, PACK_FORMAT, verifyPack, type Pack, DEFAULT_POLICY_HASH, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, proveProperty, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
+import { join, relative, resolve, sep } from 'node:path';
+import { createSeal, signDigest, parsePack, PACK_FORMAT, verifyPack, type Pack, DEFAULT_POLICY_HASH, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, proveProperty, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
 import { explainSession } from './explain.js';
+import { attestationDigest, checkDiff, headOf, junit, type DiffAttestation } from './attest.js';
 import { loadReceipts, loadSeal, loadWitnesses, restoreSession, signingKeys, tamperReceipt, dataDir } from './store.js';
 
 const [command = 'verify', ...rest] = process.argv.slice(2);
@@ -182,6 +183,49 @@ if (command === 'verify') {
   console.log(check.headline);
   for (const item of check.checks) console.log(`  ${item.ok ? 'ok  ' : 'FAIL'} ${item.name}: ${item.detail}`);
   if (!check.ok) process.exitCode = 1;
+} else if (command === 'attest-diff') {
+  // Receipt-gated merge: fail any changed file that a signed write_file step did not produce.
+  //   attest-diff --base <sha> [--from <exportDir>] [--junit out.xml] [--out attestation.json] [--ignore path/**]
+  const base = option('base');
+  if (!base) { console.error('Usage: blackbox-receipts attest-diff --base <sha> [--from exportDir] [--junit out.xml] [--out attestation.json] [--ignore glob]'); process.exit(2); }
+  const from = option('from');
+  let receipts: Receipt[];
+  let publicKey: string;
+  let integrity: string | null = null;
+  if (from) {
+    const dir = resolve(from);
+    receipts = (await readFile(join(dir, 'session.jsonl'), 'utf8')).trim().split('\n').filter(Boolean).map((line) => JSON.parse(line) as Receipt);
+    publicKey = await readFile(join(dir, 'public-key.pem'), 'utf8');
+    const seal = existsSync(join(dir, 'seal.json')) ? JSON.parse(await readFile(join(dir, 'seal.json'), 'utf8')) as Seal : null;
+    const sealed = verifySeal(seal, receipts, publicKey, 'exact');
+    if (!sealed.valid) integrity = sealed.reason;
+    if (process.env.BLACKBOX_PUBLIC_KEY && process.env.BLACKBOX_PUBLIC_KEY.trim() !== publicKey.trim()) integrity = 'Export public key does not match the pinned BLACKBOX_PUBLIC_KEY';
+  } else {
+    receipts = await loadReceipts();
+    publicKey = (await signingKeys()).publicKey;
+    const seal = await loadSeal();
+    if (seal) { const sealed = verifySeal(seal, receipts, publicKey, 'prefix'); if (!sealed.valid) integrity = sealed.reason; }
+  }
+  const chain = verifyChain(receipts, publicKey);
+  if (!chain.valid) integrity = `Chain verification failed at step ${chain.brokenAt}: ${chain.reason}`;
+  if (!receipts.length) integrity = 'No receipts exist for this session';
+  // The exported receipts themselves and the local store are part of the change set by design.
+  // So are this command's own outputs.
+  const outputs = [option('junit'), option('out')].filter((file): file is string => Boolean(file)).map((file) => relative(process.cwd(), resolve(file)).split(sep).join('/'));
+  const ignore = ['receipts/**', '.blackbox/**', ...outputs, ...rest.filter((item, index) => rest[index - 1] === '--ignore')];
+  const files = integrity ? [] : checkDiff(process.cwd(), base, receipts, ignore);
+  const ok = !integrity && files.every((file) => file.ok);
+  const sessionId = receipts[0]?.sessionId ?? 'none';
+  for (const file of files) console.log(`${file.ok ? 'ok  ' : 'FAIL'} ${file.reason}`);
+  const unrecorded = files.filter((file) => !file.ok).length;
+  console.log(integrity ? `FAIL attest-diff: ${integrity}` : ok ? `PASS attest-diff: ${files.length} changed file(s) since ${base.slice(0, 12)}, each produced by a signed write_file step` : `FAIL attest-diff: ${unrecorded} of ${files.length} changed file(s) since ${base.slice(0, 12)} were not produced by a signed write_file step`);
+  if (option('junit')) await writeFile(resolve(option('junit')!), junit(integrity ? [{ path: '(receipts)', change: 'modified', blob: null, step: null, ok: false, reason: integrity }] : files, base, sessionId));
+  if (option('out')) {
+    const keys = await signingKeys();
+    const unsigned: Omit<DiffAttestation, 'signature'> = { kind: 'blackbox-diff-attestation', version: 1, base, head: headOf(process.cwd()), sessionId, root: merkleRoot(receipts.map(({ hash }) => hash)), files, ok, createdAt: new Date().toISOString(), publicKey: keys.publicKey };
+    await writeFile(resolve(option('out')!), `${JSON.stringify({ ...unsigned, signature: signDigest(attestationDigest(unsigned), keys.privateKey) }, null, 2)}\n`);
+  }
+  if (!ok) process.exitCode = 1;
 } else if (command === 'public-key') {
   // The key that verifies this proxy's receipts. Safe to publish; the private key never leaves the key dir.
   process.stdout.write((await signingKeys()).publicKey);
@@ -192,6 +236,6 @@ if (command === 'verify') {
 } else if (command === 'restore') {
   console.log(`Restored block(s) ${(await restoreSession()).join(', ')} to their signed originals.`);
 } else {
-  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | explain [--out file.md] | pack [out.json] [--from exportDir] | verify-pack <file> | disclose <step> | public-key | tamper [step] | restore]\nVerdicts are judged against no-secrets-read/v1 unless you pin another policy with --expect-policy <file> or BLACKBOX_POLICY_HASH.');
+  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | explain [--out file.md] | pack [out.json] [--from exportDir] | verify-pack <file> | attest-diff --base <sha> [--from dir] [--junit file] [--out file] | disclose <step> | public-key | tamper [step] | restore]\nVerdicts are judged against no-secrets-read/v1 unless you pin another policy with --expect-policy <file> or BLACKBOX_POLICY_HASH.');
   process.exitCode = 2;
 }

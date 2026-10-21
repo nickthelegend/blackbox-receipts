@@ -53,8 +53,8 @@ async function handleCall(name: string, args: Record<string, unknown>): Promise<
   try {
     planned = await backend.plan(name, args);
     guard(name, planned, args);
-    const { result, recorded } = await planned.run();
-    await addReceipt({ tool: name, args, result: recorded, paths: planned.paths, secretsAccessed: false, permissions: planned.permissions, outcome: result.isError ? 'error' : 'ok', detail: result.isError ? textOf(result) : undefined });
+    const { result, recorded, artifacts } = await planned.run();
+    await addReceipt({ tool: name, args, result: recorded, paths: planned.paths, secretsAccessed: false, permissions: planned.permissions, outcome: result.isError ? 'error' : 'ok', detail: result.isError ? textOf(result) : undefined, artifacts });
     return result;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

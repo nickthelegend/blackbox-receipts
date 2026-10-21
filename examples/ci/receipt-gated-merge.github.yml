@@ -1,0 +1,26 @@
+# Example (not active in this repo): gate a pull request on Blackbox receipts.
+# Copy to .github/workflows/ in a repo whose agent works through the Blackbox proxy (write_file) and
+# commits its export under receipts/<session>/. The job fails, naming each file, if any change in the PR
+# was not produced by a signed write_file step: a human edit, or an agent that wrote around the proxy.
+name: receipt-gated-merge
+on: pull_request
+jobs:
+  attest-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      # Install Blackbox Receipts however you vendor it; here, a checkout built next to the repo.
+      - run: git clone --depth 1 https://github.com/nickthelegend/blackbox-receipts ../blackbox && cd ../blackbox && corepack enable && pnpm install --frozen-lockfile && pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/proxy build
+      - name: Every changed file must come from a signed write
+        env:
+          # Pin the proxy's public key (PEM) so an export signed by any other key fails.
+          BLACKBOX_PUBLIC_KEY: ${{ vars.BLACKBOX_PUBLIC_KEY }}
+        run: |
+          SESSION_DIR="$(ls -d receipts/*/ | head -n1)"
+          node ../blackbox/packages/proxy/dist/cli.js attest-diff --base "${{ github.event.pull_request.base.sha }}" --from "$SESSION_DIR" --junit attest-diff.xml --out attest-diff.json
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: attest-diff, path: "attest-diff.*" }
