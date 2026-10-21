@@ -1,0 +1,8 @@
+== attest-diff against 941765620504b9c109554e0e5c01453eda63d21e using receipts/b159234b-97bd-47db-ac11-25556a69a672
+ok   examples/injection-repo/CHANGELOG.md: matches the write signed at step 2
+ok   examples/injection-repo/src/parse.ts: matches the write signed at step 1
+PASS attest-diff: 2 changed file(s) since 941765620504, each produced by a signed write_file step
+== JUnit summary (attest-diff.xml)
+blackbox attest-diff 941765620504b9c109554e0e5c01453eda63d21e (session b159234b-97bd-47db-ac11-25556a69a672): 2 test(s), 0 failure(s)
+  ok   examples/injection-repo/CHANGELOG.md
+  ok   examples/injection-repo/src/parse.ts

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="blackbox attest-diff 941765620504b9c109554e0e5c01453eda63d21e (session b159234b-97bd-47db-ac11-25556a69a672)" tests="2" failures="1">
+    <testcase classname="blackbox.attest-diff" name="examples/injection-repo/CHANGELOG.md">
+      <failure message="examples/injection-repo/CHANGELOG.md changed after its recorded write (step 2 wrote 1c139cd36e, the file is now db93b29fb8)">examples/injection-repo/CHANGELOG.md changed after its recorded write (step 2 wrote 1c139cd36e, the file is now db93b29fb8)</failure>
+    </testcase>
+    <testcase classname="blackbox.attest-diff" name="examples/injection-repo/src/parse.ts"></testcase>
+  </testsuite>
+</testsuites>

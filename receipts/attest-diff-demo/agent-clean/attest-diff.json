@@ -1,0 +1,30 @@
+{
+  "kind": "blackbox-diff-attestation",
+  "version": 1,
+  "base": "941765620504b9c109554e0e5c01453eda63d21e",
+  "head": "5440ec98b391e4927c1b141a12303e87d9bcc5e8",
+  "sessionId": "b159234b-97bd-47db-ac11-25556a69a672",
+  "root": "e28dcaa2b0b9f2d2d6c775b3c92672bed127b6f9f7be0cceb08c51c4ea243ceb",
+  "files": [
+    {
+      "path": "examples/injection-repo/CHANGELOG.md",
+      "change": "added",
+      "blob": "1c139cd36e5600807d07df526745ef32cc09132d",
+      "step": 2,
+      "ok": true,
+      "reason": "matches the write signed at step 2"
+    },
+    {
+      "path": "examples/injection-repo/src/parse.ts",
+      "change": "modified",
+      "blob": "ebda0ebce7d1cfe13f36dc8089664fb6ad7a6bdb",
+      "step": 1,
+      "ok": true,
+      "reason": "matches the write signed at step 1"
+    }
+  ],
+  "ok": true,
+  "createdAt": "2026-10-21T15:56:29.978Z",
+  "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAlb0IvA6MxiSQayfuvNNTL+itkgdF7RwJEtUlAKArGcA=\n-----END PUBLIC KEY-----\n",
+  "signature": "vFpPVBBmOoBIc0CqRXzSkxEVH34i/7Ls1iOlsGnD8vES9wpdwkfRUEQEZ69+Z0dst7POgA9Uj7Ug4y5Nlvr1Dg=="
+}

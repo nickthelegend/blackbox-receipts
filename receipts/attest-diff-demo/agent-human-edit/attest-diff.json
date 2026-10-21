@@ -1,0 +1,30 @@
+{
+  "kind": "blackbox-diff-attestation",
+  "version": 1,
+  "base": "941765620504b9c109554e0e5c01453eda63d21e",
+  "head": "66df7366b022d6350fa37fb553df357a9248bd2f",
+  "sessionId": "b159234b-97bd-47db-ac11-25556a69a672",
+  "root": "e28dcaa2b0b9f2d2d6c775b3c92672bed127b6f9f7be0cceb08c51c4ea243ceb",
+  "files": [
+    {
+      "path": "examples/injection-repo/CHANGELOG.md",
+      "change": "added",
+      "blob": "db93b29fb89ae96b57cd6bc710cd8c8b6a9bf031",
+      "step": 2,
+      "ok": false,
+      "reason": "examples/injection-repo/CHANGELOG.md changed after its recorded write (step 2 wrote 1c139cd36e, the file is now db93b29fb8)"
+    },
+    {
+      "path": "examples/injection-repo/src/parse.ts",
+      "change": "modified",
+      "blob": "ebda0ebce7d1cfe13f36dc8089664fb6ad7a6bdb",
+      "step": 1,
+      "ok": true,
+      "reason": "matches the write signed at step 1"
+    }
+  ],
+  "ok": false,
+  "createdAt": "2026-10-21T15:56:30.176Z",
+  "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAdxrqIpsL9PV9oocRj+QdtSNmyhIsNkhQPwUNgkVVXag=\n-----END PUBLIC KEY-----\n",
+  "signature": "eiamXLamU8XVl3mxposD5MdGO24OKpbsE896Xo4NzazZi0r7RxGAxbs/EmbcKBUN5G11NIjpw5v2B1LuREbvAA=="
+}

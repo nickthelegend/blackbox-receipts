@@ -130,3 +130,32 @@ test('attest-diff-pr.sh: a request with no exported session is not gated; two se
   assert.equal(badBase.code, 1);
   assert.match(badBase.out, /is not a commit in this clone/);
 });
+
+test('committed demo output (receipts/attest-diff-demo): exports verify, attestations are signed, verdicts match the exit codes', async () => {
+  const { readdirSync } = await import('node:fs');
+  const { verifyChain, verifySeal, merkleRoot } = await import('../packages/verify/src/index.ts');
+  const demo = join(repoRoot, 'receipts/attest-diff-demo');
+  const expected: Record<string, { ok: boolean; failing: string[] }> = {
+    'agent-clean': { ok: true, failing: [] },
+    'agent-human-edit': { ok: false, failing: ['examples/injection-repo/CHANGELOG.md'] },
+    'agent-bypass': { ok: false, failing: ['examples/injection-repo/src/debug.ts'] },
+  };
+  for (const [branch, want] of Object.entries(expected)) {
+    const dir = join(demo, branch);
+    const attestation = JSON.parse(readFileSync(join(dir, 'attest-diff.json'), 'utf8')) as DiffAttestation;
+    const { signature, ...unsigned } = attestation;
+    assert.equal(verifyDigestSignature(publicKeyFromPem(attestation.publicKey), attestationDigest(unsigned), signature), true, branch);
+    assert.equal(attestation.ok, want.ok, branch);
+    assert.deepEqual(attestation.files.filter((file) => !file.ok).map((file) => file.path), want.failing, branch);
+    assert.equal(readFileSync(join(dir, 'exit-code'), 'utf8').trim(), want.ok ? '0' : '1', branch);
+    // The session the gate read (human-edit reuses agent-clean's) still verifies from its exported files.
+    const sessionDir = join(demo, branch === 'agent-human-edit' ? 'agent-clean' : branch, 'receipts');
+    const [session] = readdirSync(sessionDir);
+    assert.equal(session, attestation.sessionId, branch);
+    const receipts = readFileSync(join(sessionDir, session, 'session.jsonl'), 'utf8').trim().split('\n').map((line) => JSON.parse(line) as Receipt);
+    const publicKey = readFileSync(join(sessionDir, session, 'public-key.pem'), 'utf8');
+    assert.equal(verifyChain(receipts, publicKey).valid, true, branch);
+    assert.equal(verifySeal(JSON.parse(readFileSync(join(sessionDir, session, 'seal.json'), 'utf8')), receipts, publicKey, 'exact').valid, true, branch);
+    assert.equal(merkleRoot(receipts.map(({ hash }) => hash)), attestation.root, branch);
+  }
+});

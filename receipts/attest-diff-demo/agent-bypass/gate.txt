@@ -1,0 +1,8 @@
+== attest-diff against 941765620504b9c109554e0e5c01453eda63d21e using receipts/fbfb6e63-f309-4679-9e9f-d0df575ae11b
+FAIL unrecorded change: examples/injection-repo/src/debug.ts
+ok   examples/injection-repo/src/parse.ts: matches the write signed at step 1
+FAIL attest-diff: 1 of 2 changed file(s) since 941765620504 were not produced by a signed write_file step
+== JUnit summary (attest-diff.xml)
+blackbox attest-diff 941765620504b9c109554e0e5c01453eda63d21e (session fbfb6e63-f309-4679-9e9f-d0df575ae11b): 2 test(s), 1 failure(s)
+  FAIL examples/injection-repo/src/debug.ts - unrecorded change: examples/injection-repo/src/debug.ts
+  ok   examples/injection-repo/src/parse.ts

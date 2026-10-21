@@ -1,0 +1,2 @@
+   PASS no-secrets-read [policy no-secrets-read/v1 720836167c0f]: 2/2 receipts satisfy the policy
+   exported 2 receipts to receipts/b159234b-97bd-47db-ac11-25556a69a672

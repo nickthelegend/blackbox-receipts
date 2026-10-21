@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="blackbox attest-diff 941765620504b9c109554e0e5c01453eda63d21e (session fbfb6e63-f309-4679-9e9f-d0df575ae11b)" tests="2" failures="1">
+    <testcase classname="blackbox.attest-diff" name="examples/injection-repo/src/debug.ts">
+      <failure message="unrecorded change: examples/injection-repo/src/debug.ts">unrecorded change: examples/injection-repo/src/debug.ts</failure>
+    </testcase>
+    <testcase classname="blackbox.attest-diff" name="examples/injection-repo/src/parse.ts"></testcase>
+  </testsuite>
+</testsuites>
