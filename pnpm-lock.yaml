@@ -62,6 +62,9 @@ importers:
 
   packages/proxy:
     dependencies:
+      '@blackbox/meterless':
+        specifier: workspace:*
+        version: link:../meterless
       '@blackbox/receipts':
         specifier: workspace:*
         version: link:../receipts

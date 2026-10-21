@@ -34,6 +34,7 @@ build:
       - packages/verify/dist
       - packages/receipts/dist
       - packages/proxy/dist
+      - packages/meterless/dist
     expire_in: 1 day
 
 test:

@@ -4,6 +4,7 @@ import { existsSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
 import { createSeal, signDigest, parsePack, PACK_FORMAT, verifyPack, type Pack, DEFAULT_POLICY_HASH, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
 import { renderExplanation, renderStep } from './explain.js';
+import { narrate, renderNarrative, type Narrative } from './narrate.js';
 import { failLine as formatFailLine, explainCurrent, policyTag as tagFor, proveCurrent as proveWith } from './report.js';
 import { attestationDigest, checkDiff, headOf, junit, type DiffAttestation } from './attest.js';
 import { loadReceipts, loadSeal, loadWitnesses, restoreSession, signingKeys, tamperReceipt, dataDir } from './store.js';
@@ -132,11 +133,28 @@ if (command === 'verify') {
   console.log(JSON.stringify(discloseStep(receipts, witnesses, step, policy, keys.privateKey), null, 2));
 } else if (command === 'explain') {
   // Step-cited explanation for a reviewer: the prover's verdict, then what each step did and why.
-  //   explain [--json] [--step N] [--out file]
+  //   explain [--json] [--step N] [--out file] [--model meterless [--routing meterless/auto]]
   const model = await explainCurrent(await loadPolicy(), pinned);
   const step = option('step');
   if (step !== undefined && !(Number.isInteger(Number(step)) && Number(step) >= 1)) { console.error(`explain --step takes a step number, got "${step}"`); process.exit(2); }
-  const text = rest.includes('--json') ? `${JSON.stringify(step ? model.steps.find((item) => item.step === Number(step)) ?? null : model, null, 2)}\n` : step ? renderStep(model, Number(step)) : renderExplanation(model);
+  // --model meterless (or BLACKBOX_EXPLAIN_MODEL=meterless): add a narrative written by the local Meterless
+  // Runtime from the explanation above. Missing configuration or an offline runtime is "Setup required".
+  const narrator = option('model') ?? process.env.BLACKBOX_EXPLAIN_MODEL;
+  let narrative: Narrative | null = null;
+  if (narrator) {
+    if (narrator !== 'meterless') { console.error(`explain --model supports only "meterless", got "${narrator}"`); process.exit(2); }
+    const { MeterlessClient, MeterlessConfigError, meterlessConfigFromEnv } = await import('@blackbox/meterless');
+    let client: InstanceType<typeof MeterlessClient>;
+    try { client = new MeterlessClient(meterlessConfigFromEnv()); } catch (error) {
+      if (error instanceof MeterlessConfigError) { console.error(`Setup required: ${error.message}`); process.exit(2); }
+      throw error;
+    }
+    const status = await client.status();
+    if (status === 'offline') { console.error(`Setup required: the Meterless Runtime is not reachable at ${client.config.baseUrl} (GET /models). Install and start it (see README, "Meterless"), or unset --model.`); process.exit(2); }
+    if (status === 'unauthorized') { console.error(`FAIL: the Meterless Runtime at ${client.config.baseUrl} rejected the token (401/403).`); process.exit(1); }
+    narrative = await narrate(model, client, option('routing') ?? 'meterless/auto');
+  }
+  const text = rest.includes('--json') ? `${JSON.stringify(step ? model.steps.find((item) => item.step === Number(step)) ?? null : narrative ? { ...model, narrative } : model, null, 2)}\n` : step ? renderStep(model, Number(step)) : renderExplanation(model) + (narrative ? renderNarrative(narrative) : '');
   if (option('out')) await writeFile(resolve(option('out')!), text);
   process.stdout.write(text);
   if (step && !model.steps.some((item) => item.step === Number(step))) process.exitCode = 1;
@@ -224,6 +242,6 @@ if (command === 'verify') {
 } else if (command === 'restore') {
   console.log(`Restored block(s) ${(await restoreSession()).join(', ')} to their signed originals.`);
 } else {
-  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | explain [--out file.md] | pack [out.json] [--from exportDir] | verify-pack <file> | attest-diff --base <sha> [--from dir] [--junit file] [--out file] | disclose <step> | public-key | tamper [step] | restore]\nVerdicts are judged against no-secrets-read/v1 unless you pin another policy with --expect-policy <file> or BLACKBOX_POLICY_HASH.');
+  console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | explain [--json] [--step N] [--out file] [--model meterless] | pack [out.json] [--from exportDir] | verify-pack <file> | attest-diff --base <sha> [--from dir] [--junit file] [--out file] | disclose <step> | public-key | tamper [step] | restore]\nVerdicts are judged against no-secrets-read/v1 unless you pin another policy with --expect-policy <file> or BLACKBOX_POLICY_HASH.');
   process.exitCode = 2;
 }

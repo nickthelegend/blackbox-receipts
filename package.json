@@ -8,11 +8,11 @@
   },
   "packageManager": "pnpm@10.29.2",
   "scripts": {
-    "build": "pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/proxy build && pnpm --filter @blackbox/zetaris build && pnpm --filter @blackbox/meterless build && pnpm --filter @blackbox/web build",
+    "build": "pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/meterless build && pnpm --filter @blackbox/proxy build && pnpm --filter @blackbox/zetaris build && pnpm --filter @blackbox/web build",
     "test": "pnpm --filter @blackbox/receipts test",
     "verify": "pnpm --filter @blackbox/proxy verify",
     "dev": "pnpm --filter @blackbox/web dev",
-    "typecheck": "tsc --noEmit -p packages/verify && tsc --noEmit -p packages/verify/tsconfig.bin.json && tsc --noEmit -p packages/receipts && tsc --noEmit -p packages/proxy && tsc --noEmit -p packages/zetaris && tsc --noEmit -p packages/meterless && tsc -p test/tsconfig.json && tsc --noEmit -p apps/web",
+    "typecheck": "tsc --noEmit -p packages/verify && tsc --noEmit -p packages/verify/tsconfig.bin.json && tsc --noEmit -p packages/receipts && tsc --noEmit -p packages/meterless && tsc --noEmit -p packages/proxy && tsc --noEmit -p packages/zetaris && tsc -p test/tsconfig.json && tsc --noEmit -p apps/web",
     "lint": "eslint ."
   },
   "devDependencies": {
