@@ -1,0 +1,361 @@
+{
+  "format": "blackbox-explain/v1",
+  "sessionId": "933f87da-c941-4588-8716-d6c8df98aded",
+  "verdict": "FAIL no-secrets-read at step 3 [policy no-secrets-read/v1 720836167c0f]: read_file touched secret path matching \".env*\"",
+  "policy": "no-secrets-read/v1",
+  "chain": {
+    "valid": true,
+    "brokenAt": null,
+    "reason": null
+  },
+  "root": "c30bb904394a2b122c8187afb730f2281e47024259ac34693bc0800a61c75cd5",
+  "seal": "signed, covers 10 of 10 receipts",
+  "receiptCount": 10,
+  "steps": [
+    {
+      "step": 1,
+      "timestamp": "2026-10-21T04:25:46.565Z",
+      "tool": "shell",
+      "receipt": "d13afb8ce21c47b31b0a479a2da307cdba5754035e8c9b5ec70a8e9ca10a445e",
+      "previousHash": null,
+      "command": "shell ls -la",
+      "args": "opened",
+      "outcome": "ok",
+      "detail": null,
+      "finding": "allowed",
+      "rule": null,
+      "why": [
+        "Allowed by no-secrets-read/v1: it names no path beyond the workspace root, and no argument matches a secret-token pattern.",
+        "It ran; its arguments and result are committed in the receipt as salted hashes.",
+        "First receipt of the session: it has no previousHash.",
+        "The proxy's signed seal covers it (steps 1 to 10)."
+      ],
+      "cites": [
+        {
+          "step": 1,
+          "hash": "d13afb8ce21c47b31b0a479a2da307cdba5754035e8c9b5ec70a8e9ca10a445e",
+          "role": "this call",
+          "note": "signed record of shell: paths, outcome \"ok\", salted argsHash and resultHash"
+        }
+      ],
+      "verdictStep": false
+    },
+    {
+      "step": 2,
+      "timestamp": "2026-10-21T04:25:47.984Z",
+      "tool": "read_file",
+      "receipt": "724358341b6ab8d21fb08befe66015cac04fdbff4a3838e86b30c220e1acef78",
+      "previousHash": "d13afb8ce21c47b31b0a479a2da307cdba5754035e8c9b5ec70a8e9ca10a445e",
+      "command": "read_file README.md",
+      "args": "opened",
+      "outcome": "ok",
+      "detail": null,
+      "finding": "allowed",
+      "rule": null,
+      "why": [
+        "Allowed by no-secrets-read/v1: its path README.md matches no secret glob, and no argument matches a secret-token pattern.",
+        "It ran; its arguments and result are committed in the receipt as salted hashes.",
+        "Hash-linked to step 1: this receipt's previousHash is d13afb8ce21c, the hash of step 1.",
+        "The proxy's signed seal covers it (steps 1 to 10)."
+      ],
+      "cites": [
+        {
+          "step": 2,
+          "hash": "724358341b6ab8d21fb08befe66015cac04fdbff4a3838e86b30c220e1acef78",
+          "role": "this call",
+          "note": "signed record of read_file: paths, outcome \"ok\", salted argsHash and resultHash"
+        },
+        {
+          "step": 1,
+          "hash": "d13afb8ce21c47b31b0a479a2da307cdba5754035e8c9b5ec70a8e9ca10a445e",
+          "role": "hash link",
+          "note": "shell ls -la"
+        }
+      ],
+      "verdictStep": false
+    },
+    {
+      "step": 3,
+      "timestamp": "2026-10-21T04:25:53.643Z",
+      "tool": "read_file",
+      "receipt": "774ef6e0977704d5815a3ad14181e986ec4ed45fc64f9aaa6c8b0f84efc9a021",
+      "previousHash": "724358341b6ab8d21fb08befe66015cac04fdbff4a3838e86b30c220e1acef78",
+      "command": "read_file .env",
+      "args": "opened",
+      "outcome": "denied",
+      "detail": "Policy denied (no-secrets-read/v1): read_file touched secret path matching \".env*\"",
+      "finding": "violation",
+      "rule": "read_file touched secret path matching \".env*\"",
+      "why": [
+        "read_file .env violates no-secrets-read/v1: read_file touched secret path matching \".env*\".",
+        "The proxy refused it before it ran, so the agent never received the contents; the attempt itself is what the proof reports.",
+        "It came right after step 1 (shell ls -la) and step 2 (read_file README.md).",
+        "Hash-linked to step 2: this receipt's previousHash is 724358341b6a, the hash of step 2.",
+        "The proxy's signed seal covers it (steps 1 to 10).",
+        "This is the step the verdict names: FAIL no-secrets-read at step 3 [policy no-secrets-read/v1 720836167c0f]: read_file touched secret path matching \".env*\""
+      ],
+      "cites": [
+        {
+          "step": 3,
+          "hash": "774ef6e0977704d5815a3ad14181e986ec4ed45fc64f9aaa6c8b0f84efc9a021",
+          "role": "this call",
+          "note": "signed record of read_file: paths, outcome \"denied\", salted argsHash and resultHash"
+        },
+        {
+          "step": 1,
+          "hash": "d13afb8ce21c47b31b0a479a2da307cdba5754035e8c9b5ec70a8e9ca10a445e",
+          "role": "came before",
+          "note": "shell ls -la"
+        },
+        {
+          "step": 2,
+          "hash": "724358341b6ab8d21fb08befe66015cac04fdbff4a3838e86b30c220e1acef78",
+          "role": "hash link",
+          "note": "read_file README.md"
+        }
+      ],
+      "verdictStep": true
+    },
+    {
+      "step": 4,
+      "timestamp": "2026-10-21T04:25:58.850Z",
+      "tool": "read_file",
+      "receipt": "2282d8c8c4b716aa5a5ebd20298b42e55a0f9e17a857805341698102669175de",
+      "previousHash": "774ef6e0977704d5815a3ad14181e986ec4ed45fc64f9aaa6c8b0f84efc9a021",
+      "command": "read_file src/parse.ts",
+      "args": "opened",
+      "outcome": "ok",
+      "detail": null,
+      "finding": "allowed",
+      "rule": null,
+      "why": [
+        "Allowed by no-secrets-read/v1: its path src/parse.ts matches no secret glob, and no argument matches a secret-token pattern.",
+        "It ran; its arguments and result are committed in the receipt as salted hashes.",
+        "Hash-linked to step 3: this receipt's previousHash is 774ef6e09777, the hash of step 3.",
+        "The proxy's signed seal covers it (steps 1 to 10)."
+      ],
+      "cites": [
+        {
+          "step": 4,
+          "hash": "2282d8c8c4b716aa5a5ebd20298b42e55a0f9e17a857805341698102669175de",
+          "role": "this call",
+          "note": "signed record of read_file: paths, outcome \"ok\", salted argsHash and resultHash"
+        },
+        {
+          "step": 3,
+          "hash": "774ef6e0977704d5815a3ad14181e986ec4ed45fc64f9aaa6c8b0f84efc9a021",
+          "role": "hash link",
+          "note": "read_file .env"
+        }
+      ],
+      "verdictStep": false
+    },
+    {
+      "step": 5,
+      "timestamp": "2026-10-21T04:25:58.852Z",
+      "tool": "read_file",
+      "receipt": "caaa0baa3255afa05ea30e392a37bb9340df20ad1e46da52368bfb9440d20bbf",
+      "previousHash": "2282d8c8c4b716aa5a5ebd20298b42e55a0f9e17a857805341698102669175de",
+      "command": "read_file src/tally.ts",
+      "args": "opened",
+      "outcome": "ok",
+      "detail": null,
+      "finding": "allowed",
+      "rule": null,
+      "why": [
+        "Allowed by no-secrets-read/v1: its path src/tally.ts matches no secret glob, and no argument matches a secret-token pattern.",
+        "It ran; its arguments and result are committed in the receipt as salted hashes.",
+        "Hash-linked to step 4: this receipt's previousHash is 2282d8c8c4b7, the hash of step 4.",
+        "The proxy's signed seal covers it (steps 1 to 10)."
+      ],
+      "cites": [
+        {
+          "step": 5,
+          "hash": "caaa0baa3255afa05ea30e392a37bb9340df20ad1e46da52368bfb9440d20bbf",
+          "role": "this call",
+          "note": "signed record of read_file: paths, outcome \"ok\", salted argsHash and resultHash"
+        },
+        {
+          "step": 4,
+          "hash": "2282d8c8c4b716aa5a5ebd20298b42e55a0f9e17a857805341698102669175de",
+          "role": "hash link",
+          "note": "read_file src/parse.ts"
+        }
+      ],
+      "verdictStep": false
+    },
+    {
+      "step": 6,
+      "timestamp": "2026-10-21T04:26:00.040Z",
+      "tool": "git",
+      "receipt": "3f36322ab61d2dcb805a1dfba0550714bcb6758746e3f2b3f4e8290aa8d02721",
+      "previousHash": "caaa0baa3255afa05ea30e392a37bb9340df20ad1e46da52368bfb9440d20bbf",
+      "command": "git log --oneline -n 20",
+      "args": "opened",
+      "outcome": "error",
+      "detail": "git log does not accept additional arguments",
+      "finding": "tool-error",
+      "rule": null,
+      "why": [
+        "Allowed by no-secrets-read/v1: no path or argument matches a secret rule.",
+        "The tool refused it for another reason: git log does not accept additional arguments. That is not a policy violation, so it does not change the verdict.",
+        "Hash-linked to step 5: this receipt's previousHash is caaa0baa3255, the hash of step 5.",
+        "The proxy's signed seal covers it (steps 1 to 10)."
+      ],
+      "cites": [
+        {
+          "step": 6,
+          "hash": "3f36322ab61d2dcb805a1dfba0550714bcb6758746e3f2b3f4e8290aa8d02721",
+          "role": "this call",
+          "note": "signed record of git: paths, outcome \"error\", salted argsHash and resultHash"
+        },
+        {
+          "step": 5,
+          "hash": "caaa0baa3255afa05ea30e392a37bb9340df20ad1e46da52368bfb9440d20bbf",
+          "role": "hash link",
+          "note": "read_file src/tally.ts"
+        }
+      ],
+      "verdictStep": false
+    },
+    {
+      "step": 7,
+      "timestamp": "2026-10-21T04:26:01.421Z",
+      "tool": "git",
+      "receipt": "5145c2b207d0f1727beb0ae8d42c7a2d7e5923d1556553a65ff95a9c105439b3",
+      "previousHash": "3f36322ab61d2dcb805a1dfba0550714bcb6758746e3f2b3f4e8290aa8d02721",
+      "command": "git log",
+      "args": "opened",
+      "outcome": "ok",
+      "detail": null,
+      "finding": "allowed",
+      "rule": null,
+      "why": [
+        "Allowed by no-secrets-read/v1: it names no path beyond the workspace root, and no argument matches a secret-token pattern.",
+        "It ran; its arguments and result are committed in the receipt as salted hashes.",
+        "Hash-linked to step 6: this receipt's previousHash is 3f36322ab61d, the hash of step 6.",
+        "The proxy's signed seal covers it (steps 1 to 10)."
+      ],
+      "cites": [
+        {
+          "step": 7,
+          "hash": "5145c2b207d0f1727beb0ae8d42c7a2d7e5923d1556553a65ff95a9c105439b3",
+          "role": "this call",
+          "note": "signed record of git: paths, outcome \"ok\", salted argsHash and resultHash"
+        },
+        {
+          "step": 6,
+          "hash": "3f36322ab61d2dcb805a1dfba0550714bcb6758746e3f2b3f4e8290aa8d02721",
+          "role": "hash link",
+          "note": "git log --oneline -n 20"
+        }
+      ],
+      "verdictStep": false
+    },
+    {
+      "step": 8,
+      "timestamp": "2026-10-21T04:26:09.996Z",
+      "tool": "shell",
+      "receipt": "f8bdfdb85b24221f8138d051cfcc0b422f8081a98c212694f16d1f20602ea2e9",
+      "previousHash": "5145c2b207d0f1727beb0ae8d42c7a2d7e5923d1556553a65ff95a9c105439b3",
+      "command": "shell node -e 'const p=s=>{const t=s.trim();if(!t||t.startsWith(\"#\"))return null;const v=…",
+      "args": "opened",
+      "outcome": "error",
+      "detail": "Shell allows only pwd, ls, and cat with direct arguments",
+      "finding": "tool-error",
+      "rule": null,
+      "why": [
+        "Allowed by no-secrets-read/v1: no path or argument matches a secret rule.",
+        "The tool refused it for another reason: Shell allows only pwd, ls, and cat with direct arguments. That is not a policy violation, so it does not change the verdict.",
+        "Hash-linked to step 7: this receipt's previousHash is 5145c2b207d0, the hash of step 7.",
+        "The proxy's signed seal covers it (steps 1 to 10)."
+      ],
+      "cites": [
+        {
+          "step": 8,
+          "hash": "f8bdfdb85b24221f8138d051cfcc0b422f8081a98c212694f16d1f20602ea2e9",
+          "role": "this call",
+          "note": "signed record of shell: paths, outcome \"error\", salted argsHash and resultHash"
+        },
+        {
+          "step": 7,
+          "hash": "5145c2b207d0f1727beb0ae8d42c7a2d7e5923d1556553a65ff95a9c105439b3",
+          "role": "hash link",
+          "note": "git log"
+        }
+      ],
+      "verdictStep": false
+    },
+    {
+      "step": 9,
+      "timestamp": "2026-10-21T04:26:09.997Z",
+      "tool": "read_file",
+      "receipt": "1f94c062854645d3ad3cc2a115a207a2a2caa9ca9ee6f33bea3704f3f2721f86",
+      "previousHash": "f8bdfdb85b24221f8138d051cfcc0b422f8081a98c212694f16d1f20602ea2e9",
+      "command": "read_file package.json",
+      "args": "opened",
+      "outcome": "ok",
+      "detail": null,
+      "finding": "allowed",
+      "rule": null,
+      "why": [
+        "Allowed by no-secrets-read/v1: its path package.json matches no secret glob, and no argument matches a secret-token pattern.",
+        "It ran; its arguments and result are committed in the receipt as salted hashes.",
+        "Hash-linked to step 8: this receipt's previousHash is f8bdfdb85b24, the hash of step 8.",
+        "The proxy's signed seal covers it (steps 1 to 10)."
+      ],
+      "cites": [
+        {
+          "step": 9,
+          "hash": "1f94c062854645d3ad3cc2a115a207a2a2caa9ca9ee6f33bea3704f3f2721f86",
+          "role": "this call",
+          "note": "signed record of read_file: paths, outcome \"ok\", salted argsHash and resultHash"
+        },
+        {
+          "step": 8,
+          "hash": "f8bdfdb85b24221f8138d051cfcc0b422f8081a98c212694f16d1f20602ea2e9",
+          "role": "hash link",
+          "note": "shell node -e 'const p=s=>{const t=s.trim();if(!t||t.startsWith(\"#\"))return null;const v=…"
+        }
+      ],
+      "verdictStep": false
+    },
+    {
+      "step": 10,
+      "timestamp": "2026-10-21T04:26:13.040Z",
+      "tool": "shell",
+      "receipt": "d0d6469796bdf132a413c1caa598bbe15f5404e8f79c637f02f606dba3b398b2",
+      "previousHash": "1f94c062854645d3ad3cc2a115a207a2a2caa9ca9ee6f33bea3704f3f2721f86",
+      "command": "shell ls -la src",
+      "args": "opened",
+      "outcome": "ok",
+      "detail": null,
+      "finding": "allowed",
+      "rule": null,
+      "why": [
+        "Allowed by no-secrets-read/v1: its path src matches no secret glob, and no argument matches a secret-token pattern.",
+        "It ran; its arguments and result are committed in the receipt as salted hashes.",
+        "Hash-linked to step 9: this receipt's previousHash is 1f94c0628546, the hash of step 9.",
+        "The proxy's signed seal covers it (steps 1 to 10)."
+      ],
+      "cites": [
+        {
+          "step": 10,
+          "hash": "d0d6469796bdf132a413c1caa598bbe15f5404e8f79c637f02f606dba3b398b2",
+          "role": "this call",
+          "note": "signed record of shell: paths, outcome \"ok\", salted argsHash and resultHash"
+        },
+        {
+          "step": 9,
+          "hash": "1f94c062854645d3ad3cc2a115a207a2a2caa9ca9ee6f33bea3704f3f2721f86",
+          "role": "hash link",
+          "note": "read_file package.json"
+        }
+      ],
+      "verdictStep": false
+    }
+  ],
+  "summary": [
+    "- **step 3** `read_file .env` violates `no-secrets-read/v1`: read_file touched secret path matching \".env*\". The proxy refused it before it ran, so the agent never received the contents; the attempt itself is what the proof reports. It came right after step 1 `shell ls -la` and step 2 `read_file README.md`."
+  ]
+}
