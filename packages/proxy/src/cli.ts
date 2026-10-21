@@ -66,7 +66,7 @@ async function verifyExport(dir: string): Promise<string> {
   if (!sealed.valid) return failure(sealed.reason!);
   if (!existsSync(join(dir, 'proof-no-secrets.json'))) {
     const reported = existsSync(join(dir, 'result.txt')) ? (await readFile(join(dir, 'result.txt'), 'utf8')).trim() : 'no result recorded';
-    return failure(`Export has no property proof. Prover reported: ${reported}`);
+    return failure(`Chain intact and seal matches, but the export has no property proof. Prover reported: ${reported}`);
   }
   const proof = JSON.parse(await readFile(join(dir, 'proof-no-secrets.json'), 'utf8')) as PropertyProof;
   if (proof.sessionId !== receipts[0].sessionId) return failure('Proof belongs to a different session');
@@ -118,7 +118,9 @@ if (command === 'verify') {
   if (!proof) process.exitCode = 1;
 } else if (command === 'verify-export') {
   const base = resolve('receipts');
-  const dirs = positional.length ? positional.map((dir) => resolve(dir)) : existsSync(base) ? (await readdir(base, { withFileTypes: true })).filter((entry) => entry.isDirectory()).map((entry) => join(base, entry.name)) : [];
+  // Without arguments: every receipts/<session>/ holding a session.jsonl (nested folders such as
+  // receipts/agent-demo/ are checked by naming them explicitly).
+  const dirs = positional.length ? positional.map((dir) => resolve(dir)) : existsSync(base) ? (await readdir(base, { withFileTypes: true })).filter((entry) => entry.isDirectory() && existsSync(join(base, entry.name, 'session.jsonl'))).map((entry) => join(base, entry.name)) : [];
   if (!dirs.length) { console.log(`FAIL no-secrets-read ${policyTag}: no exported sessions found under receipts/`); process.exitCode = 1; }
   for (const dir of dirs) {
     const line = await verifyExport(dir);

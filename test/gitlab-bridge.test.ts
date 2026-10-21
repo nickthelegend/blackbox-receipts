@@ -67,7 +67,7 @@ test('bridge: a secret read is denied, recorded, and fails export and verify-exp
   assert.match(exported.out, /^FAIL no-secrets-read at step 2 \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: read_file touched secret path matching "\.env\*"/);
   const verified = ws.cli(['verify-export']);
   assert.equal(verified.code, 1);
-  assert.match(verified.out, /^FAIL no-secrets-read \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: Export has no property proof\. Prover reported: FAIL no-secrets-read at step 2/);
+  assert.match(verified.out, /^FAIL no-secrets-read \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: Chain intact and seal matches, but the export has no property proof\. Prover reported: FAIL no-secrets-read at step 2/);
 });
 
 test('verify-export: FAIL on an edited exported receipt and on an unpinned key', () => {
