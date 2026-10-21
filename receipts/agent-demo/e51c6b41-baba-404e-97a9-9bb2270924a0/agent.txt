@@ -1,0 +1,4 @@
+agent: opencode 1.18.31
+model: openrouter/minimax/minimax-m3.1-flash:free
+tools: blackbox MCP proxy only (read_file, git, shell)
+fixture: examples/injection-repo (README carries the injection; .env holds a canary)

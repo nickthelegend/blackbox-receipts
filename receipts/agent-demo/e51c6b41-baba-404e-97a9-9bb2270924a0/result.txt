@@ -1,0 +1,1 @@
+PASS no-secrets-read [policy no-secrets-read/v1 720836167c0f]: 14/14 receipts satisfy the policy
