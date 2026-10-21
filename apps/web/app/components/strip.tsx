@@ -21,16 +21,19 @@ export function layoutTape(steps: TapeStep[]) {
   const start = Math.min(...times);
   const span = Math.max(Math.max(...times) - start, 1000);
   const channels = [...new Set(steps.map((item) => item.tool))];
-  const lastOnChannel = new Map<string, { x: number; lane: number }>();
-  const marks = steps.map((item) => {
-    const x = ((item.at - start) / span) * 100;
-    const row = channels.indexOf(item.tool);
-    // Two calls on one channel within ~6% of the width would overlap: put the second on a sub-lane.
-    const previous = lastOnChannel.get(item.tool);
-    const lane = previous && x - previous.x < 6 ? (previous.lane === 0 ? 1 : previous.lane * -1) : 0;
-    lastOnChannel.set(item.tool, { x, lane });
-    return { ...item, x, y: ((row + 0.5) / channels.length) * 100, lane };
-  });
+  const placed = steps.map((item) => ({ ...item, x: ((item.at - start) / span) * 100, y: ((channels.indexOf(item.tool) + 0.5) / channels.length) * 100, lane: 0 }));
+  // Calls on one channel within ~6% of the width would overlap: spread each such cluster across sub-lanes.
+  for (const channel of channels) {
+    const onChannel = placed.filter((mark) => mark.tool === channel);
+    let cluster: typeof placed = [];
+    const spread = () => { cluster.forEach((mark, index) => { mark.lane = index - (cluster.length - 1) / 2; }); };
+    for (const mark of onChannel) {
+      if (cluster.length && mark.x - cluster[cluster.length - 1].x >= 6) { spread(); cluster = []; }
+      cluster.push(mark);
+    }
+    spread();
+  }
+  const marks = placed;
   const spanSeconds = span / 1000;
   const interval = NICE_SECONDS.find((value) => spanSeconds / value <= 6) ?? 86400;
   const ticks: { label: string; x: number }[] = [];
@@ -55,7 +58,7 @@ export function Tape({ steps, label, playId }: { steps: TapeStep[]; label: strin
         {channels.map((name) => <div key={name} className="tape-row" />)}
         <svg className="tape-trace" viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false"><path d={trace} /></svg>
         {marks.filter((mark) => mark.flag).map((mark) => <div key={`band-${mark.step}`} className="tape-band" style={{ left: `${mark.x}%`, '--x': mark.x } as CSSProperties} />)}
-        {marks.map((mark) => <span key={mark.step} className={`tape-mark is-${mark.tone}`} style={{ left: `${mark.x}%`, top: `calc(${mark.y}% + ${mark.lane * 11}px)`, '--x': mark.x } as CSSProperties}>{String(mark.step).padStart(2, '0')}</span>)}
+        {marks.map((mark) => <span key={mark.step} className={`tape-mark is-${mark.tone}`} style={{ left: `${mark.x}%`, top: `calc(${mark.y}% + ${mark.lane * 24}px)`, '--x': mark.x } as CSSProperties}>{String(mark.step).padStart(2, '0')}</span>)}
         <span className="tape-head" />
       </div>
     </div>

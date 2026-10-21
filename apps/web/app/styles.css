@@ -23,7 +23,7 @@ body{margin:0;background:var(--deep);color:var(--text);font:400 16px/1.55 var(--
 button,select{font:inherit;color:inherit}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
-code,pre,.mono{font-family:var(--mono);letter-spacing:0}
+code,pre,.mono{font-family:var(--mono);letter-spacing:0;font-variant-ligatures:none}
 .skip{position:absolute;left:16px;top:-60px;z-index:50;background:var(--accent);color:var(--accent-ink);padding:10px 16px;border-radius:4px;font-weight:700;text-decoration:none}
 .skip:focus{top:16px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
