@@ -2,8 +2,9 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
-import { createSeal, signDigest, parsePack, PACK_FORMAT, verifyPack, type Pack, DEFAULT_POLICY_HASH, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, proveProperty, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
-import { explainSession } from './explain.js';
+import { createSeal, signDigest, parsePack, PACK_FORMAT, verifyPack, type Pack, DEFAULT_POLICY_HASH, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
+import { renderExplanation, renderStep } from './explain.js';
+import { failLine as formatFailLine, explainCurrent, policyTag as tagFor, proveCurrent as proveWith } from './report.js';
 import { attestationDigest, checkDiff, headOf, junit, type DiffAttestation } from './attest.js';
 import { loadReceipts, loadSeal, loadWitnesses, restoreSession, signingKeys, tamperReceipt, dataDir } from './store.js';
 
@@ -22,11 +23,9 @@ async function loadPinnedPolicy(): Promise<{ id: string; hash: string }> {
   return { id: defaultSecretPolicy.id, hash: DEFAULT_POLICY_HASH };
 }
 const pinned = await loadPinnedPolicy();
-const policyTag = `[policy ${pinned.id} ${pinned.hash.slice(0, 12)}]`;
+const policyTag = tagFor(pinned);
 
-function failLine(result: PropertyFailure) {
-  return `FAIL no-secrets-read${result.step === null ? '' : ` at step ${result.step}`} ${policyTag}: ${result.reason}`;
-}
+const failLine = (result: PropertyFailure) => formatFailLine(result, pinned);
 
 function fail(result: PropertyFailure) {
   console.log(failLine(result));
@@ -34,18 +33,7 @@ function fail(result: PropertyFailure) {
 }
 
 /** Proves the current session and checks the bundle the way a third party would, from the public key alone. */
-async function proveCurrent(): Promise<{ line: string; proof: PropertyProof | null; receipts: Receipt[]; publicKey: string; privateKey: string }> {
-  const [receipts, witnesses, keys, policy, seal] = await Promise.all([loadReceipts(), loadWitnesses(), signingKeys(), loadPolicy(), loadSeal()]);
-  // The proxy's last seal must still hold: the log may have grown since, but nothing sealed may be gone.
-  // Checked once the chain itself holds, so an edited receipt is still reported at its own step.
-  const sealed = seal && verifyChain(receipts, keys.publicKey).valid ? verifySeal(seal, receipts, keys.publicKey, 'prefix') : null;
-  if (sealed && !sealed.valid) return { line: failLine({ valid: false, step: null, reason: sealed.reason! }), proof: null, receipts, publicKey: keys.publicKey, privateKey: keys.privateKey };
-  const result = proveProperty(receipts, witnesses, policy, keys);
-  if (!result.valid) return { line: failLine(result), proof: null, receipts, publicKey: keys.publicKey, privateKey: keys.privateKey };
-  const check = verifyPropertyProof(result.proof, keys.publicKey, undefined, pinned.hash);
-  if (!check.valid) return { line: failLine(check), proof: null, receipts, publicKey: keys.publicKey, privateKey: keys.privateKey };
-  return { line: `PASS no-secrets-read ${policyTag}: ${check.steps}/${result.proof.receiptCount} receipts satisfy the policy`, proof: result.proof, receipts, publicKey: keys.publicKey, privateKey: keys.privateKey };
-}
+const proveCurrent = async () => proveWith(await loadPolicy(), pinned);
 
 /** Checks an exported session directory using only the files in it (no private key, no raw arguments). */
 async function verifyExport(dir: string): Promise<string> {
@@ -143,15 +131,15 @@ if (command === 'verify') {
   const [receipts, witnesses, keys, policy] = await Promise.all([loadReceipts(), loadWitnesses(), signingKeys(), loadPolicy()]);
   console.log(JSON.stringify(discloseStep(receipts, witnesses, step, policy, keys.privateKey), null, 2));
 } else if (command === 'explain') {
-  // Step-cited markdown for a reviewer: the prover's verdict, then what each step did and why it failed.
-  const { line } = await proveCurrent();
-  const [receipts, witnesses, keys, policy, seal] = await Promise.all([loadReceipts(), loadWitnesses(), signingKeys(), loadPolicy(), loadSeal()]);
-  const chain = receipts.length ? verifyChain(receipts, keys.publicKey) : { valid: true, brokenAt: null, reason: null };
-  const sealed = seal ? verifySeal(seal, receipts, keys.publicKey, 'prefix') : null;
-  const sealText = !seal ? 'none yet (the proxy writes it when it shuts down)' : sealed!.valid ? `signed, covers ${seal.count} of ${receipts.length} receipts` : `BROKEN: ${sealed!.reason}`;
-  const markdown = explainSession({ receipts, witnesses, policy, verdict: line, chain, root: merkleRoot(receipts.map(({ hash }) => hash)), seal: sealText });
-  if (option('out')) await writeFile(resolve(option('out')!), markdown);
-  process.stdout.write(markdown);
+  // Step-cited explanation for a reviewer: the prover's verdict, then what each step did and why.
+  //   explain [--json] [--step N] [--out file]
+  const model = await explainCurrent(await loadPolicy(), pinned);
+  const step = option('step');
+  if (step !== undefined && !(Number.isInteger(Number(step)) && Number(step) >= 1)) { console.error(`explain --step takes a step number, got "${step}"`); process.exit(2); }
+  const text = rest.includes('--json') ? `${JSON.stringify(step ? model.steps.find((item) => item.step === Number(step)) ?? null : model, null, 2)}\n` : step ? renderStep(model, Number(step)) : renderExplanation(model);
+  if (option('out')) await writeFile(resolve(option('out')!), text);
+  process.stdout.write(text);
+  if (step && !model.steps.some((item) => item.step === Number(step))) process.exitCode = 1;
 } else if (command === 'pack') {
   // One JSON file a third party can check offline (CLI verify-pack, or the dashboard's /verify page):
   // receipts, public key, seal, proof (on PASS) and the verdict. No private key, no raw arguments.
