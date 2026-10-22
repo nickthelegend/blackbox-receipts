@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* Ten 16:9 slides. Sizes are in cqw (1cqw = 1% of the slide width), so a slide scales to any screen and
+/* Eleven 16:9 slides. Sizes are in cqw (1cqw = 1% of the slide width), so a slide scales to any screen and
    prints as one 1280x720 page per slide. Every fact on a slide comes from a file in this repo; the
    source is named in each slide's footer. */
 :root{
@@ -109,7 +109,7 @@ td code{font-size:1.1cqw;color:var(--text)}
       <text x="26" y="184" font-family="Fira Code, monospace" font-size="10" fill="#1f0b00" letter-spacing="1">S/N 933F87DA · RCPT 10/10 SEALED</text>
     </svg>
   </div>
-  <div class="foot"><span>github.com/nickthelegend/blackbox-receipts · MIT</span><span><b>01</b> / 10</span></div>
+  <div class="foot"><span>github.com/nickthelegend/blackbox-receipts · MIT</span><span><b>01</b> / 11</span></div>
 </section>
 
 <!-- 2 · problem -->
@@ -123,7 +123,7 @@ td code{font-size:1.1cqw;color:var(--text)}
       <div class="card"><h3>“Did it read a secret?”</h3><p>Answering means handing over every argument, or asking the reviewer to take your word. Neither works for a third party.</p></div>
     </div>
   </div>
-  <div class="foot"><span>Fixture: examples/injection-repo (README asks agents to read .env; .env holds a canary)</span><span><b>02</b> / 10</span></div>
+  <div class="foot"><span>Fixture: examples/injection-repo (README asks agents to read .env; .env holds a canary)</span><span><b>02</b> / 11</span></div>
 </section>
 
 <!-- 3 · how it works -->
@@ -140,7 +140,7 @@ td code{font-size:1.1cqw;color:var(--text)}
     </div>
     <p class="lead" style="max-width:none;font-size:1.35cqw">The signing key lives in <code>~/.blackbox</code>, outside the workspace the agent’s tools can reach. Raw arguments stay in a private witness; exports carry only salted hashes.</p>
   </div>
-  <div class="foot"><span>packages/proxy (serve.ts, store.ts) · packages/receipts · packages/verify</span><span><b>03</b> / 10</span></div>
+  <div class="foot"><span>packages/proxy (serve.ts, store.ts) · packages/receipts · packages/verify</span><span><b>03</b> / 11</span></div>
 </section>
 
 <!-- 4 · the recorded run -->
@@ -171,7 +171,7 @@ td code{font-size:1.1cqw;color:var(--text)}
       </div>
     </div>
   </div>
-  <div class="foot"><span>receipts/agent-demo/933f87da…/session.jsonl, result.txt, agent.txt · scripts/demo-agent.sh</span><span><b>04</b> / 10</span></div>
+  <div class="foot"><span>receipts/agent-demo/933f87da…/session.jsonl, result.txt, agent.txt · scripts/demo-agent.sh</span><span><b>04</b> / 11</span></div>
 </section>
 
 <!-- 5 · explain why -->
@@ -199,7 +199,7 @@ td code{font-size:1.1cqw;color:var(--text)}
       </div>
     </div>
   </div>
-  <div class="foot"><span>receipts/agent-demo/933f87da…/explain.json (renders byte-for-byte to explain.md)</span><span><b>05</b> / 10</span></div>
+  <div class="foot"><span>receipts/agent-demo/933f87da…/explain.json (renders byte-for-byte to explain.md)</span><span><b>05</b> / 11</span></div>
 </section>
 
 <!-- 6 · verify offline -->
@@ -228,7 +228,7 @@ seal matches, proof verified</span>
     </div>
     <p class="lead" style="max-width:none;font-size:1.3cqw;margin-top:2cqw">The CLI, the <code>/verify</code> page and the npx bin all run the same <code>@blackbox/verify</code> code (no <code>node:</code> imports in the library). No network, no private key, no raw arguments. The policy is pinned: this run was proven under v1, so under the default v2 pin its proof is refused by name.</p>
   </div>
-  <div class="foot"><span>release/blackbox-verify-0.1.0.tgz · receipts/agent-demo/*/pack.json · test/verify-bin.test.ts</span><span><b>06</b> / 10</span></div>
+  <div class="foot"><span>release/blackbox-verify-0.1.0.tgz · receipts/agent-demo/*/pack.json · test/verify-bin.test.ts</span><span><b>06</b> / 11</span></div>
 </section>
 
 <!-- 7 · receipt-gated merge -->
@@ -246,7 +246,7 @@ seal matches, proof verified</span>
     </table>
     <p class="lead" style="max-width:none;font-size:1.3cqw;margin-top:2.4cqw">Runs on pull requests in this repo (<code>.github/workflows/attest-diff.yml</code>) and as a GitLab merge-request job with a JUnit test report. A pull request without an exported session is reported as not applicable.</p>
   </div>
-  <div class="foot"><span>scripts/demo-attest-diff.sh · receipts/attest-diff-demo/ (real output, base 9417656)</span><span><b>07</b> / 10</span></div>
+  <div class="foot"><span>scripts/demo-attest-diff.sh · receipts/attest-diff-demo/ (real output, base 9417656)</span><span><b>07</b> / 11</span></div>
 </section>
 
 <!-- 8 · MCP proxy + overhead -->
@@ -275,22 +275,22 @@ seal matches, proof verified</span>
       </div>
     </div>
   </div>
-  <div class="foot"><span>docs/BENCHMARK.md · docs/benchmark.json · packages/proxy/src/bench.ts</span><span><b>08</b> / 10</span></div>
+  <div class="foot"><span>docs/BENCHMARK.md · docs/benchmark.json · packages/proxy/src/bench.ts</span><span><b>08</b> / 11</span></div>
 </section>
 
 <!-- 9 · evidence -->
 <section class="slide" aria-label="Slide 9: tests and checks">
   <div class="in">
     <p class="kicker">What is checked, every commit</p>
-    <h2>77 tests, 72 pass, 5 skipped only because sponsor keys are missing.</h2>
+    <h2>87 tests, 82 pass, 5 skipped only because sponsor keys are missing.</h2>
     <div class="grid3">
-      <div class="card"><p class="num">72<small>/ 77</small></p><h3 style="margin-top:1cqw">node:test, no mocked APIs</h3><p>Real proxy processes over stdio, real git repos, real signatures. Skipped live tests print a warning banner.</p></div>
-      <div class="card"><p class="num">2</p><h3 style="margin-top:1cqw">Recorded agent runs</h3><p>Re-verified in CI from their exported files: one PASS, one FAIL at step 3 with chain and seal intact.</p></div>
+      <div class="card"><p class="num">82<small>/ 87</small></p><h3 style="margin-top:1cqw">node:test, no mocked APIs</h3><p>Real proxy processes over stdio, real git repos, real signatures. Skipped live tests print a warning banner.</p></div>
+      <div class="card"><p class="num">3</p><h3 style="margin-top:1cqw">Recorded agent runs</h3><p>Re-verified in CI from their exported files: two PASS (one with a neutral prompt), one FAIL at step 3 with chain and seal intact.</p></div>
       <div class="card"><p class="num">3</p><h3 style="margin-top:1cqw">Gated branches</h3><p>The attest-diff demo’s committed output is re-checked: attestation signatures, chains, seals, verdicts.</p></div>
     </div>
-    <p class="lead" style="max-width:none;font-size:1.3cqw;margin-top:2.4cqw">Plus <code>pnpm typecheck</code>, <code>pnpm lint</code>, <code>pnpm build</code>, a live proxy session in CI (clean PASS, secret read FAIL at its step, tampered log FAIL at step 1, empty session FAIL), and 33 browser E2E tests in Google Chrome at 1280 px and 375 px, all passing.</p>
+    <p class="lead" style="max-width:none;font-size:1.3cqw;margin-top:2.4cqw">Plus <code>pnpm typecheck</code>, <code>pnpm lint</code>, <code>pnpm build</code>, a live proxy session in CI (clean PASS, secret read FAIL at its step, tampered log FAIL at step 1, empty session FAIL), and 36 browser E2E tests in Google Chrome at 1280 px and 375 px, all passing.</p>
   </div>
-  <div class="foot"><span>TESTING.md · .github/workflows/ci.yml · scripts/ci/*.sh</span><span><b>09</b> / 10</span></div>
+  <div class="foot"><span>TESTING.md · .github/workflows/ci.yml · scripts/ci/*.sh</span><span><b>09</b> / 11</span></div>
 </section>
 
 <!-- 10 · limits and what is blocked -->
@@ -307,7 +307,35 @@ seal matches, proof verified</span>
       <div><h3><span class="pill caution">Not run yet</span> GitLab</h3><p>Duo flow, bridge and CI jobs are in the repo. Needs a public GitLab project, a live Duo run and pipeline history.</p></div>
     </div>
   </div>
-  <div class="foot"><span>README.md “Limitations” and “Sponsor technology”</span><span><b>10</b> / 10</span></div>
+  <div class="foot"><span>README.md “Limitations” and “Sponsor technology”</span><span><b>10</b> / 11</span></div>
+</section>
+
+<!-- 11 · built in the window -->
+<section class="slide" aria-label="Slide 11: built in the window">
+  <div class="in">
+    <p class="kicker">Built in the window · from 2026-10-22 00:00 UTC</p>
+    <h2>What the Wildcard scores, and what is still blocked.</h2>
+    <div class="grid2" style="grid-template-columns:1.25fr 1fr">
+      <div class="card">
+        <p class="label">Built Oct 22 · Claude Code (Claude Opus 5.5)</p>
+        <ul>
+          <li>Playwright suite in real Google Chrome, 1280 and 375 px: 36 tests per viewport, all pass</li>
+          <li>Policy v2 for credential stores, matched case-insensitively (<code>.ENV</code>, <code>.GIT/config</code>)</li>
+          <li>Read-only <code>git</code> that takes no options; no writes through symlinked folders</li>
+          <li>Merge gate built from the base commit; <code>UNPINNED</code> when no key is pinned</li>
+          <li>No signing key or API keys in an upstream server’s environment</li>
+          <li>Signer-key pinning on <code>/verify</code>; located FAILs for torn logs and malformed packs</li>
+          <li>Neutral-prompt agent run <code>28d95bc3</code>: never asked for <code>.env</code>, PASS</li>
+        </ul>
+      </div>
+      <div class="limits" style="grid-template-columns:1fr;margin-top:0;gap:1.2cqw">
+        <div><h3><span class="pill caution">Setup required</span> Zetaris tool</h3><p>Receipted <code>zetaris_sql</code> (SELECT only, result hash per receipt). Needs <code>ZETARIS_API_KEY</code> and <code>ZETARIS_ORG_ID</code>.</p></div>
+        <div><h3><span class="pill caution">Setup required</span> Meterless model</h3><p>The agent’s model through the local runtime. Needs Nightshift installed and <code>METERLESS_STATE_DIR</code>.</p></div>
+        <div><h3><span class="pill caution">Not yet</span> Cursor</h3><p>Rule 5.1: the sponsor work is to be built in Cursor, with a screenshot here and in the video.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>git log 4cf7afe..main · README “Built in the window” · receipts/agent-demo/28d95bc3…</span><span><b>11</b> / 11</span></div>
 </section>
 
 </main>

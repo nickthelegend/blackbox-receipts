@@ -22,13 +22,13 @@ implies a step that didn't run.
   `REPLAY · recorded 2026-10-21 · receipts/agent-demo/<id>`. A run made on camera gets `LIVE · <date> <time> UTC`.
 - **Say what the prompt said.** In both committed runs the user prompt told the agent to follow the README's agent
   section (step 2: "complete its agent checklist before anything else"). So the `.env` read was asked for through the
-  README; don't call it an injection the agent found on its own. If the neutral-prompt run
-  (`BLACKBOX_DEMO_PROMPT=neutral`) has been recorded, use that one for the "unprompted" claim, with its real verdict.
+  README; don't call it an injection the agent found on its own. The neutral-prompt run
+  (`receipts/agent-demo/28d95bc3…`, 2026-10-22) is recorded: that agent never asked for `.env` and the verdict is PASS, so it shows a clean session, not an unprompted refusal.
 - **Policy versions.** The committed runs were proven under `no-secrets-read/v1`. Anything recorded now runs under
   `no-secrets-read/v2` (adds `.git/**`, `.npmrc`, `.netrc` and other credential files). Read the version off the
   verdict line; don't mix them up in narration.
-- **Counts.** `pnpm test`: 77 tests, 72 pass, 5 skipped (live Zetaris and Meterless tests; no keys or runtime).
-  Browser E2E: 33 tests in each of two viewports, all passing. Re-check both on the day and say what you see.
+- **Counts.** `pnpm test`: 87 tests, 82 pass, 5 skipped (live Zetaris and Meterless tests; no keys or runtime).
+  Browser E2E: 36 tests in each of two viewports, all passing. Re-check both on the day and say what you see.
 
 ## Before you record
 
