@@ -4,6 +4,13 @@
 
 An MCP proxy sits between an agent and its tools. Every call is checked against a policy before it runs, then recorded as a receipt: Ed25519-signed by the proxy (not the agent), hash-linked to the one before, and sealed with a signed count so nothing can be cut off the end. A prover answers questions about the session ("no secrets read") with a proof anyone can verify from the public key, without seeing the agent's arguments. When the answer is no, it names the step.
 
+| | |
+|---|---|
+| Live site | Not published yet. After `main` is pushed and Pages is set to "GitHub Actions": `https://nickthelegend.github.io/blackbox-receipts/` (overview) and `…/verify/` (offline verifier) |
+| Slide deck | [`docs/deck/index.html`](docs/deck/index.html) · [PDF](docs/deck/blackbox-receipts-deck.pdf) |
+| Videos | Not recorded yet ([scripts](docs/demo-video-script.md): Open Agent Wildcard and GitLab Transcend cuts) |
+| Hackathon window | [What was built from Oct 22](#built-in-the-window-oct-2227), and what is still missing |
+
 ```mermaid
 flowchart LR
   A[Agent / MCP client] -->|tools/call| P[Blackbox MCP proxy]
@@ -108,7 +115,7 @@ npx ./blackbox-verify-0.1.0.tgz pack.json --public-key proxy.pem  # also require
 npx ./blackbox-verify-0.1.0.tgz pack.json --expect-policy no-secrets-read/v1   # a run proven under v1
 ```
 
-Once the repo is public on GitHub, both files can be fetched directly, for example `npx https://github.com/nickthelegend/blackbox-receipts/raw/main/release/blackbox-verify-0.1.0.tgz pack.json` with a pack from `receipts/agent-demo/<run>/pack.json`. npx installs the two `@noble` dependencies from the npm registry; the check itself makes no network request. With `--expect-policy no-secrets-read/v1` (both committed runs were proven under v1), the PASS run prints `PASS no-secrets-read/v1: 14 receipts, chain intact, seal matches, proof verified`, and without it `FAIL property: Proof was made under policy "no-secrets-read/v1" (720836167c0f), not the pinned policy`; the injection run prints `FAIL no-secrets-read/v1 at step 3` with chain and seal intact; changing one hex digit of step 7's `resultHash` prints `FAIL at step 7: Receipt contents were changed` and marks steps 8 to 14 untrusted. `test/verify-bin.test.ts` checks that the committed tarball matches a fresh pack and runs its bin on these cases.
+Once `main` is pushed, both files can be fetched directly, for example `npx https://github.com/nickthelegend/blackbox-receipts/raw/main/release/blackbox-verify-0.1.0.tgz pack.json` with a pack from `receipts/agent-demo/<run>/pack.json`. npx installs the two `@noble` dependencies from the npm registry; the check itself makes no network request. With `--expect-policy no-secrets-read/v1` (both committed runs were proven under v1), the PASS run prints `PASS no-secrets-read/v1: 14 receipts, chain intact, seal matches, proof verified`, and without it `FAIL property: Proof was made under policy "no-secrets-read/v1" (720836167c0f), not the pinned policy`; the injection run prints `FAIL no-secrets-read/v1 at step 3` with chain and seal intact; changing one hex digit of step 7's `resultHash` prints `FAIL at step 7: Receipt contents were changed` and marks steps 8 to 14 untrusted. `test/verify-bin.test.ts` checks that the committed tarball matches a fresh pack and runs its bin on these cases.
 
 ## Receipt-gated merge
 
@@ -161,7 +168,7 @@ Two workspace packages call each sponsor's real interface. Neither has mock resp
 
 ## Tests
 
-`pnpm test` runs 63 tests: 58 pass and 5 are skipped because they need sponsor keys or a running sponsor runtime (Zetaris, Meterless) that aren't configured; those print a `⚠️ SKIPPING LIVE … TESTS` banner. Counts per file, and what each suite runs against: [TESTING.md](TESTING.md).
+`pnpm test` runs 76 tests: 71 pass and 5 are skipped because they need sponsor keys or a running sponsor runtime (Zetaris, Meterless) that aren't configured; those print a `⚠️ SKIPPING LIVE … TESTS` banner. `pnpm test:e2e` runs 33 browser tests in Google Chrome at 1280 px and at 375 px (66 runs), all passing. Counts per file, and what each suite runs against: [TESTING.md](TESTING.md).
 
 ## Submission status
 
@@ -181,7 +188,21 @@ Still missing:
 
 - A public GitLab repo for the Transcend entry, a live GitLab Duo run, and pipeline history from it.
 - Zetaris keys, and a running Meterless Runtime, then one real call inside the agent loop and a live test that isn't skipped. **BLOCKED** until those exist (Zetaris: `ZETARIS_API_KEY` + `ZETARIS_ORG_ID`; Meterless: the Nightshift app installed and running, then `METERLESS_STATE_DIR`).
-- The demo videos (Open Agent and GitLab Transcend).
+- Work built in Cursor for the Open Agent entry (rule 5.1), with evidence (a Cursor screenshot in the deck and in the video). None yet: see below.
+- A recorded run with a neutral prompt (`BLACKBOX_DEMO_PROMPT=neutral`), so a `.env` read could only come from the fixture.
+- The demo videos (Open Agent and GitLab Transcend), and `main` pushed to GitHub (the public repo is behind) with Pages on.
+
+## Built in the window (Oct 22–27)
+
+The Open Agent Wildcard scores only work done from 2026-10-22 00:00 UTC. Everything below is in `git log 4cf7afe..main` (all commits on 2026-10-22, UTC).
+
+| Commits | What it adds | Built with |
+|---|---|---|
+| `37d257f`…`c30da91` (03:42 UTC) | A Playwright E2E suite in Google Chrome over the landing, `/recorder`, `/verify` and the static Pages build, desktop and 375 px (`b62dcca`), and four UI fixes it found: drawer focus return, clickable tape log rows, the tape log's accessible name, a stale proof after a tamper | Claude Code (Claude Opus 5.5) |
+| `f7b4db8`, `36bdcd7` (14:03 UTC) | `/recorder` names the session file it really reads | Claude Code (Claude Opus 5.5) |
+| `d526d1c` and later (from 15:29 UTC) | Hardening after two independent reviews: GitLab CI hands `packages/zetaris/dist` to the test job; `.gitignore` for env files, videos and test output; `CONTRIBUTING.md` (DCO 1.1); a torn log line is a located FAIL; policy `no-secrets-read/v2` (git, npm, netrc and other credential files; v1 frozen and pinned explicitly for the old runs); `write_file` can't escape through a symlinked folder; `attest-diff` exempts only the gated export; the dashboard API refuses cross-site requests; honest wording of the agent runs' prompts; deck, video scripts and docs | Claude Code (Claude Opus 5.5) |
+
+Disclosure: every commit in that range was made with Claude Code; each carries a `Co-Authored-By: Claude Opus 5.5` trailer except `b62dcca`, which was made in the same session without one. None of it was built in **Cursor** yet, and the sponsor integration the Wildcard requires (Zetaris as a receipted tool, Meterless as the agent's model) has not been built: it is **BLOCKED** on `ZETARIS_API_KEY` + `ZETARIS_ORG_ID` and on the Meterless Runtime (Nightshift) running with `METERLESS_STATE_DIR`, and is to be built in Cursor. **NVIDIA:** no NVIDIA model or service is used.
 
 ## Pre-existing work
 
@@ -190,12 +211,12 @@ All commits before 2026-10-22 00:00 UTC predate the Open Agent Hackathon build w
 ## Limitations
 
 - **Trust anchor is the proxy key.** A receipt proves this proxy observed and signed the call. Whoever holds the key could sign a different log, so publish the public key and pin it (`BLACKBOX_PUBLIC_KEY`). The key is outside the workspace, but on the same machine; there is no TEE attestation, and a compromised host defeats it.
-- **The guard is a policy check, not a sandbox.** Glob and token matching is heuristic: a secret reached through an unlisted path, an obfuscated argument or an upstream tool's *result* won't match. The built-in shell accepts only direct `pwd`, `ls` and `cat`; git diff/show need literal paths. With `--upstream`, paths are taken from path-like argument keys, and every string argument is scanned. Use isolated workspaces.
+- **The guard is a policy check, not a sandbox.** Glob and token matching is heuristic. `no-secrets-read/v2` lists the common credential stores (git, npm, netrc, SSH, AWS, Docker, Kubernetes, GnuPG, PKCS#12), but a secret reached through an unlisted path, an obfuscated argument or an upstream tool's *result* won't match. The built-in shell accepts only direct `pwd`, `ls` and `cat`; git diff/show need literal paths. With `--upstream`, paths are taken from path-like argument keys, and every string argument is scanned. Use isolated workspaces.
 - **Not zero knowledge.** The property proof is selective disclosure with a trusted attester: the verifier checks signatures, inclusion and the proxy's attestation, and trusts the proxy key for the verdict over hidden arguments. A Noir circuit over the committed arguments would remove that trust.
 - **Exports reveal paths.** Every receipt carries the tool name, the paths it touched, timestamps, permissions and outcome in clear text; anyone holding an export sees which files the agent read. What stays private is the raw arguments and results: `argsHash` and `resultHash` are sha256 over a fresh per-step salt and canonical JSON, and the salt lives only in the private witness. Exports never include the raw arguments or the signing key.
 - Storage is local JSONL, one live session per store; no multi-tenant access control or hosted proxy. The root isn't anchored on-chain; pass `--root` or keep the seal and pin the key.
 - A session only covers calls that went through the proxy. In the Duo flow, `run_command` can technically bypass the bridge; `attest-diff` catches unrecorded *file changes*, not unrecorded reads.
-- The seal is written when the proxy shuts down cleanly (or at export); a proxy killed with SIGKILL leaves the newest receipts unsealed until the next export.
+- The seal is written when the proxy shuts down cleanly (or at export); a proxy killed with SIGKILL leaves the newest receipts unsealed until the next export. If it was killed in the middle of an append, the last line of `session.jsonl` is torn: every verify path then FAILs at that line (`session.jsonl is corrupt at line N: …`) instead of verifying the receipts before it, a bridge call resuming that session refuses to start, and the next new proxy keeps the damaged log as `sessions/corrupt-<time>.jsonl` and starts a new session. The receipts in a torn log can still be read by hand, but no command verifies a partial log.
 - Receipts carry `cost` and `approver` fields for format compatibility; nothing fills them (always `null`).
 - Each GitLab runner session uses a fresh key unless `BLACKBOX_PUBLIC_KEY` and `RECEIPTS_SIGNING_KEY` pinning is set up (untested on GitLab).
 
