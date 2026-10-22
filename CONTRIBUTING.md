@@ -3,7 +3,7 @@
 Thanks for helping. Blackbox Receipts is MIT licensed (`Copyright (c) 2026 Nivesh Gajengi`, see [LICENSE](LICENSE)),
 and every contribution is accepted under that license.
 
-## Sign off every commit (DCO 1.1)
+## Sign off your commits (DCO 1.1)
 
 This project uses the Developer Certificate of Origin 1.1, the same sign-off GitLab uses for contributions.
 By adding a `Signed-off-by` line to a commit, you certify the statement below for that commit.
@@ -14,12 +14,17 @@ Sign off with `git commit -s`, which appends a line built from your `user.name` 
 Signed-off-by: Your Name <you@example.com>
 ```
 
-- Every commit in a merge request or pull request needs its own `Signed-off-by` line. Use a real name and an
-  email address you can be reached at.
+- **Where it applies:** every commit in a merge request or pull request needs its own `Signed-off-by` line. Use a
+  real name and an email address you can be reached at.
+- **On `main`:** sign-off starts with the first commit that carries one
+  (`git log --reverse --grep='^Signed-off-by:' -n 1`), and every commit after it needs one too.
+- **The history so far carries none.** As of 2026-10-23 no commit on `main` is signed off: it is the maintainer's own
+  work, much of it written with AI coding agents (each named in the commit's `Co-Authored-By` line), and an agent
+  can't certify the DCO on his behalf. Those commits are not rewritten to add sign-offs, because their hashes are
+  cited in the README, the submission form, the landing and the deck.
 - Forgot one? `git commit --amend -s` fixes the last commit, and `git rebase --signoff <base>` fixes a whole branch
   before it is merged.
 - Sign-off certifies where the change came from. It does not replace review, and it is not a CLA.
-- Commits made before this file was added (2026-10-22) predate the policy and carry no sign-off.
 
 ```
 Developer Certificate of Origin
