@@ -176,6 +176,24 @@ test.describe('verify', () => {
     await expectNoHorizontalScroll(page);
   });
 
+  test('a crafted pack (object-valued outcome or step) fails format at that step instead of crashing the page', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    const outcome = JSON.parse(readFileSync(PASS_PACK, 'utf8'));
+    outcome.receipts[0].outcome = { evil: 1 };
+    await page.locator('input[type=file]').setInputFiles({ name: 'evil-outcome.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(outcome)) });
+    await expect(page.locator('.vf-badge')).toHaveText('FAIL');
+    await expect(page.locator('.vf-headline')).toHaveText('FAIL format at step 1: receipt outcome is not ok, denied or error');
+    await expect(page.locator('.vf-step-bad .vf-step-n')).toHaveText('01');
+    const step = JSON.parse(readFileSync(PASS_PACK, 'utf8'));
+    step.receipts[1].step = { x: 1 };
+    await page.locator('input[type=file]').setInputFiles({ name: 'evil-step.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(step)) });
+    await expect(page.locator('.vf-headline')).toHaveText('FAIL format at step 2: receipt step is not an integer');
+    await expect(page.locator('.vf-step')).toHaveCount(step.receipts.length);
+    await expectNoHorizontalScroll(page);
+    expect(errors, 'page errors').toEqual([]);
+  });
+
   test('header links', async ({ page }) => {
     await page.getByRole('link', { name: 'Open recorder' }).click();
     await expect(page).toHaveURL(/\/recorder$/);

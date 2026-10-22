@@ -237,9 +237,9 @@ export default function VerifyPage() {
           <p>{result.steps.length} steps · {counts.ok} signed{counts.flagged ? ` · ${counts.flagged} secret access` : ''}{counts.broken ? ` · ${counts.broken} broken` : ''}{counts.untrusted ? ` · ${counts.untrusted} untrusted` : ''}</p>
         </div>
         <ol className="vf-steps">
-          {result.steps.map((item) => {
+          {result.steps.map((item, index) => {
             const status = STATUS[item.status];
-            return <li key={item.step} className={`vf-step vf-step-${status.tone}`}>
+            return <li key={index} className={`vf-step vf-step-${status.tone}`}>
               <span className="vf-step-n">{String(item.step).padStart(2, '0')}</span>
               <div className="vf-step-main">
                 <p className="vf-step-what"><strong>{item.tool}</strong>{item.paths.length > 0 && <code>{item.paths.join(' ')}</code>}</p>

@@ -52,6 +52,7 @@ export function keyFingerprint(pem: string): string {
 
 const HEX64 = /^[0-9a-f]{64}$/;
 const BASE64 = /^[A-Za-z0-9+/]+={0,2}$/;
+const OUTCOMES: readonly unknown[] = ['ok', 'denied', 'error'];
 const isStrings = (value: unknown) => Array.isArray(value) && value.every((item) => typeof item === 'string');
 
 /** Why a receipt in a pack is not shaped like one, or null. Checked before any hashing, so bad input fails at its step instead of throwing. */
@@ -69,6 +70,8 @@ export function receiptShapeError(receipt: unknown): string | null {
   if (!isStrings(item.paths)) return 'paths is not a list of strings';
   if (!isStrings(item.permissions)) return 'permissions is not a list of strings';
   if (typeof item.secretsAccessed !== 'boolean') return 'secretsAccessed is not true or false';
+  // Optional (receipts from before outcomes were recorded have none), but never anything else.
+  if (item.outcome !== undefined && item.outcome !== null && !OUTCOMES.includes(item.outcome as string)) return 'outcome is not ok, denied or error';
   return null;
 }
 
@@ -87,7 +90,18 @@ export function verifyPack(pack: Pack, options: PackOptions = {}): PackResult {
   const policyId = options.expectedPolicyId ?? publishedPolicy(expectedPolicyHash)?.id ?? 'pinned policy';
   const receipts = Array.isArray(pack?.receipts) ? pack.receipts : [];
   const checks: PackCheck[] = [];
-  const steps: StepStatus[] = receipts.map((receipt, index) => ({ step: receipt?.step ?? index + 1, tool: String(receipt?.tool ?? '?'), paths: Array.isArray(receipt?.paths) ? receipt.paths : [], outcome: receipt?.outcome ?? null, timestamp: String(receipt?.timestamp ?? ''), hash: String(receipt?.hash ?? ''), status: 'ok', reason: null }));
+  // Only plain values reach the step list (the /verify page renders it): a field of the wrong type is
+  // replaced here and reported by the format check below.
+  const steps: StepStatus[] = receipts.map((receipt, index) => ({
+    step: Number.isInteger(receipt?.step) ? receipt.step : index + 1,
+    tool: String(receipt?.tool ?? '?'),
+    paths: isStrings(receipt?.paths) ? receipt.paths : [],
+    outcome: OUTCOMES.includes(receipt?.outcome) ? receipt.outcome! : null,
+    timestamp: String(receipt?.timestamp ?? ''),
+    hash: String(receipt?.hash ?? ''),
+    status: 'ok',
+    reason: null,
+  }));
   let fingerprint: string | null = null;
   try { fingerprint = typeof pack?.publicKey === 'string' ? keyFingerprint(pack.publicKey) : null; } catch { fingerprint = null; }
   let keyPinned = false;

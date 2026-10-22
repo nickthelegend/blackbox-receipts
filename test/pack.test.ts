@@ -95,3 +95,28 @@ test('verifyPack: keyPinned is true only for a matching pinned key, compared as 
   assert.equal(garbage.keyPinned, false);
   assert.match(garbage.headline, /^FAIL: The pinned key is not an Ed25519 public key PEM/);
 });
+
+// The step list is rendered by /verify, so every field it shows must be a plain value whatever the pack
+// holds: an object-valued outcome or step must not reach React as a child or key.
+test('pack: object-valued outcome or step fails format at that step and never reaches the step list as an object', () => {
+  const sample = readFileSync(join(repoRoot, 'apps/web/app/verify/samples/agent-pass.json'), 'utf8');
+  const evilOutcome = JSON.parse(sample) as Pack;
+  (evilOutcome.receipts[0] as unknown as Record<string, unknown>).outcome = { evil: 1 };
+  const outcome = verifyPack(evilOutcome);
+  assert.equal(outcome.ok, false);
+  assert.equal(outcome.headline, 'FAIL format at step 1: receipt outcome is not ok, denied or error');
+  assert.equal(outcome.brokenAt, 1);
+  assert.equal(outcome.steps[0].outcome, null);
+  const evilStep = JSON.parse(sample) as Pack;
+  (evilStep.receipts[1] as unknown as Record<string, unknown>).step = { x: 1 };
+  (evilStep.receipts[2] as unknown as Record<string, unknown>).paths = [{ y: 1 }];
+  const step = verifyPack(evilStep);
+  assert.equal(step.headline, 'FAIL format at step 2: receipt step is not an integer');
+  assert.equal(step.steps[1].step, 2);
+  assert.deepEqual(step.steps[2].paths, []);
+  for (const item of [...outcome.steps, ...step.steps]) {
+    assert.equal(typeof item.step, 'number');
+    assert.ok(item.outcome === null || ['ok', 'denied', 'error'].includes(item.outcome));
+    assert.ok(item.paths.every((path) => typeof path === 'string'));
+  }
+});
