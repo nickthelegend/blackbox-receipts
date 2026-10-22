@@ -24,7 +24,8 @@ Counted on 2026-10-21, run file by file:
 | `zetaris.test.ts` | 4 | 2 | **2** | Config errors and URL handling. The 2 live tests skip: `ZETARIS_API_KEY` / `ZETARIS_ORG_ID` are not set (Setup required) |
 | `meterless.test.ts` | 9 | 6 | **3** | Config, token and URL handling; `explain --model meterless` without a token and against a port nothing answers both print Setup required and exit 2; narrative citation checking. The 3 live tests skip: no `METERLESS_TOKEN` or runtime (Setup required) |
 | `verify-bin.test.ts` | 2 | 2 | 0 | `release/blackbox-verify-0.1.0.tgz` matches a fresh `pnpm pack` of `packages/verify` file for file, has the bin and stays browser-safe; its bin, installed from the tarball, PASSes the committed PASS pack, FAILs the injection pack at step 3 with chain and seal intact, FAILs a one-byte-tampered copy at step 7, rejects another pinned key, exits 2 on usage errors |
-| **Total** | **62** | **57** | **5** | Skipped tests print a `⚠️ SKIPPING LIVE … TESTS` banner, so a green run never implies a sponsor call happened |
+| `store-source.test.ts` | 1 | 1 | 0 | The file `/recorder` says it reads: repo-relative inside the repo, `~` for home, the full path elsewhere (a sibling folder named like the repo counts as outside), and never a path inside the signing-key folder (added 2026-10-22) |
+| **Total** | **63** | **58** | **5** | Skipped tests print a `⚠️ SKIPPING LIVE … TESTS` banner, so a green run never implies a sponsor call happened |
 
 ## Other checks (all pass at this commit)
 
@@ -52,10 +53,10 @@ Counted on 2026-10-22:
 | File | Tests per project | Desktop | Mobile | What it clicks |
 |---|---|---|---|---|
 | `e2e/landing.spec.ts` | 9 | 9 pass | 9 pass | Header and hero links, skip link, playback sweep and Replay, every tape log row (Why button and the row itself) with cited-receipt navigation and close by button, Escape and backdrop, both investigation exhibits with a one-byte flip and Original file, limits and install CTAs, reduced motion |
-| `e2e/recorder.spec.ts` | 11 | 11 pass | 11 pass | Lamps and readouts from the live store (Walrus, Zetaris, Meterless: Setup required), public key toggle, every tape log row and its Explain why, Prove (Fail at the denied read, explain), Tamper / Re-verify / Restore with a stale proof, Walrus disabled, nav, a new real call through the proxy appearing within one poll, the empty store, the local-only API refusing a non-loopback host |
+| `e2e/recorder.spec.ts` | 12 | 12 pass | 12 pass | Lamps and readouts from the live store (Walrus, Zetaris, Meterless: Setup required), the session file named as `RECEIPTS_DIR` really is (never `.blackbox/` or the key folder), public key toggle, every tape log row and its Explain why, Prove (Fail at the denied read, explain), Tamper / Re-verify / Restore with a stale proof, Walrus disabled, nav, a new real call through the proxy appearing within one poll, the empty store, the local-only API refusing a non-loopback host |
 | `e2e/verify.spec.ts` | 6 | 6 pass | 6 pass | Empty state, both sample packs with no request after load, flip one byte, file picker and Load another pack, a non-pack file, drag and drop, header links |
 | `e2e/pages.spec.ts` | 2 | 2 pass | 2 pass | The static export: base-path links, recorder link to the local setup, tape log drawer, an exhibit check, offline /verify |
-| **Total** | **28** | **28 pass** | **28 pass** | No horizontal scroll at 375 px on any page checked |
+| **Total** | **29** | **29 pass** | **29 pass** | No horizontal scroll at 375 px on any page checked |
 
 ## Live runs (not part of `pnpm test`)
 

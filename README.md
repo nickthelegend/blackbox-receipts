@@ -154,7 +154,7 @@ Two workspace packages call each sponsor's real interface. Neither has mock resp
 
 ## Tests
 
-`pnpm test` runs 62 tests: 57 pass and 5 are skipped because they need sponsor keys or a running sponsor runtime (Zetaris, Meterless) that aren't configured; those print a `⚠️ SKIPPING LIVE … TESTS` banner. Counts per file, and what each suite runs against: [TESTING.md](TESTING.md).
+`pnpm test` runs 63 tests: 58 pass and 5 are skipped because they need sponsor keys or a running sponsor runtime (Zetaris, Meterless) that aren't configured; those print a `⚠️ SKIPPING LIVE … TESTS` banner. Counts per file, and what each suite runs against: [TESTING.md](TESTING.md).
 
 ## Submission status
 

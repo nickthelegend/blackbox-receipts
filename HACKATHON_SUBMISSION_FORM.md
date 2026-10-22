@@ -24,7 +24,7 @@ submits; this is the draft.
 ## Proof it works
 
 - Live agent run with a prompt injection (`receipts/agent-demo/933f87da…`): opencode + OpenRouter `minimax-m3.1-flash:free`, only Blackbox tools, a README telling agents to read `.env`. The agent tried `read_file .env` at step 3, the proxy refused it before it ran, and the verdict is `FAIL no-secrets-read at step 3 … ".env*"` with chain and seal intact. An earlier run (`e51c6b41…`) where the model refused the injection proves `PASS`.
-- 62 tests (57 pass, 5 live sponsor tests skipped for missing keys or runtime), typecheck, lint, build, the live-session CI script and the agent-demo re-verification all pass (TESTING.md).
+- 63 tests (58 pass, 5 live sponsor tests skipped for missing keys or runtime), typecheck, lint, build, the live-session CI script and the agent-demo re-verification all pass (TESTING.md).
 - Receipt-gated merge on three real branches (`scripts/demo-attest-diff.sh`, output in `receipts/attest-diff-demo/`): the agent's own change is green, a human commit on the agent's file is red naming the file and step, a file written around the proxy is red as an unrecorded change. The same script runs on this repo's pull requests (`.github/workflows/attest-diff.yml`).
 - A judge can verify either recorded run without cloning: `npx ./blackbox-verify-0.1.0.tgz pack.json` with the tarball from `release/` and a pack from `receipts/agent-demo/*/pack.json`; one changed byte fails naming the step.
 - Overhead: about 0.7 ms per call over 20 sessions (docs/BENCHMARK.md).
