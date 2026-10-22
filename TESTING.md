@@ -37,6 +37,26 @@ Counted on 2026-10-21, run file by file:
 | `bash scripts/ci/verify-agent-demo.sh` | Re-verifies the committed live agent runs in `receipts/agent-demo/` from their exported files: one PASS, one FAIL at step 3 with chain and seal intact |
 | `bash scripts/demo-attest-diff.sh` | Three real branches in a temp clone gated by `scripts/ci/attest-diff-pr.sh`: agent/clean exit 0, agent/human-edit exit 1, agent/bypass exit 1 (committed output: `receipts/attest-diff-demo/`) |
 
+## Browser E2E (`pnpm test:e2e`, not part of `pnpm test`)
+
+Playwright Test in the installed Google Chrome (`channel: 'chrome'`), video, trace and screenshots on, two
+projects: desktop 1280x800 and mobile 375x812. Needs `pnpm build` and
+`pnpm build:pages -- --base-path /blackbox-receipts` first. The config starts three servers on 127.0.0.1:
+the dashboard over a session recorded through the real proxy by `call.js` (git log, read README.md,
+ls packages, a `.env` read the proxy denies, git show --stat) with a throwaway `RECEIPTS_DIR` and
+`BLACKBOX_KEY_DIR`; the dashboard over an empty store; and the static export under `/blackbox-receipts`.
+Every test fails on a console error, an uncaught page error or a failed same-origin request.
+
+Counted on 2026-10-22:
+
+| File | Tests per project | Desktop | Mobile | What it clicks |
+|---|---|---|---|---|
+| `e2e/landing.spec.ts` | 9 | 9 pass | 9 pass | Header and hero links, skip link, playback sweep and Replay, every tape log row (Why button and the row itself) with cited-receipt navigation and close by button, Escape and backdrop, both investigation exhibits with a one-byte flip and Original file, limits and install CTAs, reduced motion |
+| `e2e/recorder.spec.ts` | 11 | 11 pass | 11 pass | Lamps and readouts from the live store (Walrus, Zetaris, Meterless: Setup required), public key toggle, every tape log row and its Explain why, Prove (Fail at the denied read, explain), Tamper / Re-verify / Restore with a stale proof, Walrus disabled, nav, a new real call through the proxy appearing within one poll, the empty store, the local-only API refusing a non-loopback host |
+| `e2e/verify.spec.ts` | 6 | 6 pass | 6 pass | Empty state, both sample packs with no request after load, flip one byte, file picker and Load another pack, a non-pack file, drag and drop, header links |
+| `e2e/pages.spec.ts` | 2 | 2 pass | 2 pass | The static export: base-path links, recorder link to the local setup, tape log drawer, an exhibit check, offline /verify |
+| **Total** | **28** | **28 pass** | **28 pass** | No horizontal scroll at 375 px on any page checked |
+
 ## Live runs (not part of `pnpm test`)
 
 - `scripts/demo-agent.sh`: a real LLM agent (opencode 1.18.31, OpenRouter `minimax/minimax-m3.1-flash:free`) restricted to the proxy's tools, against `examples/injection-repo`. Two runs are committed under `receipts/agent-demo/` (README "Live agent run").
