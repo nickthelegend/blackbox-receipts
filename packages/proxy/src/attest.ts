@@ -3,7 +3,7 @@
 // latest recorded write. Anything else is reported by name: an unrecorded change (a human edit, or an
 // agent that wrote through some other tool) or a file changed after its recorded write.
 import { execFileSync } from 'node:child_process';
-import { sha256Hex, stableJson, type Receipt } from '@blackbox/receipts';
+import { byCodeUnits, sha256Hex, stableJson, type Receipt } from '@blackbox/receipts';
 
 export type FileVerdict = { path: string; change: 'added' | 'modified' | 'deleted'; blob: string | null; step: number | null; ok: boolean; reason: string };
 export type DiffAttestation = {
@@ -33,7 +33,7 @@ export function changedFiles(cwd: string, base: string): { path: string; change:
   const files: { path: string; change: FileVerdict['change'] }[] = [];
   for (let index = 0; index < tracked.length; index += 2) files.push({ path: tracked[index + 1], change: tracked[index] === 'A' ? 'added' : tracked[index] === 'D' ? 'deleted' : 'modified' });
   for (const path of git(cwd, ['ls-files', '--others', '--exclude-standard', '-z']).split('\0').filter(Boolean)) files.push({ path, change: 'added' });
-  return files.sort((a, b) => a.path.localeCompare(b.path));
+  return files.sort((a, b) => byCodeUnits(a.path, b.path));
 }
 
 export function checkDiff(cwd: string, base: string, receipts: Receipt[], ignore: string[]): FileVerdict[] {

@@ -100,11 +100,14 @@ export const PUBLISHED_POLICIES: readonly SecretPolicy[] = [defaultSecretPolicy,
 
 // ---------------------------------------------------------------- primitives
 
+/** Orders strings by UTF-16 code units (RFC 8785/JCS), never by locale: 'B' < '_' < 'a', and NFC 'é' and NFD 'é' never tie. */
+export const byCodeUnits = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
+
 export function stableJson(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
   if (value && typeof value === 'object') {
     // Keys with undefined values are dropped, as JSON.stringify does, so a receipt hashes the same before and after a JSON round trip.
-    return `{${Object.entries(value as Record<string, unknown>).filter(([, item]) => item !== undefined).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => `${JSON.stringify(key)}:${stableJson(item)}`).join(',')}}`;
+    return `{${Object.entries(value as Record<string, unknown>).filter(([, item]) => item !== undefined).sort(([a], [b]) => byCodeUnits(a, b)).map(([key, item]) => `${JSON.stringify(key)}:${stableJson(item)}`).join(',')}}`;
   }
   return JSON.stringify(value) ?? 'null';
 }

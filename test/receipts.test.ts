@@ -49,3 +49,16 @@ test('seal: exact and prefix checks, forged seal and wrong key rejected', () => 
   assert.equal(verifySeal(seal, items, generateSigningKey().publicKey).reason, 'Seal signature is invalid');
   assert.match(verifySeal(null, items, keys.publicKey).reason!, /Seal is missing/);
 });
+
+// Canonical JSON must not depend on the machine's locale or on insertion order: keys sort by UTF-16 code
+// units (as RFC 8785/JCS does), so 'é' (NFC) and 'é' (NFD) are two keys in a fixed order, and upper case
+// sorts before lower case.
+test('stableJson: keys sort by code units, independent of locale and insertion order', async () => {
+  const { stableJson } = await import('../packages/verify/src/index.ts');
+  assert.equal(stableJson({ b: 1, B: 2, a: 3, _: 4 }), '{"B":2,"_":4,"a":3,"b":1}');
+  const nfc = 'é';
+  const nfd = 'é';
+  assert.equal(stableJson({ [nfc]: 1, [nfd]: 2 }), stableJson({ [nfd]: 2, [nfc]: 1 }));
+  assert.equal(stableJson({ [nfc]: 1, [nfd]: 2 }), `{"${nfd}":2,"${nfc}":1}`);
+  assert.equal(stableJson({ z: { Y: 1, y: 2 }, list: [{ b: 1, a: 2 }] }), '{"list":[{"a":2,"b":1}],"z":{"Y":1,"y":2}}');
+});
