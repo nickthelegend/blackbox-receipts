@@ -2,12 +2,18 @@ import { NextResponse } from 'next/server';
 import { merkleRoot, verifyChain } from '@blackbox/receipts';
 import { loadReceipts, signingKeys, sessionId, dataDir, tamperedSteps, sessionSource } from '@blackbox/proxy/store';
 import { existsSync } from 'node:fs';
+import { corruptResponse } from '../corrupt';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const receipts = await loadReceipts();
+  let receipts;
+  try { receipts = await loadReceipts(); } catch (error) {
+    const response = corruptResponse(error);
+    if (response) return response;
+    throw error;
+  }
   const keys = await signingKeys();
   const chain = verifyChain(receipts, keys.publicKey);
   const root = merkleRoot(receipts.map(({ hash }) => hash));

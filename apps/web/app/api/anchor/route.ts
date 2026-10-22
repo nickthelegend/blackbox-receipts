@@ -3,13 +3,19 @@ import { writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { merkleRoot } from '@blackbox/receipts';
 import { dataDir, loadReceipts, signingKeys } from '@blackbox/proxy/store';
+import { corruptResponse } from '../corrupt';
 
 export const runtime = 'nodejs';
 
 export async function POST() {
   const publisher = process.env.WALRUS_PUBLISHER_URL;
   if (!publisher) return NextResponse.json({ error: 'Walrus is not configured. Set WALRUS_PUBLISHER_URL to a funded publisher endpoint.' }, { status: 503 });
-  const receipts = await loadReceipts();
+  let receipts;
+  try { receipts = await loadReceipts(); } catch (error) {
+    const response = corruptResponse(error);
+    if (response) return response;
+    throw error;
+  }
   if (!receipts.length) return NextResponse.json({ error: 'There are no session receipts to anchor.' }, { status: 409 });
   const keys = await signingKeys();
   const root = merkleRoot(receipts.map(({ hash }) => hash));

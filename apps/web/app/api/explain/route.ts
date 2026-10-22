@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { explainCurrent } from '@blackbox/proxy/report';
+import { corruptResponse } from '../corrupt';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -11,6 +12,8 @@ export async function GET() {
   try {
     return NextResponse.json(await explainCurrent());
   } catch (error) {
+    const corrupt = corruptResponse(error);
+    if (corrupt) return corrupt;
     return NextResponse.json({ error: `Could not explain the session: ${error instanceof Error ? error.message : String(error)}` }, { status: 500 });
   }
 }

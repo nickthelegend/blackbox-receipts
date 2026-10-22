@@ -11,7 +11,7 @@ import { builtinBackend } from './builtin.js';
 import { connectUpstream } from './upstream.js';
 import { renderExplanation, renderStep } from './explain.js';
 import { explainCurrent } from './report.js';
-import { addReceipt, archiveSession, isSecretPath, resumeSession, sealSession } from './store.js';
+import { addReceipt, archiveSession, CorruptLogError, isSecretPath, loadReceipts, resumeSession, sealSession } from './store.js';
 
 const argv = process.argv.slice(2);
 const upstreamIndex = argv.indexOf('--upstream');
@@ -113,6 +113,15 @@ process.stdin.on('end', () => void shutdown());
 process.on('SIGTERM', () => void shutdown());
 process.on('SIGINT', () => void shutdown());
 
-// A new proxy starts a new session; the previous one is archived under sessions/, never deleted.
+// A new proxy starts a new session; the previous one is archived under sessions/, never deleted (a log
+// that no longer parses is kept as sessions/corrupt-*). A proxy resuming a session refuses to start on a
+// corrupt log, so no tool runs whose receipt could not be appended.
 if (!resumeSession) await archiveSession();
+else {
+  try { await loadReceipts(); } catch (error) {
+    if (!(error instanceof CorruptLogError)) throw error;
+    console.error(`blackbox-proxy: ${error.message}. Not resuming it: start a new session (blackbox-call --new-session, or a proxy without RECEIPTS_RESUME), which keeps the damaged log under sessions/.`);
+    process.exit(1);
+  }
+}
 await server.connect(new StdioServerTransport());

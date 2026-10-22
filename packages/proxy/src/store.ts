@@ -127,24 +127,48 @@ async function withFileLock<T>(work: () => Promise<T>): Promise<T> {
   }
 }
 
-export async function loadReceipts(): Promise<Receipt[]> {
+/**
+ * A line of a receipt log (or its witness) that is not one JSON record: an append torn by a process killed
+ * mid-write, or an edit. Every reader stops there with this error, which names the file and the line,
+ * instead of a bare SyntaxError, so the CLI and the dashboard can report a located FAIL.
+ */
+export class CorruptLogError extends Error {
+  override readonly name = 'CorruptLogError';
+  constructor(readonly file: string, readonly line: number, readonly detail: string) {
+    super(`${file} is corrupt at line ${line}: ${detail}. The line is not one JSON record (an append cut short by a killed process, or an edit), so the log cannot be verified past it`);
+  }
+}
+
+/** Parses JSON Lines, numbering lines as they are in the file; `label` names the file in errors. Blank lines are skipped. */
+export function parseJsonLines<T>(text: string, label: string): T[] {
+  const records: T[] = [];
+  text.split('\n').forEach((line, index) => {
+    if (!line.trim()) return;
+    let value: unknown;
+    try { value = JSON.parse(line); } catch (error) {
+      throw new CorruptLogError(label, index + 1, (error instanceof Error ? error.message : String(error)).replace(/ \(line \d+ column \d+\)$/, ''));
+    }
+    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new CorruptLogError(label, index + 1, 'valid JSON, but not a record');
+    records.push(value as T);
+  });
+  return records;
+}
+
+async function readJsonLines<T>(file: string, label: string): Promise<T[]> {
   try {
-    const lines = (await readFile(sessionFile, 'utf8')).trim().split('\n').filter(Boolean);
-    return lines.map((line) => JSON.parse(line) as Receipt);
+    return parseJsonLines<T>(await readFile(file, 'utf8'), label);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
     throw error;
   }
 }
 
-export async function loadWitnesses(): Promise<Witness[]> {
-  try {
-    const lines = (await readFile(witnessFile, 'utf8')).trim().split('\n').filter(Boolean);
-    return lines.map((line) => JSON.parse(line) as Witness);
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
-    throw error;
-  }
+export function loadReceipts(): Promise<Receipt[]> {
+  return readJsonLines<Receipt>(sessionFile, 'session.jsonl');
+}
+
+export function loadWitnesses(): Promise<Witness[]> {
+  return readJsonLines<Witness>(witnessFile, 'witness.jsonl');
 }
 
 export type CallRecord = {
@@ -209,7 +233,11 @@ export const archiveDir = resolve(dataDir, 'sessions');
  */
 export function archiveSession(): Promise<string | null> {
   return withSessionLock(async () => {
-    const receipts = await loadReceipts();
+    let receipts: Receipt[];
+    try { receipts = await loadReceipts(); } catch (error) {
+      if (!(error instanceof CorruptLogError)) throw error;
+      return archiveCorrupt(error);
+    }
     if (!receipts.length) {
       // A seal next to an empty log means a sealed session was emptied; keep that evidence aside.
       const orphan = await loadSeal();
@@ -234,6 +262,22 @@ export function archiveSession(): Promise<string | null> {
   });
 }
 
+/**
+ * A log that no longer parses can't be sealed or verified, but it is still evidence: it moves, byte for
+ * byte with its witness, seal and tamper backup, to sessions/corrupt-<time>.*, and a new session starts.
+ */
+async function archiveCorrupt(error: CorruptLogError): Promise<string> {
+  await mkdir(archiveDir, { recursive: true, mode: 0o700 });
+  const base = resolve(archiveDir, `corrupt-${new Date().toISOString().replace(/[:.]/g, '-')}`);
+  const moves: [string, string][] = [[sessionFile, `${base}.jsonl`], [witnessFile, `${base}.witness.jsonl`], [sealFile, `${base}.seal.json`], [tamperBackupFile, `${base}.tamper-backup.json`]];
+  for (const [from, to] of moves) {
+    try { await rename(from, to); } catch (moveError) { if ((moveError as NodeJS.ErrnoException).code !== 'ENOENT') throw moveError; }
+  }
+  await Promise.all([writeFile(sessionFile, '', { mode: 0o600 }), writeFile(witnessFile, '', { mode: 0o600 })]);
+  console.error(`blackbox: ${error.message}. Kept it as ${relative(dataDir, `${base}.jsonl`)} in the store and started a new session.`);
+  return `${base}.jsonl`;
+}
+
 // Tamper demonstration. The original line of every edited block is kept here, keyed by the receipt's
 // stored hash (which the edit leaves alone), so `restoreSession` can undo it without dropping blocks
 // the proxy appended after the tamper.
@@ -255,7 +299,9 @@ export async function tamperedSteps(): Promise<number[]> {
 /** Edits the tool name of the block with this step in the current log. Returns the edited step. */
 export function tamperReceipt(step: number): Promise<number> {
   return withSessionLock(async () => {
-    const lines = (await readFile(sessionFile, 'utf8').catch(() => '')).split('\n').filter(Boolean);
+    const text = await readFile(sessionFile, 'utf8').catch(() => '');
+    parseJsonLines<Receipt>(text, 'session.jsonl');
+    const lines = text.split('\n').filter(Boolean);
     if (!lines.length) throw new Error('Record a real tool call before running the tamper demonstration.');
     const index = lines.findIndex((line) => (JSON.parse(line) as Receipt).step === step);
     if (index === -1) throw new Error(`There is no block ${step} in the current log (it has ${lines.length}).`);
@@ -275,7 +321,9 @@ export function restoreSession(): Promise<number[]> {
   return withSessionLock(async () => {
     const backup = await loadTamperBackup();
     if (!Object.keys(backup).length) throw new Error('Nothing to restore: no block has been tampered with.');
-    const lines = (await readFile(sessionFile, 'utf8').catch(() => '')).split('\n').filter(Boolean);
+    const text = await readFile(sessionFile, 'utf8').catch(() => '');
+    parseJsonLines<Receipt>(text, 'session.jsonl');
+    const lines = text.split('\n').filter(Boolean);
     const restored: number[] = [];
     const next = lines.map((line) => {
       const original = backup[(JSON.parse(line) as Receipt).hash];

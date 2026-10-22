@@ -2,6 +2,7 @@
 // (git log, read README.md, ls packages, a .env read the proxy denied, git show --stat). The tests tamper
 // with and restore that throwaway store, and record one more real call while the page is open.
 import { spawnSync } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { EMPTY, LIVE, REPO, storeEnv } from './env.ts';
 import { expectNoHorizontalScroll, logControls, test, expect } from './fixtures.ts';
@@ -231,6 +232,36 @@ test.describe('recorder: empty store', () => {
     await reverify;
     await expectNoHorizontalScroll(page);
     await page.screenshot({ path: test.info().outputPath('recorder-empty.png'), animations: 'disabled', fullPage: true });
+  });
+});
+
+test.describe('recorder: a torn log line', () => {
+  // A proxy killed mid-append leaves a half-written last line. The dashboard must say which line of which
+  // file is damaged, not fail with a bare server error. Uses the empty store and empties it again after.
+  test('the session API answers 409 naming the line, and the page shows it as an alert', async ({ page, problems }) => {
+    problems.allow(new RegExp(`HTTP 409 GET http://127\\.0\\.0\\.1:${EMPTY.port}/api/session$`));
+    problems.allow(/console error: Failed to load resource: the server responded with a status of 409/);
+    const live = readFileSync(join(storeEnv(LIVE.dir).RECEIPTS_DIR, 'session.jsonl'), 'utf8').split('\n');
+    const file = join(storeEnv(EMPTY.dir).RECEIPTS_DIR, 'session.jsonl');
+    writeFileSync(file, `${live[0]}\n${live[1].slice(0, Math.floor(live[1].length / 2))}`);
+    try {
+      const response = await page.request.get(`http://127.0.0.1:${EMPTY.port}/api/session`);
+      expect(response.status()).toBe(409);
+      const body = await response.json();
+      expect(body.corruptLine).toBe(2);
+      expect(body.error).toMatch(/^session\.jsonl is corrupt at line 2: /);
+      await page.goto(`http://127.0.0.1:${EMPTY.port}/recorder`);
+      await expect(page.getByRole('alert').filter({ hasText: 'Could not load the session' })).toContainText('session.jsonl is corrupt at line 2');
+      await expect(page.locator('.rc-empty')).toContainText('Session unavailable');
+      await expectNoHorizontalScroll(page);
+      await page.screenshot({ path: test.info().outputPath('recorder-torn-log.png'), animations: 'disabled', fullPage: true });
+    } finally {
+      writeFileSync(file, '');
+    }
+    const reverify = page.waitForResponse((response) => response.url().endsWith('/api/session') && response.ok());
+    await page.getByRole('button', { name: 'Re-verify' }).click();
+    await reverify;
+    await expect(page.locator('.rc-empty')).toContainText('Recorder armed. Nothing recorded yet.');
   });
 });
 
