@@ -27,7 +27,7 @@ implies a step that didn't run.
 - **Policy versions.** The committed runs were proven under `no-secrets-read/v1`. Anything recorded now runs under
   `no-secrets-read/v2` (adds `.git/**`, `.npmrc`, `.netrc` and other credential files). Read the version off the
   verdict line; don't mix them up in narration.
-- **Counts.** `pnpm test`: 76 tests, 71 pass, 5 skipped (live Zetaris and Meterless tests; no keys or runtime).
+- **Counts.** `pnpm test`: 77 tests, 72 pass, 5 skipped (live Zetaris and Meterless tests; no keys or runtime).
   Browser E2E: 33 tests in each of two viewports, all passing. Re-check both on the day and say what you see.
 
 ## Before you record

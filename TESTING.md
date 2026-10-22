@@ -30,7 +30,7 @@ Counted on 2026-10-22 at the commit that adds this line, run file by file:
 | `symlink-escape.test.ts` | 2 | 2 | 0 | `safePath` refuses a new file under a symlinked folder that leads outside, behind a dangling symlink, or through a missing folder under one, and names a write through an inside symlink by its real path; through the real proxy, `write_file link/escape.txt` and `write_file dangling` fail with nothing written outside, and a write through `alias/` is signed as `real/kept.txt` (added 2026-10-22) |
 | `ci-config.test.ts` | 1 | 1 | 0 | `.gitlab-ci.yml`: the build job's artifacts include every built workspace package's `dist` (zetaris included), which the test job's typecheck needs (added 2026-10-22) |
 | `gitignore.test.ts` | 1 | 1 | 0 | `git check-ignore`: `.env.*` (not `.env.example`), `*.mp4`, `*.mov`, `*.webm`, `test-results/` and `playwright-report/` anywhere are ignored, and nothing tracked is (added 2026-10-22) |
-| **Total** | **76** | **71** | **5** | Skipped tests print a `⚠️ SKIPPING LIVE … TESTS` banner, so a green run never implies a sponsor call happened |
+| **Total** | **77** | **72** | **5** | Skipped tests print a `⚠️ SKIPPING LIVE … TESTS` banner, so a green run never implies a sponsor call happened |
 
 ## Other checks (all pass at this commit)
 
