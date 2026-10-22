@@ -1,4 +1,4 @@
-import { appendFile, link, mkdir, open, readFile, rename, rm, unlink, writeFile } from 'node:fs/promises';
+import { appendFile, link, mkdir, open, readFile, rename, rm, stat, unlink, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { basename, dirname, join, resolve, relative, isAbsolute, sep } from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -106,6 +106,34 @@ function holderIsDead(content: string): boolean {
   try { process.kill(pid, 0); return false; } catch (error) { return (error as NodeJS.ErrnoException).code === 'ESRCH'; }
 }
 
+// Reclaiming a dead holder's lock is itself serialised by a second lock file. Without it, two waiters that
+// both read the dead pid could each delete session.lock, the second one deleting the fresh lock the first
+// had just taken, and both would append with the same step and previousHash.
+const reclaimFile = `${lockFile}.reclaim`;
+// The reclaim critical section is one read and one unlink; a reclaim lock older than this was left by a
+// waiter that died inside it.
+const RECLAIM_STALE_MS = 5_000;
+
+/** Removes session.lock only if, under the reclaim lock, it still names a dead process. True if removed. */
+async function reclaimStaleLock(): Promise<boolean> {
+  let handle;
+  try { handle = await open(reclaimFile, 'wx', 0o600); } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+    const age = await stat(reclaimFile).then((info) => Date.now() - info.mtimeMs, () => 0);
+    if (age > RECLAIM_STALE_MS) await rm(reclaimFile, { force: true });
+    return false;
+  }
+  try {
+    // Read again under the reclaim lock: another waiter may already have reclaimed it and taken a new one.
+    if (!holderIsDead(await readFile(lockFile, 'utf8').catch(() => ''))) return false;
+    await rm(lockFile, { force: true });
+    return true;
+  } finally {
+    await handle.close();
+    await rm(reclaimFile, { force: true });
+  }
+}
+
 async function withFileLock<T>(work: () => Promise<T>): Promise<T> {
   await mkdir(dataDir, { recursive: true, mode: 0o700 });
   const started = Date.now();
@@ -122,7 +150,7 @@ async function withFileLock<T>(work: () => Promise<T>): Promise<T> {
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
       // A holder that crashed leaves its lock behind; reclaim it only when its process is gone.
-      if (holderIsDead(await readFile(lockFile, 'utf8').catch(() => ''))) { await rm(lockFile, { force: true }); continue; }
+      if (holderIsDead(await readFile(lockFile, 'utf8').catch(() => '')) && await reclaimStaleLock()) continue;
       if (Date.now() - started > LOCK_TIMEOUT_MS) throw new Error(`Timed out after ${LOCK_TIMEOUT_MS / 1000}s waiting for the receipt log lock ${lockFile}. If no Blackbox process is running, delete that file.`);
       await new Promise((done) => setTimeout(done, 3 + Math.random() * 12));
     }
