@@ -6,6 +6,8 @@ dist/
 .vercel/
 .env
 .env.local
+.env.*
+!.env.example
 .blackbox/
 coverage/
 .pnpm-store/
@@ -16,6 +18,11 @@ coverage/
 apps/web/.pages-build/
 /public/
 
-# Playwright E2E output (videos, traces, HTML report).
-e2e/test-results/
-e2e/playwright-report/
+# Playwright E2E output (videos, traces, HTML report), wherever a run puts it.
+test-results/
+playwright-report/
+
+# Screen recordings and demo videos are published elsewhere, never committed.
+*.mp4
+*.mov
+*.webm
