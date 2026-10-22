@@ -60,7 +60,10 @@ function planBuiltin(name: string, args: Record<string, unknown>): Omit<Planned,
       const path = separator > 0 ? requested[0].slice(separator + 1) : '';
       if (!PLAIN_REVISION.test(rev) || !path || path.startsWith('-') || /[*?\[\]]/.test(path)) throw new Error('git show requires one revision:path argument with a plain revision (no options)');
       paths = [safeFilePath(path).relativePath];
-      showSpec = `${rev}:${path}`;
+      // git reads `rev:path` from the repository root; `rev:./path` is relative to the working directory,
+      // which is where the path was checked. Built from the checked path, so git shows exactly the file
+      // the receipt names.
+      showSpec = `${rev}:./${paths[0]}`;
     }
     if (action === 'show_stat' && (requested.length > 1 || requested.some((rev) => !PLAIN_REVISION.test(rev)))) throw new Error('git show_stat accepts at most one plain revision');
     const gitArgs: Record<string, string[]> = {

@@ -37,3 +37,26 @@ test('git: show refuses options as the revision and writes no file; a plain rev:
   const receipts = readFileSync(join(dataDir, 'session.jsonl'), 'utf8').trim().split('\n').map((line) => JSON.parse(line) as Receipt);
   assert.deepEqual(receipts.map((item) => item.outcome), ['error', 'error', 'error', 'ok']);
 });
+
+// git resolves `rev:path` from the repository root, but the proxy checks paths against its working
+// directory. Run from a subdirectory, `HEAD:outside.txt` must read sub/outside.txt (what was checked and
+// signed), never the root file of the same name.
+test('git: show from a subdirectory reads the path relative to the proxy cwd, the one its receipt names', async () => {
+  const repo = mkdtempSync(join(tmpdir(), 'blackbox-gitsub-'));
+  const git = (...args: string[]) => execFileSync('git', args, { cwd: repo, stdio: 'ignore' });
+  git('init', '-q');
+  mkdirSync(join(repo, 'sub'));
+  writeFileSync(join(repo, 'outside.txt'), 'ROOTFILE\n');
+  writeFileSync(join(repo, 'sub/outside.txt'), 'SUBFILE\n');
+  git('add', '-A');
+  git('-c', 'user.name=t', '-c', 'user.email=t@example.com', 'commit', '-q', '-m', 'init');
+  const dataDir = mkdtempSync(join(tmpdir(), 'blackbox-gitsub-store-'));
+  const env = { RECEIPTS_DIR: dataDir, BLACKBOX_KEY_DIR: mkdtempSync(join(tmpdir(), 'blackbox-keys-')), RECEIPTS_RESUME: undefined };
+  const client = await connectProxy({ cwd: join(repo, 'sub'), env });
+  let result;
+  try { result = await client.callTool({ name: 'git', arguments: { action: 'show', args: ['HEAD:outside.txt'] } }); } finally { await client.close(); }
+  assert.equal(result.isError, undefined, JSON.stringify(result.content));
+  assert.equal((result.content as { text: string }[])[0].text, 'SUBFILE\n');
+  const [receipt] = readFileSync(join(dataDir, 'session.jsonl'), 'utf8').trim().split('\n').map((line) => JSON.parse(line) as Receipt);
+  assert.deepEqual(receipt.paths, ['outside.txt']);
+});
