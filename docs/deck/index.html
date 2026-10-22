@@ -282,13 +282,13 @@ seal matches, proof verified</span>
 <section class="slide" aria-label="Slide 9: tests and checks">
   <div class="in">
     <p class="kicker">What is checked, every commit</p>
-    <h2>87 tests, 82 pass, 5 skipped only because sponsor keys are missing.</h2>
+    <h2>96 tests, 91 pass, 5 skipped only because sponsor keys are missing.</h2>
     <div class="grid3">
-      <div class="card"><p class="num">82<small>/ 87</small></p><h3 style="margin-top:1cqw">node:test, no mocked APIs</h3><p>Real proxy processes over stdio, real git repos, real signatures. Skipped live tests print a warning banner.</p></div>
+      <div class="card"><p class="num">91<small>/ 96</small></p><h3 style="margin-top:1cqw">node:test, no mocked APIs</h3><p>Real proxy processes over stdio, real git repos, real signatures. Skipped live tests print a warning banner.</p></div>
       <div class="card"><p class="num">3</p><h3 style="margin-top:1cqw">Recorded agent runs</h3><p>Re-verified in CI from their exported files: two PASS (one with a neutral prompt), one FAIL at step 3 with chain and seal intact.</p></div>
       <div class="card"><p class="num">3</p><h3 style="margin-top:1cqw">Gated branches</h3><p>The attest-diff demo’s committed output is re-checked: attestation signatures, chains, seals, verdicts.</p></div>
     </div>
-    <p class="lead" style="max-width:none;font-size:1.3cqw;margin-top:2.4cqw">Plus <code>pnpm typecheck</code>, <code>pnpm lint</code>, <code>pnpm build</code>, a live proxy session in CI (clean PASS, secret read FAIL at its step, tampered log FAIL at step 1, empty session FAIL), and 36 browser E2E tests in Google Chrome at 1280 px and 375 px, all passing.</p>
+    <p class="lead" style="max-width:none;font-size:1.3cqw;margin-top:2.4cqw">Plus <code>pnpm typecheck</code>, <code>pnpm lint</code>, <code>pnpm build</code>, a live proxy session in CI (clean PASS, secret read FAIL at its step, tampered log FAIL at step 1, empty session FAIL), and 37 browser E2E tests in Google Chrome at 1280 px and 375 px, all passing.</p>
   </div>
   <div class="foot"><span>TESTING.md · .github/workflows/ci.yml · scripts/ci/*.sh</span><span><b>09</b> / 11</span></div>
 </section>
