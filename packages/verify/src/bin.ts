@@ -51,7 +51,12 @@ try {
   process.exit(2);
 }
 
-const result = verifyPack(pack, { pinnedPublicKey, expectedPolicyHash: policyHash(expected), expectedPolicyId: expected.id });
+let result: ReturnType<typeof verifyPack>;
+try { result = verifyPack(pack, { pinnedPublicKey, expectedPolicyHash: policyHash(expected), expectedPolicyId: expected.id }); } catch (error) {
+  // verifyPack locates every malformed receipt it knows of; anything else still ends in a readable line.
+  console.error(`FAIL: ${files[0]} could not be verified: ${error instanceof Error ? error.message : String(error)}`);
+  process.exit(2);
+}
 if (args.includes('--json')) console.log(JSON.stringify(result, null, 2));
 else {
   console.log(result.headline);

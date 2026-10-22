@@ -166,6 +166,16 @@ test.describe('verify', () => {
     expect(requests, 'requests made after the page loaded').toEqual([]);
   });
 
+  test('a malformed pack (a null receipt) fails format at that step, with no page error', async ({ page }) => {
+    const pack = JSON.parse(readFileSync(PASS_PACK, 'utf8'));
+    pack.receipts.push(null);
+    await page.locator('input[type=file]').setInputFiles({ name: 'null-receipt.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(pack)) });
+    await expect(page.locator('.vf-badge')).toHaveText('FAIL');
+    await expect(page.locator('.vf-headline')).toHaveText('FAIL format at step 15: receipt is not an object');
+    await expect(page.locator('.vf-step-bad .vf-step-n')).toHaveText('15');
+    await expectNoHorizontalScroll(page);
+  });
+
   test('header links', async ({ page }) => {
     await page.getByRole('link', { name: 'Open recorder' }).click();
     await expect(page).toHaveURL(/\/recorder$/);

@@ -50,6 +50,28 @@ export function keyFingerprint(pem: string): string {
   return sha256Hex(publicKeyFromPem(pem));
 }
 
+const HEX64 = /^[0-9a-f]{64}$/;
+const BASE64 = /^[A-Za-z0-9+/]+={0,2}$/;
+const isStrings = (value: unknown) => Array.isArray(value) && value.every((item) => typeof item === 'string');
+
+/** Why a receipt in a pack is not shaped like one, or null. Checked before any hashing, so bad input fails at its step instead of throwing. */
+export function receiptShapeError(receipt: unknown): string | null {
+  if (!receipt || typeof receipt !== 'object' || Array.isArray(receipt)) return 'is not an object';
+  const item = receipt as Record<string, unknown>;
+  if (!Number.isInteger(item.step)) return 'step is not an integer';
+  if (typeof item.sessionId !== 'string') return 'sessionId is not a string';
+  if (typeof item.tool !== 'string') return 'tool is not a string';
+  if (typeof item.timestamp !== 'string') return 'timestamp is not a string';
+  if (typeof item.hash !== 'string' || !HEX64.test(item.hash)) return 'hash is not 64 hex characters';
+  if (item.previousHash !== null && (typeof item.previousHash !== 'string' || !HEX64.test(item.previousHash))) return 'previousHash is neither null nor 64 hex characters';
+  if (typeof item.argsHash !== 'string' || typeof item.resultHash !== 'string') return 'argsHash or resultHash is not a string';
+  if (typeof item.signature !== 'string' || !BASE64.test(item.signature)) return 'signature is not base64';
+  if (!isStrings(item.paths)) return 'paths is not a list of strings';
+  if (!isStrings(item.permissions)) return 'permissions is not a list of strings';
+  if (typeof item.secretsAccessed !== 'boolean') return 'secretsAccessed is not true or false';
+  return null;
+}
+
 /** Parses a pack file, with a readable error for anything that isn't one. */
 export function parsePack(text: string): Pack {
   let value: unknown;
@@ -69,10 +91,18 @@ export function verifyPack(pack: Pack, options: PackOptions = {}): PackResult {
   let fingerprint: string | null = null;
   try { fingerprint = typeof pack?.publicKey === 'string' ? keyFingerprint(pack.publicKey) : null; } catch { fingerprint = null; }
   let keyPinned = false;
-  const result = (headline: string, brokenAt: number | null = null): PackResult => ({ ok: checks.every((check) => check.ok), headline, brokenAt, sessionId: receipts[0]?.sessionId ?? null, root: receipts.length ? merkleRoot(receipts.map(({ hash }) => hash)) : null, policyId, steps, checks, keyPinned, keyFingerprint: fingerprint });
+  const rootOf = (): string | null => { try { return receipts.length ? merkleRoot(receipts.map(({ hash }) => hash)) : null; } catch { return null; } };
+  const result = (headline: string, brokenAt: number | null = null): PackResult => ({ ok: checks.every((check) => check.ok), headline, brokenAt, sessionId: typeof receipts[0]?.sessionId === 'string' ? receipts[0].sessionId : null, root: rootOf(), policyId, steps, checks, keyPinned, keyFingerprint: fingerprint });
 
   if (pack?.format !== PACK_FORMAT) { checks.push({ name: 'format', ok: false, detail: `Not a ${PACK_FORMAT} pack` }); return result(`FAIL: not a ${PACK_FORMAT} pack`); }
   if (!receipts.length) { checks.push({ name: 'format', ok: false, detail: 'The pack holds no receipts' }); return result('FAIL: the pack holds no receipts, so there is nothing to verify'); }
+  for (let index = 0; index < receipts.length; index++) {
+    const shape = receiptShapeError(receipts[index]);
+    if (!shape) continue;
+    checks.push({ name: 'format', ok: false, detail: `Receipt ${index + 1} ${shape}` });
+    if (steps[index]) Object.assign(steps[index], { status: 'broken', reason: `Malformed: ${shape}` });
+    return result(`FAIL format at step ${index + 1}: receipt ${shape}`, index + 1);
+  }
   checks.push({ name: 'format', ok: true, detail: `${receipts.length} receipts for session ${receipts[0].sessionId}` });
 
   try {
@@ -101,7 +131,8 @@ export function verifyPack(pack: Pack, options: PackOptions = {}): PackResult {
     }
   }
 
-  const seal = verifySeal(pack.seal, receipts, pack.publicKey, 'exact');
+  let seal;
+  try { seal = verifySeal(pack.seal, receipts, pack.publicKey, 'exact'); } catch (error) { seal = { valid: false, reason: `Seal is malformed: ${error instanceof Error ? error.message : String(error)}` }; }
   checks.push({ name: 'seal', ok: seal.valid, detail: seal.valid ? `Signed seal covers all ${pack.seal!.count} receipts` : seal.reason! });
 
   // The property: a valid proof under the pinned policy, or, without one, the first receipt that is
@@ -112,7 +143,10 @@ export function verifyPack(pack: Pack, options: PackOptions = {}): PackResult {
     Object.assign(item, { status: 'flagged', reason: `Signed as a secret access (${flagged.outcome === 'denied' ? 'denied by the proxy before it ran' : 'flagged by the proxy'})` });
   }
   if (pack.proof) {
-    const proof = pack.proof.sessionId !== receipts[0].sessionId ? { valid: false as const, step: null, reason: 'Proof belongs to a different session' } : verifyPropertyProof(pack.proof, pack.publicKey, merkleRoot(receipts.map(({ hash }) => hash)), expectedPolicyHash);
+    let proof: ReturnType<typeof verifyPropertyProof>;
+    try {
+      proof = pack.proof.sessionId !== receipts[0].sessionId ? { valid: false as const, step: null, reason: 'Proof belongs to a different session' } : verifyPropertyProof(pack.proof, pack.publicKey, merkleRoot(receipts.map(({ hash }) => hash)), expectedPolicyHash);
+    } catch (error) { proof = { valid: false, step: null, reason: `Proof is malformed: ${error instanceof Error ? error.message : String(error)}` }; }
     checks.push({ name: 'property', ok: proof.valid, detail: proof.valid ? `Proof verified: all ${proof.steps} receipts satisfy ${proof.policyId}` : `${proof.step === null ? '' : `Step ${proof.step}: `}${proof.reason}` });
   } else {
     checks.push({ name: 'property', ok: false, detail: flagged ? `No proof: step ${flagged.step} (${flagged.tool} ${flagged.paths.join(' ')}) is signed as a secret access` : `No property proof in the pack. Prover reported: ${pack.verdict || 'nothing'}` });

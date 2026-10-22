@@ -95,3 +95,24 @@ test('blackbox-verify bin: committed packs PASS / FAIL at step 3 under v1, the p
   assert.equal(bin().code, 2);
   assert.equal(bin(join(repoRoot, 'no-such-pack.json')).code, 2);
 });
+
+// A pack whose receipts are the wrong shape must give a located FAIL (exit 1), never a stack trace.
+test('blackbox-verify bin: malformed receipts (non-hex hash, missing paths, a null receipt) FAIL format at that step without a stack trace', async () => {
+  const { runScript } = await import('./fixtures/run.ts');
+  const dir = mkdtempSync(join(tmpdir(), 'blackbox-malformed-'));
+  const variants: [string, (pack: { receipts: unknown[]; proof: unknown }) => void, RegExp][] = [
+    ['bad-hash', (pack) => { (pack.receipts[0] as { hash: string }).hash = 'zz'; }, /^FAIL format at step 1: receipt hash is not 64 hex characters\n/],
+    ['no-paths', (pack) => { pack.proof = null; const second = pack.receipts[1] as { secretsAccessed: boolean; paths?: string[] }; second.secretsAccessed = true; delete second.paths; }, /^FAIL format at step 2: receipt paths is not a list of strings\n/],
+    ['null-receipt', (pack) => { pack.receipts.push(null); }, /^FAIL format at step 15: receipt is not an object\n/],
+  ];
+  for (const [name, edit, expected] of variants) {
+    const pack = JSON.parse(readFileSync(PASS_PACK, 'utf8'));
+    edit(pack);
+    const file = join(dir, `${name}.json`);
+    writeFileSync(file, JSON.stringify(pack, null, 2));
+    const result = runScript('packages/verify/src/bin.ts', dir, [file, '--expect-policy', 'no-secrets-read/v1'], { BLACKBOX_PUBLIC_KEY: undefined });
+    assert.equal(result.code, 1, `${name}: ${result.out}`);
+    assert.match(result.out, expected, name);
+    assert.doesNotMatch(result.out, /\n\s+at |TypeError|RangeError|SyntaxError/, `${name}: stack trace`);
+  }
+});

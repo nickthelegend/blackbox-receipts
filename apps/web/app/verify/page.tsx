@@ -62,8 +62,8 @@ function load(name: string, text: string, edit: string | null, sample: boolean, 
 
 /** Changes exactly one character of the pack file: a hex digit of the chosen step's resultHash. */
 function flipOneByte(text: string, pack: Pack, step: number): { text: string; offset: number } | null {
-  const receipt = pack.receipts.find((item) => item.step === step);
-  if (!receipt) return null;
+  const receipt = pack.receipts.find((item) => item?.step === step);
+  if (!receipt || typeof receipt.resultHash !== 'string') return null;
   const from = text.indexOf(`"step": ${step},`);
   const at = text.indexOf(receipt.resultHash, from);
   if (from < 0 || at < 0) return null;
@@ -224,7 +224,7 @@ export default function VerifyPage() {
             <label className="vf-select-wrap">
               <span className="vf-sr">Step to edit</span>
               <select value={flipStep} onChange={(event) => setFlipStep(Number(event.target.value))}>
-                {loaded.pack.receipts.map((receipt) => <option key={receipt.step} value={receipt.step}>Step {receipt.step}</option>)}
+                {result.steps.map((item, index) => <option key={`${index}-${item.step}`} value={item.step}>Step {item.step}</option>)}
               </select>
             </label>
             <button type="button" className="vf-btn" onClick={flip}>Flip one byte</button>
