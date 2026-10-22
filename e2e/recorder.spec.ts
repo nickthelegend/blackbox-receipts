@@ -4,7 +4,7 @@
 import { spawnSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { EMPTY, LIVE, REPO, storeEnv } from './env.ts';
+import { EMPTY, LIVE, PAGES, REPO, storeEnv } from './env.ts';
 import { expectNoHorizontalScroll, logControls, test, expect } from './fixtures.ts';
 import type { Page } from '@playwright/test';
 
@@ -262,6 +262,46 @@ test.describe('recorder: a torn log line', () => {
     await page.getByRole('button', { name: 'Re-verify' }).click();
     await reverify;
     await expect(page.locator('.rc-empty')).toContainText('Recorder armed. Nothing recorded yet.');
+  });
+});
+
+test.describe('recorder: requests from another site', () => {
+  // A page on another origin (here the static site on another port, then a page under another host name) fires
+  // the simple, preflight-free POSTs a CSRF attack would: restore an edited block, run a proof. The API must
+  // refuse them, so the tamper stays visible; the dashboard's own requests keep working.
+  test('cross-origin POSTs to /api/restore and /api/prove are refused, and the store is left as it was', async ({ page, problems }) => {
+    problems.allow(new RegExp(`HTTP 403 POST http://127\\.0\\.0\\.1:${LIVE.port}/api/(restore|prove)$`));
+    problems.allow(/console error: Failed to load resource: the server responded with a status of 403/);
+    const api = `http://127.0.0.1:${LIVE.port}`;
+    expect((await page.request.post(`${api}/api/tamper`, { data: { step: 2 } })).ok()).toBe(true);
+    try {
+      for (const attacker of [`http://127.0.0.1:${PAGES.port}${PAGES.base}/`, `http://blackbox.test:${PAGES.port}${PAGES.base}/`]) {
+        await page.goto(attacker);
+        const statuses = await page.evaluate(async (target) => {
+          const out: string[] = [];
+          for (const path of ['/api/restore', '/api/prove']) {
+            const response = await fetch(`${target}${path}`, { method: 'POST', mode: 'no-cors' });
+            out.push(response.type);
+          }
+          return out;
+        }, api);
+        expect(statuses).toEqual(['opaque', 'opaque']);
+        const body = await (await page.request.get(`${api}/api/session`)).json();
+        expect(body.tampered, `a request from ${attacker} undid the tamper`).toEqual([2]);
+      }
+      // What the attacker's request got, seen from the server side: a readable refusal.
+      const refused = await page.request.post(`${api}/api/restore`, { headers: { 'Sec-Fetch-Site': 'cross-site', Origin: 'http://evil.example' } });
+      expect(refused.status()).toBe(403);
+      expect((await refused.json()).error).toContain('refused a cross-site request from http://evil.example');
+    } finally {
+      // Leave the shared store as the other tests expect it, without masking the assertion that failed.
+      if ((await (await page.request.get(`${api}/api/session`)).json()).tampered?.length) await page.request.post(`${api}/api/restore`);
+    }
+    // The dashboard's own same-origin requests still go through.
+    await page.goto('/recorder');
+    await expect(lamp(page, 'Chain')).toContainText('Verified');
+    await page.getByRole('button', { name: 'Prove: no secrets read' }).click();
+    await expect(lamp(page, 'No-secrets proof')).toContainText('Fail');
   });
 });
 
