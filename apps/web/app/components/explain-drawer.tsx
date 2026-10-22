@@ -44,7 +44,8 @@ export function ExplainDrawer({ step, verdict, source, onClose, onSelect }: {
 
   if (!step) return null;
   const finding = FINDING[step.finding];
-  return <div className="xd" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+  // preventDefault keeps the mousedown from moving focus to <body> after the drawer has handed it back.
+  return <div className="xd" onMouseDown={(event) => { if (event.target === event.currentTarget) { event.preventDefault(); onClose(); } }}>
     <section className="xd-panel" role="dialog" aria-modal="true" aria-labelledby="xd-title">
       <header className="xd-head">
         <div>
