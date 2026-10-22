@@ -15,3 +15,7 @@ coverage/
 # Static Pages build (scripts/build-pages.mjs): scratch stage and exported site.
 apps/web/.pages-build/
 /public/
+
+# Playwright E2E output (videos, traces, HTML report).
+e2e/test-results/
+e2e/playwright-report/

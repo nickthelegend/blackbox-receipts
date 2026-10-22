@@ -1,0 +1,6 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": { "noEmit": true, "allowImportingTsExtensions": true, "rootDir": "..", "lib": ["ES2022", "DOM"] },
+  "include": ["**/*.ts"],
+  "exclude": ["test-results", "playwright-report"]
+}
