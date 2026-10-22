@@ -95,3 +95,28 @@ test('verify-export: FAIL when nothing was exported', () => {
   assert.equal(result.code, 1);
   assert.match(result.out, /no exported sessions found/);
 });
+
+// A malformed export is a located FAIL naming its folder, never a stack trace, and the other exports are
+// still checked: a bad public-key.pem or proof file must not abort the loop.
+test('verify-export, attest-diff --from and pack --from: a malformed export is a located FAIL, and the loop goes on', () => {
+  const ws = workspace();
+  ws.call('--new-session', 'read_file', '{"path":"notes.md"}');
+  assert.equal(ws.cli(['export', 'receipts/good']).code, 0);
+  for (const name of ['badkey', 'badproof']) assert.equal(ws.cli(['export', `receipts/${name}`]).code, 0);
+  writeFileSync(join(ws.cwd, 'receipts/badkey/public-key.pem'), 'not a key\n');
+  writeFileSync(join(ws.cwd, 'receipts/badproof/proof-no-secrets.json'), '{bad');
+  const all = ws.cli(['verify-export', 'receipts/badkey', 'receipts/badproof', 'receipts/good']);
+  assert.equal(all.code, 1, all.out);
+  assert.doesNotMatch(all.out, /^\s+at /m, 'no stack trace');
+  assert.match(all.out, /^FAIL no-secrets-read \[policy [^\]]+\]: public-key\.pem is not an Ed25519 SPKI public key \(PEM\) \[receipts\/badkey\]$/m);
+  assert.match(all.out, /^FAIL no-secrets-read \[policy [^\]]+\]: proof-no-secrets\.json is not JSON \(.+\) \[receipts\/badproof\]$/m);
+  assert.match(all.out, /^PASS no-secrets-read \[policy [^\]]+\]: 1 receipts, chain intact, seal matches, proof verified under root [0-9a-f]{64} \[receipts\/good\]$/m);
+  const attest = ws.cli(['attest-diff', '--base', 'HEAD', '--from', 'receipts/badkey']);
+  assert.equal(attest.code, 1, attest.out);
+  assert.doesNotMatch(attest.out, /^\s+at /m);
+  assert.match(attest.out, /^FAIL attest-diff: public-key\.pem is not an Ed25519 SPKI public key \(PEM\) \[receipts\/badkey\]$/m);
+  const pack = ws.cli(['pack', 'out.json', '--from', 'receipts/badproof']);
+  assert.equal(pack.code, 1, pack.out);
+  assert.doesNotMatch(pack.out, /^\s+at /m);
+  assert.match(pack.out, /^FAIL: cannot pack receipts\/badproof: proof-no-secrets\.json is not JSON/m);
+});

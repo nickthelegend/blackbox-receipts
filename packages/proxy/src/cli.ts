@@ -2,7 +2,7 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync, realpathSync } from 'node:fs';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
-import { createSeal, signDigest, parsePack, PACK_FORMAT, PUBLISHED_POLICIES, publishedPolicy, verifyPack, type Pack, DEFAULT_POLICY_HASH, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
+import { createSeal, signDigest, parsePack, PACK_FORMAT, PUBLISHED_POLICIES, publishedPolicy, verifyPack, type Pack, DEFAULT_POLICY_HASH, publicKeyFromPem, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
 import { renderExplanation, renderStep } from './explain.js';
 import { narrate, renderNarrative, type Narrative } from './narrate.js';
 import { failLine as formatFailLine, explainCurrent, policyTag as tagFor, proveCurrent as proveWith } from './report.js';
@@ -54,36 +54,58 @@ const UNPINNED_SETUP = 'Setup required: set BLACKBOX_PUBLIC_KEY (PEM of the prox
 /** The receipts of an exported session directory (receipts/<session>/session.jsonl). */
 const readExportLog = async (dir: string) => parseJsonLines<Receipt>(await readFile(join(dir, 'session.jsonl'), 'utf8'), 'session.jsonl');
 
+/** An export folder that can't be read as one: the message names the file and what is wrong with it. */
+class ExportError extends Error {}
+
+type ExportFiles = { receipts: Receipt[]; publicKey: string; seal: Seal | null; proof: PropertyProof | null; verdict: string | null };
+
+/**
+ * Reads and shape-checks an exported session directory, so every command that takes one (verify-export,
+ * attest-diff --from, pack --from) reports a malformed file as a located FAIL instead of a stack trace.
+ */
+async function readExport(dir: string): Promise<ExportFiles> {
+  let receipts: Receipt[];
+  try { receipts = await readExportLog(dir); } catch (error) {
+    throw new ExportError(error instanceof CorruptLogError ? error.message : `Cannot read export: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  let publicKey: string;
+  try { publicKey = await readFile(join(dir, 'public-key.pem'), 'utf8'); } catch (error) { throw new ExportError(`Cannot read export: ${error instanceof Error ? error.message : String(error)}`); }
+  try { publicKeyFromPem(publicKey); } catch { throw new ExportError('public-key.pem is not an Ed25519 SPKI public key (PEM)'); }
+  const optionalJson = async <T>(file: string): Promise<T | null> => {
+    if (!existsSync(join(dir, file))) return null;
+    const text = await readFile(join(dir, file), 'utf8');
+    try { return JSON.parse(text) as T; } catch (error) { throw new ExportError(`${file} is not JSON (${error instanceof Error ? error.message : String(error)})`); }
+  };
+  const seal = await optionalJson<Seal>('seal.json');
+  const proof = await optionalJson<PropertyProof>('proof-no-secrets.json');
+  const verdict = existsSync(join(dir, 'result.txt')) ? (await readFile(join(dir, 'result.txt'), 'utf8')).trim() : null;
+  return { receipts, publicKey, seal, proof, verdict };
+}
+
 /** Checks an exported session directory using only the files in it (no private key, no raw arguments). */
 async function verifyExport(dir: string): Promise<string> {
   const name = relative(process.cwd(), dir) || dir;
   const failure = (reason: string, step: number | null = null) => `${failLine({ valid: false, step, reason })} [${name}]`;
-  let receipts: Receipt[];
-  let publicKey: string;
   try {
-    receipts = await readExportLog(dir);
-    publicKey = await readFile(join(dir, 'public-key.pem'), 'utf8');
-  } catch (error) { return failure(error instanceof CorruptLogError ? error.message : `Cannot read export: ${error instanceof Error ? error.message : String(error)}`); }
-  const pinnedKey = process.env.BLACKBOX_PUBLIC_KEY?.trim();
-  if (!pinnedKey && requirePinnedKey()) return failure(UNPINNED_SETUP);
-  if (pinnedKey && pinnedKey !== publicKey.trim()) return failure('Exported public key does not match the pinned BLACKBOX_PUBLIC_KEY');
-  if (!receipts.length) return failure('No receipts exist for this session, so there is nothing to prove');
-  const chain = verifyChain(receipts, publicKey);
-  if (!chain.valid) return failure(`Chain verification failed: ${chain.reason}`, chain.brokenAt);
-  let seal: Seal | null = null;
-  try { seal = JSON.parse(await readFile(join(dir, 'seal.json'), 'utf8')) as Seal; } catch { seal = null; }
-  const sealed = verifySeal(seal, receipts, publicKey, 'exact');
-  if (!sealed.valid) return failure(sealed.reason!);
-  if (!existsSync(join(dir, 'proof-no-secrets.json'))) {
-    const reported = existsSync(join(dir, 'result.txt')) ? (await readFile(join(dir, 'result.txt'), 'utf8')).trim() : 'no result recorded';
-    return failure(`Chain intact and seal matches, but the export has no property proof. Prover reported: ${reported}`);
+    const { receipts, publicKey, seal, proof, verdict } = await readExport(dir);
+    const pinnedKey = process.env.BLACKBOX_PUBLIC_KEY?.trim();
+    if (!pinnedKey && requirePinnedKey()) return failure(UNPINNED_SETUP);
+    if (pinnedKey && pinnedKey !== publicKey.trim()) return failure('Exported public key does not match the pinned BLACKBOX_PUBLIC_KEY');
+    if (!receipts.length) return failure('No receipts exist for this session, so there is nothing to prove');
+    const chain = verifyChain(receipts, publicKey);
+    if (!chain.valid) return failure(`Chain verification failed: ${chain.reason}`, chain.brokenAt);
+    const sealed = verifySeal(seal, receipts, publicKey, 'exact');
+    if (!sealed.valid) return failure(sealed.reason!);
+    if (!proof) return failure(`Chain intact and seal matches, but the export has no property proof. Prover reported: ${verdict ?? 'no result recorded'}`);
+    if (proof.sessionId !== receipts[0].sessionId) return failure('Proof belongs to a different session');
+    const root = merkleRoot(receipts.map(({ hash }) => hash));
+    const check = verifyPropertyProof(proof, publicKey, root, pinned.hash);
+    if (!check.valid) return `${failLine(check)} [${name}]`;
+    return `PASS no-secrets-read ${policyTag}: ${check.steps} receipts, chain intact, seal matches, proof verified under root ${root} [${name}]`;
+  } catch (error) {
+    // Anything else that throws on a hostile export (a malformed seal or proof field) is still a located FAIL.
+    return failure(error instanceof ExportError ? error.message : `Cannot verify export: ${error instanceof Error ? error.message : String(error)}`);
   }
-  const proof = JSON.parse(await readFile(join(dir, 'proof-no-secrets.json'), 'utf8')) as PropertyProof;
-  if (proof.sessionId !== receipts[0].sessionId) return failure('Proof belongs to a different session');
-  const root = merkleRoot(receipts.map(({ hash }) => hash));
-  const check = verifyPropertyProof(proof, publicKey, root, pinned.hash);
-  if (!check.valid) return `${failLine(check)} [${name}]`;
-  return `PASS no-secrets-read ${policyTag}: ${check.steps} receipts, chain intact, seal matches, proof verified under root ${root} [${name}]`;
 }
 
 async function loadPolicy(): Promise<SecretPolicy> {
@@ -92,7 +114,8 @@ async function loadPolicy(): Promise<SecretPolicy> {
 }
 
 // A log line that is not one JSON record (an append cut short by a killed process, or an edit) is a
-// located FAIL in each command's own format, never a stack trace.
+// located FAIL in each command's own format, never a stack trace. Malformed export files (a key that is
+// not Ed25519, a proof or seal that is not JSON) are caught where each command reads them (readExport).
 try {
   if (command === 'verify') {
     const receipts = await loadReceipts();
@@ -187,11 +210,14 @@ try {
     let pack: Pack;
     if (from) {
       const dir = resolve(from);
-      const read = (file: string) => readFile(join(dir, file), 'utf8');
-      const receipts = await readExportLog(dir);
-      const optional = async (file: string) => (existsSync(join(dir, file)) ? read(file) : null);
-      const [publicKey, seal, proof, verdict] = await Promise.all([read('public-key.pem'), optional('seal.json'), optional('proof-no-secrets.json'), optional('result.txt')]);
-      pack = { format: PACK_FORMAT, createdAt: new Date().toISOString(), sessionId: receipts[0]?.sessionId ?? '', publicKey, receipts, seal: seal ? JSON.parse(seal) as Seal : null, proof: proof ? JSON.parse(proof) as PropertyProof : null, verdict: verdict?.trim() ?? '' };
+      let files: ExportFiles;
+      try { files = await readExport(dir); } catch (error) {
+        if (!(error instanceof ExportError)) throw error;
+        console.log(`FAIL: cannot pack ${relative(process.cwd(), dir) || dir}: ${error.message}`);
+        process.exit(1);
+      }
+      const { receipts, publicKey, seal, proof, verdict } = files;
+      pack = { format: PACK_FORMAT, createdAt: new Date().toISOString(), sessionId: receipts[0]?.sessionId ?? '', publicKey, receipts, seal, proof, verdict: verdict ?? '' };
     } else {
       const { line, proof, receipts, publicKey, privateKey } = await proveCurrent();
       if (!receipts.length) { console.log(line); process.exit(1); }
@@ -223,10 +249,15 @@ try {
     let unpinned = false;
     if (from) {
       const dir = resolve(from);
-      receipts = await readExportLog(dir);
-      publicKey = await readFile(join(dir, 'public-key.pem'), 'utf8');
-      const seal = existsSync(join(dir, 'seal.json')) ? JSON.parse(await readFile(join(dir, 'seal.json'), 'utf8')) as Seal : null;
-      const sealed = verifySeal(seal, receipts, publicKey, 'exact');
+      let files: ExportFiles;
+      try { files = await readExport(dir); } catch (error) {
+        if (!(error instanceof ExportError)) throw error;
+        console.log(`FAIL attest-diff: ${error.message} [${relative(process.cwd(), dir) || dir}]`);
+        process.exit(1);
+      }
+      ({ receipts, publicKey } = files);
+      let sealed;
+      try { sealed = verifySeal(files.seal, receipts, publicKey, 'exact'); } catch (error) { sealed = { valid: false, reason: `Seal is malformed: ${error instanceof Error ? error.message : String(error)}` }; }
       if (!sealed.valid) integrity = sealed.reason;
       if (process.env.BLACKBOX_PUBLIC_KEY && process.env.BLACKBOX_PUBLIC_KEY.trim() !== publicKey.trim()) integrity = 'Export public key does not match the pinned BLACKBOX_PUBLIC_KEY';
       // Without a pinned key the export vouches for itself: anyone can sign a matching log with a fresh key.
@@ -238,7 +269,8 @@ try {
       const seal = await loadSeal();
       if (seal) { const sealed = verifySeal(seal, receipts, publicKey, 'prefix'); if (!sealed.valid) integrity = sealed.reason; }
     }
-    const chain = verifyChain(receipts, publicKey);
+    let chain;
+    try { chain = verifyChain(receipts, publicKey); } catch (error) { chain = { valid: false, brokenAt: null, reason: error instanceof Error ? error.message : String(error) }; }
     if (!chain.valid) integrity = `Chain verification failed at step ${chain.brokenAt}: ${chain.reason}`;
     if (!receipts.length) integrity = 'No receipts exist for this session';
     // Exempt from the check: the one exported session being gated (--from), the local store this command
