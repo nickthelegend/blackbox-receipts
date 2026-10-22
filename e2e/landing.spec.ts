@@ -167,6 +167,20 @@ test.describe('landing', () => {
     await expect(page).toHaveURL(/\/recorder$/);
   });
 
+  test('built in the window: what was built Oct 22-27, and the sponsor work still marked Setup required', async ({ page }) => {
+    const section = page.locator('#window');
+    await section.scrollIntoViewIfNeeded();
+    await expect(page.getByRole('heading', { name: 'Built Oct 22–27, and what is still blocked.' })).toBeVisible();
+    await expect(section.locator('.ld-window-row')).toHaveCount(8);
+    await expect(section.locator('.ld-window-row.is-setup-required')).toHaveCount(2);
+    await expect(section.locator('.ld-window-row.is-setup-required').first()).toContainText('ZETARIS_API_KEY and ZETARIS_ORG_ID');
+    await expect(section.locator('.ld-window-row.is-setup-required').nth(1)).toContainText('METERLESS_STATE_DIR');
+    await expect(section.locator('.ld-window-row.is-not-yet')).toContainText('Cursor');
+    await expect(section).toContainText('neutral prompt');
+    await expectNoHorizontalScroll(page);
+    await page.screenshot({ path: test.info().outputPath('landing-window.png'), animations: 'disabled' });
+  });
+
   test('every "log" control works: each tape log control opens its explanation', async ({ page }) => {
     const controls = await logControls(page);
     expect(controls.length, 'controls in or labelled as a log').toBe(10);

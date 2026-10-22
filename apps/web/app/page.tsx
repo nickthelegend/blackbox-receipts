@@ -74,6 +74,19 @@ const LIMITS: { q: string; a: string; tag: string }[] = [
   { q: 'Is the session anchored anywhere?', a: 'Not by default. The root is not anchored on-chain. Walrus upload works only when WALRUS_PUBLISHER_URL points at a funded publisher, and none is bundled.', tag: 'Setup required' },
 ];
 
+// The Open Agent Wildcard scores only work from 2026-10-22 00:00 UTC. What exists, and what is still
+// blocked, said plainly; the sponsor rows stay "Setup required" until a real call has run.
+const WINDOW: { when: string; what: string; tag: string }[] = [
+  { when: 'Oct 22', what: 'A Playwright suite in real Google Chrome at 1280 and 375 px over the landing, /recorder, /verify and the static build, and the UI fixes it found.', tag: 'Built' },
+  { when: 'Oct 22', what: 'Policy no-secrets-read/v2 (git, npm, netrc and other credential stores), matched case-insensitively, so .ENV or .GIT/config can’t slip past on a macOS disk.', tag: 'Built' },
+  { when: 'Oct 22', what: 'Hardening from two independent reviews: no write through a symlinked folder, read-only git that takes no options, a merge gate built from the base commit, no secrets in an upstream server’s environment, located FAILs for torn logs and malformed packs.', tag: 'Built' },
+  { when: 'Oct 22', what: 'Signer-key pinning on /verify: an unpinned PASS is amber, a different key is red.', tag: 'Built' },
+  { when: 'Oct 22', what: 'A third live agent run with a neutral prompt that never mentions the README’s instructions: the agent read README.md and never asked for .env (PASS, 5 receipts).', tag: 'Recorded' },
+  { when: 'Next', what: 'Zetaris as a receipted agent tool (SELECT-only, result hash in each receipt). Needs ZETARIS_API_KEY and ZETARIS_ORG_ID.', tag: 'Setup required' },
+  { when: 'Next', what: 'Meterless as the agent’s model, routed through the local runtime (Nightshift). Needs the app installed and METERLESS_STATE_DIR.', tag: 'Setup required' },
+  { when: 'Next', what: 'That sponsor work built in Cursor, with a screenshot in the deck and the video.', tag: 'Not yet' },
+];
+
 export default function Landing() {
   const flight = loadFlight();
   const first = flight.steps[0];
@@ -199,10 +212,26 @@ export default function Landing() {
         </div>
       </section>
 
+      <section id="window" className="ld-section ld-window" aria-labelledby="window-title">
+        <div className="ld-wrap">
+          <div className="ld-sec-head">
+            <p className="stencil">04 · Built in the window</p>
+            <h2 id="window-title">Built Oct 22–27, and what is still blocked.</h2>
+            <p>The Open Agent Wildcard scores only work from 2026-10-22 00:00 UTC. Everything before that is pre-existing work. The sponsor rows stay “Setup required” until a real call has run; nothing here is simulated.</p>
+          </div>
+          <dl className="ld-window-list">
+            {WINDOW.map((item) => <div key={item.what} className={`ld-window-row is-${item.tag.toLowerCase().replace(/\s+/g, '-')}`}>
+              <dt><span className="stencil">{item.when}</span><span className={`ld-tag is-${item.tag.toLowerCase().replace(/\s+/g, '-')}`}>{item.tag}</span></dt>
+              <dd>{item.what}</dd>
+            </div>)}
+          </dl>
+        </div>
+      </section>
+
       <section className="ld-section ld-install" aria-labelledby="install-title">
         <div className="ld-wrap ld-install-row">
           <div>
-            <p className="stencil">04 · Install the recorder</p>
+            <p className="stencil">05 · Install the recorder</p>
             <h2 id="install-title">Put it between your agent and its tools.</h2>
             <p>Point any MCP client at the proxy, or wrap an existing stdio MCP server with <code>--upstream</code>. The local recorder dashboard plots each call as it lands.</p>
           </div>
