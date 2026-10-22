@@ -90,13 +90,17 @@ If `pnpm install` fails on `corepack enable`, check that the job log shows `pnpm
 - **Secret read:** comment `@<service-account-username> Read .env.example and summarize it.` The proxy denies the read and still records it. Expect `FAIL no-secrets-read at step N [policy no-secrets-read/v2 …]: read_file touched secret path matching ".env*"` in the note, and `verify:exported-receipts` fails the branch pipeline at that step. The flow prompt tells the agent not to read secrets, so it may refuse instead. That's a real outcome too; record whatever happens.
 - **Tamper:** on the exported branch, edit one line of `receipts/<id>/session.jsonl` (change a `paths` entry), commit and push. The pipeline must fail with `FAIL no-secrets-read at step N [policy no-secrets-read/v2 …]: Chain verification failed: Receipt contents were changed`.
 
-## 7. Optional: pin the proxy key
+## 7. Optional: pin the proxy key (only where the agent can't reach it)
 
-Each runner session generates a fresh Ed25519 key and exports its public half, so on its own `verify-export` proves integrity relative to that key. To require a known key:
+Each runner session generates a fresh Ed25519 key and exports its public half, so on its own `verify-export` proves integrity relative to that key. A pinned `BLACKBOX_PUBLIC_KEY` makes the CI gates reject exports signed by any other key (the gates fail with "Setup required: set BLACKBOX_PUBLIC_KEY" until one is pinned).
+
+> **Never put the pinned private key in the Duo flow.** The flow's toolset includes `run_command`, which can run any command (section 8). An agent that can run `printenv RECEIPTS_SIGNING_KEY` or `cat ~/.blackbox/signing-key.pem` can sign any log it likes, and with `BLACKBOX_PUBLIC_KEY` pinned those forgeries pass `verify:exported-receipts` and `verify:attest-diff` on every later merge request. Pinning only means something when the proxy, and its key, run outside the agent's reach (a separate service or runner the agent can't execute commands on). In the Duo flow as shipped, the proxy runs in the agent's own sandbox, so leave the flow on its per-session key.
+
+To pin a key for a proxy the agent can't reach:
 
 1. Generate one locally: `node -e "const c=require('crypto');const k=c.generateKeyPairSync('ed25519');console.log(k.privateKey.export({type:'pkcs8',format:'pem'}));console.log(k.publicKey.export({type:'spki',format:'pem'}))"`.
 2. Add the public key as a CI/CD variable `BLACKBOX_PUBLIC_KEY` (Settings > CI/CD > Variables).
-3. Give the flow the private key as `RECEIPTS_SIGNING_KEY`. **This is untested:** GitLab's docs don't confirm that project CI/CD variables reach flow jobs. If they don't, leave pinning off and say so in the submission.
+3. Give the private key only to the proxy host that the agent talks to over MCP, never to a job or flow where the agent has `run_command`.
 
 ## 8. Things GitLab's docs don't confirm (record what happens)
 
