@@ -28,6 +28,20 @@ receipts/other/evil.js`). `--junit` writes one test case per file for CI test
 reports; `--out` writes a JSON attestation (base, HEAD, session, Merkle root, per-file verdicts) signed
 with the key of whoever runs the command, whose public key it embeds.
 
+**Pin the key.** An export carries its own `public-key.pem`. Without `BLACKBOX_PUBLIC_KEY` the gate
+checks the chain against that key, so anyone can produce a passing export by signing a matching log with a
+fresh key. An unpinned run still passes, but its PASS line reads `PASS attest-diff (UNPINNED: the export's
+own key was trusted; set BLACKBOX_PUBLIC_KEY)` and the JUnit suite name ends in `UNPINNED`.
+`BLACKBOX_REQUIRE_PINNED_KEY=1` makes an unpinned run FAIL instead.
+
+**Run the gate from the base commit.** A gate built from the request's own checkout runs the code under
+review: a request could change `checkDiff` to return nothing, or edit `attest-diff-pr.sh`, and pass itself.
+Both CI jobs in this repo check out the base commit with `git worktree add --detach "$GATE" <base>`,
+install and build there, and run `bash "$GATE/scripts/ci/attest-diff-pr.sh" <base>` with the request's
+checkout as the working directory. The CI definition itself (`.github/workflows/attest-diff.yml`, `.gitlab-ci.yml`)
+is still read from the request on GitHub `pull_request` and GitLab merge-request pipelines, so protect
+those files with code owners and make the job a required check.
+
 In this repo the gate runs as `.github/workflows/attest-diff.yml` (pull requests) and the
 `verify:attest-diff` job in `.gitlab-ci.yml` (merge requests; not run yet, as the GitLab project doesn't
 exist). Both call `scripts/ci/attest-diff-pr.sh <base> [out-dir]`, which picks the exported session the
@@ -43,6 +57,6 @@ For another repo, adapt the examples in [examples/ci/receipt-gated-merge.github.
 and [examples/ci/receipt-gated-merge.gitlab-ci.yml](../examples/ci/receipt-gated-merge.gitlab-ci.yml).
 
 Limits: the gate proves where each changed byte came from, not that the change is good. It trusts the
-proxy key (pin it). Renames show up as a delete plus an add, so a rename fails unless the new file was
+proxy key (pin it; unpinned runs say `UNPINNED`). Renames show up as a delete plus an add, so a rename fails unless the new file was
 written through `write_file` and the delete is accepted by hand. The attestation's signer is the CI
 runner's key unless you provide one with `RECEIPTS_SIGNING_KEY`.

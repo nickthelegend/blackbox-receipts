@@ -63,8 +63,9 @@ export function attestationDigest(attestation: Omit<DiffAttestation, 'signature'
 
 const xml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-export function junit(files: FileVerdict[], base: string, sessionId: string): string {
+/** JUnit for CI test reports. `label` (UNPINNED when the export's key was not pinned) ends the suite name. */
+export function junit(files: FileVerdict[], base: string, sessionId: string, label?: string): string {
   const failures = files.filter((file) => !file.ok).length;
   const cases = files.map((file) => `    <testcase classname="blackbox.attest-diff" name="${xml(file.path)}">${file.ok ? '' : `\n      <failure message="${xml(file.reason)}">${xml(file.reason)}</failure>\n    `}</testcase>`);
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<testsuites>\n  <testsuite name="blackbox attest-diff ${xml(base)} (session ${xml(sessionId)})" tests="${files.length}" failures="${failures}">\n${cases.join('\n')}\n  </testsuite>\n</testsuites>\n`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<testsuites>\n  <testsuite name="blackbox attest-diff ${xml(base)} (session ${xml(sessionId)})${label ? ` ${xml(label)}` : ''}" tests="${files.length}" failures="${failures}">\n${cases.join('\n')}\n  </testsuite>\n</testsuites>\n`;
 }

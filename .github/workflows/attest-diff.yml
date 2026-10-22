@@ -23,13 +23,22 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/meterless build && pnpm --filter @blackbox/proxy build
+      # The gate runs from the base commit, never from the code under review: a pull request that edits
+      # checkDiff, the CLI or attest-diff-pr.sh can't certify itself. The base is checked out in its own
+      # worktree, installed and built there, and its copy of the script gates this checkout.
+      - name: Build the gate from the base commit
+        run: |
+          GATE="$RUNNER_TEMP/gate"
+          git worktree add --detach "$GATE" "${{ github.event.pull_request.base.sha }}"
+          cd "$GATE" && pnpm install --frozen-lockfile && pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/meterless build && pnpm --filter @blackbox/proxy build
       - name: Every changed file must come from a signed write_file step
         env:
-          # Optional repository variable (PEM): an export signed by any other proxy key fails.
+          # Repository variable (PEM): an export signed by any other proxy key fails. Unset, the export's
+          # own key is trusted and the result says UNPINNED.
           BLACKBOX_PUBLIC_KEY: ${{ vars.BLACKBOX_PUBLIC_KEY }}
-        run: bash scripts/ci/attest-diff-pr.sh "${{ github.event.pull_request.base.sha }}" attest-diff
+        run: |
+          GATE="$RUNNER_TEMP/gate"
+          bash "$GATE/scripts/ci/attest-diff-pr.sh" "${{ github.event.pull_request.base.sha }}" attest-diff
       - if: always()
         uses: actions/upload-artifact@v4
         with:

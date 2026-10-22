@@ -93,7 +93,9 @@ test('attest-diff --from: only the gated export is exempt; an unsigned file anyw
   assert.match(result.out, /FAIL attest-diff: 2 of 4 changed file\(s\)/);
   // Without the stray files the same export gates the change green.
   execFileSync('rm', ['-r', join(repo.cwd, 'receipts/other'), join(repo.cwd, 'receipts/run-notes.md')]);
-  const clean = repo.cli('attest-diff', '--base', repo.base, '--from', 'receipts/run');
+  // With the export's key pinned, as CI should run it (an unpinned run says UNPINNED; tested below).
+  const pin = { ...repo.env, BLACKBOX_PUBLIC_KEY: readFileSync(join(repo.cwd, 'receipts/run/public-key.pem'), 'utf8') };
+  const clean = runScript('packages/proxy/src/cli.ts', repo.cwd, ['attest-diff', '--base', repo.base, '--from', 'receipts/run'], pin);
   assert.equal(clean.code, 0, clean.out);
   assert.match(clean.out, /PASS attest-diff: 2 changed file\(s\)/);
 });
@@ -116,7 +118,8 @@ test('attest-diff-pr.sh: a committed agent export gates the request green; a hum
   appendFileSync(join(repo.cwd, '.git/info/exclude'), '.blackbox/\nci-out/\n');
   assert.equal(repo.cli('export', 'receipts/run').code, 1); // the denied .env write makes the prover FAIL; the receipts still gate the diff
   commitAll(repo, 'agent change with its exported receipts');
-  const green = runPrScript(repo.cwd, repo.base, repo.env);
+  const pinned = { ...repo.env, BLACKBOX_PUBLIC_KEY: readFileSync(join(repo.cwd, 'receipts/run/public-key.pem'), 'utf8') };
+  const green = runPrScript(repo.cwd, repo.base, pinned);
   assert.equal(green.code, 0, green.out);
   assert.match(green.out, /== attest-diff against [0-9a-f]{40} using receipts\/run\n/);
   assert.match(green.out, /PASS attest-diff: 2 changed file\(s\)/);
@@ -127,7 +130,7 @@ test('attest-diff-pr.sh: a committed agent export gates the request green; a hum
 
   appendFileSync(join(repo.cwd, 'src/new.ts'), '// tweaked by hand\n');
   commitAll(repo, 'human edit on the agent branch');
-  const red = runPrScript(repo.cwd, repo.base, repo.env);
+  const red = runPrScript(repo.cwd, repo.base, pinned);
   assert.equal(red.code, 1, red.out);
   assert.match(red.out, /: 2 test\(s\), 1 failure\(s\)\n {2}ok {3}src\/a\.ts\n {2}FAIL src\/new\.ts - src\/new\.ts changed after its recorded write \(step 2 wrote /);
 });
@@ -177,4 +180,29 @@ test('committed demo output (receipts/attest-diff-demo): exports verify, attesta
     assert.equal(verifySeal(JSON.parse(readFileSync(join(sessionDir, session, 'seal.json'), 'utf8')), receipts, publicKey, 'exact').valid, true, branch);
     assert.equal(merkleRoot(receipts.map(({ hash }) => hash)), attestation.root, branch);
   }
+});
+
+test('attest-diff --from: an export key nobody pinned is labelled UNPINNED; a pinned key passes clean, another key fails, and BLACKBOX_REQUIRE_PINNED_KEY=1 fails', async () => {
+  const repo = await agentRepo();
+  appendFileSync(join(repo.cwd, '.git/info/exclude'), '.blackbox/\nci-out/\n');
+  repo.cli('export', 'receipts/run');
+  commitAll(repo, 'agent change with its exported receipts');
+  const exportKey = readFileSync(join(repo.cwd, 'receipts/run/public-key.pem'), 'utf8');
+  const unpinned = runPrScript(repo.cwd, repo.base, { ...repo.env, BLACKBOX_PUBLIC_KEY: undefined });
+  assert.equal(unpinned.code, 0, unpinned.out);
+  assert.match(unpinned.out, /PASS attest-diff \(UNPINNED: the export's own key was trusted; set BLACKBOX_PUBLIC_KEY\): 2 changed file\(s\)/);
+  assert.match(unpinned.out, /^blackbox attest-diff [0-9a-f]{40} \(session [^)]+\) UNPINNED: 2 test\(s\), 0 failure\(s\)$/m);
+  assert.match(readFileSync(join(repo.cwd, 'ci-out/attest-diff.xml'), 'utf8'), /<testsuite name="[^"]* UNPINNED"/);
+  const pinned = runPrScript(repo.cwd, repo.base, { ...repo.env, BLACKBOX_PUBLIC_KEY: exportKey });
+  assert.equal(pinned.code, 0, pinned.out);
+  assert.match(pinned.out, /PASS attest-diff: 2 changed file\(s\)/);
+  assert.doesNotMatch(pinned.out, /UNPINNED/);
+  const { generateKeyPairSync } = await import('node:crypto');
+  const otherKey = generateKeyPairSync('ed25519').publicKey.export({ type: 'spki', format: 'pem' }).toString();
+  const wrong = runPrScript(repo.cwd, repo.base, { ...repo.env, BLACKBOX_PUBLIC_KEY: otherKey });
+  assert.equal(wrong.code, 1, wrong.out);
+  assert.match(wrong.out, /FAIL attest-diff: Export public key does not match the pinned BLACKBOX_PUBLIC_KEY/);
+  const required = runPrScript(repo.cwd, repo.base, { ...repo.env, BLACKBOX_PUBLIC_KEY: undefined, BLACKBOX_REQUIRE_PINNED_KEY: '1' });
+  assert.equal(required.code, 1, required.out);
+  assert.match(required.out, /FAIL attest-diff: BLACKBOX_REQUIRE_PINNED_KEY is set but no BLACKBOX_PUBLIC_KEY is pinned/);
 });

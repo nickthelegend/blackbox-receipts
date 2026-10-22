@@ -44,3 +44,19 @@ test('gitlab ci: the build job hands every built workspace package dist to the t
   assert.match(testJob, /needs: \[build\]/);
   assert.match(testJob, /pnpm typecheck/);
 });
+
+// The receipt gate must not run the code under review: a pull/merge request that edits checkDiff or the
+// gate script would otherwise certify itself. Both CI configs build the gate from the base commit in a
+// separate worktree and run that copy's script against the request's checkout.
+test('ci: the receipt gate is built and run from the base commit, not from the request head', () => {
+  const github = readFileSync(join(repoRoot, '.github/workflows/attest-diff.yml'), 'utf8');
+  const gitlab = readFileSync(join(repoRoot, '.gitlab-ci.yml'), 'utf8');
+  const gitlabJob = gitlab.slice(gitlab.indexOf('\nverify:attest-diff:'), gitlab.indexOf('\n', gitlab.indexOf('junit: attest-diff/attest-diff.xml')));
+  for (const [name, config, base] of [['github', github, '${{ github.event.pull_request.base.sha }}'], ['gitlab', gitlabJob, '$CI_MERGE_REQUEST_DIFF_BASE_SHA']] as const) {
+    assert.ok(config.includes(`git worktree add --detach "$GATE" "${base}"`), `${name}: no worktree at the base commit`);
+    assert.match(config, /cd "\$GATE" && pnpm install --frozen-lockfile/, `${name}: the gate is not installed in the base worktree`);
+    assert.ok(config.includes(`bash "$GATE/scripts/ci/attest-diff-pr.sh" "${base}" attest-diff`), `${name}: the gate script does not come from the base worktree`);
+    assert.doesNotMatch(config, /^\s*-?\s*(?:run: )?bash scripts\/ci\/attest-diff-pr\.sh/m, `${name}: still runs the request's own gate script`);
+  }
+  assert.doesNotMatch(gitlabJob, /needs: \[build\]/, 'gitlab: the gate job must not use the request head build artifacts');
+});

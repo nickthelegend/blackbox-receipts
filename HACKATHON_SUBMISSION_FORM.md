@@ -19,7 +19,7 @@ submits; this is the draft.
 - **Prove:** "no secrets read" under a pinned policy, as a proof with per-step Merkle paths and commitments, verifiable from the public key alone. A FAIL names the step and the rule.
 - **Explain:** `explain` turns a session into step-cited markdown: what each call did, what was refused, and why the verdict is what it is.
 - **Verify anywhere:** one pack file, checked by the same `@blackbox/verify` code in the CLI or offline in the browser (`/verify`). One changed byte turns it red at that step.
-- **Gate merges:** `write_file` signs each file's git blob id; `attest-diff` fails any changed file no signed write produced, with JUnit output and a signed attestation.
+- **Gate merges:** `write_file` signs each file's git blob id; `attest-diff` fails any changed file no signed write produced, with JUnit output and a signed attestation. In CI the gate is built from the base commit, not the request's code. It trusts the export's own key unless `BLACKBOX_PUBLIC_KEY` pins one, and then says `UNPINNED` in its verdict.
 
 ## Proof it works
 

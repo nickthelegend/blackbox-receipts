@@ -214,6 +214,7 @@ try {
     let receipts: Receipt[];
     let publicKey: string;
     let integrity: string | null = null;
+    let unpinned = false;
     if (from) {
       const dir = resolve(from);
       receipts = await readExportLog(dir);
@@ -222,6 +223,9 @@ try {
       const sealed = verifySeal(seal, receipts, publicKey, 'exact');
       if (!sealed.valid) integrity = sealed.reason;
       if (process.env.BLACKBOX_PUBLIC_KEY && process.env.BLACKBOX_PUBLIC_KEY.trim() !== publicKey.trim()) integrity = 'Export public key does not match the pinned BLACKBOX_PUBLIC_KEY';
+      // Without a pinned key the export vouches for itself: anyone can sign a matching log with a fresh key.
+      unpinned = !process.env.BLACKBOX_PUBLIC_KEY?.trim();
+      if (unpinned && process.env.BLACKBOX_REQUIRE_PINNED_KEY === '1') integrity = 'BLACKBOX_REQUIRE_PINNED_KEY is set but no BLACKBOX_PUBLIC_KEY is pinned, so the export\'s own key would be trusted';
     } else {
       receipts = await loadReceipts();
       publicKey = (await signingKeys()).publicKey;
@@ -244,8 +248,9 @@ try {
     const sessionId = receipts[0]?.sessionId ?? 'none';
     for (const file of files) console.log(file.ok ? `ok   ${file.path}: ${file.reason}` : `FAIL ${file.reason}`);
     const unrecorded = files.filter((file) => !file.ok).length;
-    console.log(integrity ? `FAIL attest-diff: ${integrity}` : ok ? `PASS attest-diff: ${files.length} changed file(s) since ${base.slice(0, 12)}, each produced by a signed write_file step` : `FAIL attest-diff: ${unrecorded} of ${files.length} changed file(s) since ${base.slice(0, 12)} were not produced by a signed write_file step`);
-    if (option('junit')) await writeFile(resolve(option('junit')!), junit(integrity ? [{ path: '(receipts)', change: 'modified', blob: null, step: null, ok: false, reason: integrity }] : files, base, sessionId));
+    const pinNote = unpinned ? ' (UNPINNED: the export\'s own key was trusted; set BLACKBOX_PUBLIC_KEY)' : '';
+    console.log(integrity ? `FAIL attest-diff: ${integrity}` : ok ? `PASS attest-diff${pinNote}: ${files.length} changed file(s) since ${base.slice(0, 12)}, each produced by a signed write_file step` : `FAIL attest-diff: ${unrecorded} of ${files.length} changed file(s) since ${base.slice(0, 12)} were not produced by a signed write_file step`);
+    if (option('junit')) await writeFile(resolve(option('junit')!), junit(integrity ? [{ path: '(receipts)', change: 'modified', blob: null, step: null, ok: false, reason: integrity }] : files, base, sessionId, unpinned ? 'UNPINNED' : undefined));
     if (option('out')) {
       const keys = await signingKeys();
       const unsigned: Omit<DiffAttestation, 'signature'> = { kind: 'blackbox-diff-attestation', version: 1, base, head: headOf(process.cwd()), sessionId, root: merkleRoot(receipts.map(({ hash }) => hash)), files, ok, createdAt: new Date().toISOString(), publicKey: keys.publicKey };

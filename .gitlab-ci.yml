@@ -78,17 +78,25 @@ verify:exported-receipts:
 # (receipts/<session>/session.jsonl), every other changed file must be exactly what a signed write_file
 # step produced. Results show in the merge request's test report; the signed attestation is an artifact.
 # Merge requests without an exported session print NOT APPLICABLE and pass.
+# The gate is built and run from the base commit in its own worktree, never from the merge request's
+# code, so a request that edits checkDiff, the CLI or attest-diff-pr.sh can't certify itself.
 verify:attest-diff:
   stage: verify
-  needs: [build]
+  needs: []
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   variables:
     GIT_DEPTH: 0
+  before_script:
+    - corepack enable
+    - pnpm config set store-dir "$CI_PROJECT_DIR/.pnpm-store"
   script:
-    # Set BLACKBOX_PUBLIC_KEY (CI/CD variable, PEM) to pin the proxy key.
+    # Set BLACKBOX_PUBLIC_KEY (CI/CD variable, PEM) to pin the proxy key. Unset, the result says UNPINNED.
     - git fetch --quiet origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
-    - bash scripts/ci/attest-diff-pr.sh "$CI_MERGE_REQUEST_DIFF_BASE_SHA" attest-diff
+    - GATE="$(mktemp -d)/gate"
+    - git worktree add --detach "$GATE" "$CI_MERGE_REQUEST_DIFF_BASE_SHA"
+    - (cd "$GATE" && pnpm install --frozen-lockfile && pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/meterless build && pnpm --filter @blackbox/proxy build)
+    - bash "$GATE/scripts/ci/attest-diff-pr.sh" "$CI_MERGE_REQUEST_DIFF_BASE_SHA" attest-diff
   artifacts:
     when: always
     paths: [attest-diff/]
