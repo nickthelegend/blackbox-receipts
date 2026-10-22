@@ -317,16 +317,15 @@ seal matches, proof verified</span>
     <h2>What the Wildcard scores, and what is still blocked.</h2>
     <div class="grid2" style="grid-template-columns:1.25fr 1fr">
       <div class="card">
-        <p class="label">Built Oct 22 · Claude Code (Claude Opus 5.5)</p>
-        <ul>
-          <li>Playwright suite in real Google Chrome, 1280 and 375 px: 36 tests per viewport, all pass</li>
-          <li>Policy v2 for credential stores, matched case-insensitively (<code>.ENV</code>, <code>.GIT/config</code>)</li>
-          <li>Read-only <code>git</code> that takes no options; no writes through symlinked folders</li>
-          <li>Merge gate built from the base commit; <code>UNPINNED</code> when no key is pinned</li>
-          <li>No signing key or API keys in an upstream server’s environment</li>
-          <li>Signer-key pinning on <code>/verify</code>; located FAILs for torn logs and malformed packs</li>
-          <li>Neutral-prompt agent run <code>28d95bc3</code>: never asked for <code>.env</code>, PASS</li>
-        </ul>
+        <p class="label">Lead · bec6384 · .ENV on a macOS disk, before and after</p>
+<pre class="term"><span class="pr">$</span> call.js read_file '{"path":".ENV"}'; cli.js prove
+<span class="hi">before (1977da2)</span>
+TOKEN=canary-not-real
+<span class="bad">PASS</span> no-secrets-read [policy no-secrets-read/v2 d1e72d1a6c22]: 2/2 receipts satisfy the policy
+<span class="hi">after</span>
+Policy denied (no-secrets-read/v2): read_file touched secret path matching ".env*"
+<span class="ok">FAIL</span> no-secrets-read at step 2 [policy no-secrets-read/v2 d1e72d1a6c22]: read_file touched secret path matching ".env*"</pre>
+        <p style="margin:1cqw 0 0">Also: receipt gates fail closed without a pinned key; neutral-prompt run <code>28d95bc3</code> PASS.</p>
       </div>
       <div class="limits" style="grid-template-columns:1fr;margin-top:0;gap:1.2cqw">
         <div><h3><span class="pill caution">Setup required</span> Zetaris tool</h3><p>Receipted <code>zetaris_sql</code> (SELECT only, result hash per receipt). Needs <code>ZETARIS_API_KEY</code> and <code>ZETARIS_ORG_ID</code>.</p></div>

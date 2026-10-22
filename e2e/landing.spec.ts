@@ -177,6 +177,15 @@ test.describe('landing', () => {
     await expect(section.locator('.ld-window-row.is-setup-required').nth(1)).toContainText('METERLESS_STATE_DIR');
     await expect(section.locator('.ld-window-row.is-not-yet')).toContainText('Cursor');
     await expect(section).toContainText('neutral prompt');
+    // The section leads with one demonstrable window feature: the same command before and after, real output.
+    const lead = section.locator('.ld-window-lead');
+    await expect(lead.locator('h3')).toHaveText('A case variant of .env is a denied read, not a PASS');
+    await expect(lead.locator('.ld-window-run')).toHaveCount(2);
+    await expect(lead.locator('.ld-window-run.is-before')).toContainText('TOKEN=canary-not-real');
+    await expect(lead.locator('.ld-window-run.is-before')).toContainText('PASS no-secrets-read [policy no-secrets-read/v2 d1e72d1a6c22]: 2/2 receipts satisfy the policy');
+    await expect(lead.locator('.ld-window-run.is-after')).toContainText('Policy denied (no-secrets-read/v2): read_file touched secret path matching ".env*"');
+    await expect(lead.locator('.ld-window-run.is-after')).toContainText('FAIL no-secrets-read at step 2 [policy no-secrets-read/v2 d1e72d1a6c22]');
+    await expect(lead.locator('.ld-window-run.is-after')).not.toContainText('TOKEN=');
     await expectNoHorizontalScroll(page);
     await page.screenshot({ path: test.info().outputPath('landing-window.png'), animations: 'disabled' });
   });

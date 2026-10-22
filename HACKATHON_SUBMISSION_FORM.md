@@ -46,6 +46,29 @@ Zetaris and Meterless clients and a dashboard live-check panel exist, and `expla
 
 ## Built in the window (Oct 22–27): what the Wildcard scores
 
+**Lead feature: a case variant of `.env` is a denied read, not a PASS** (`bec6384`). On a macOS disk `.ENV` is the same file as `.env`. The same commands in a temp folder whose `.env` holds a canary, first on `1977da2` (just before the fix), then on `main` (real output, Oct 23):
+
+```sh
+printf 'TOKEN=canary-not-real\n' > .env
+node packages/proxy/dist/call.js --new-session read_file '{"path":"notes.md"}'
+node packages/proxy/dist/call.js read_file '{"path":".ENV"}'
+node packages/proxy/dist/cli.js prove
+```
+
+```text
+# before (1977da2)
+# notes
+TOKEN=canary-not-real
+PASS no-secrets-read [policy no-secrets-read/v2 d1e72d1a6c22]: 2/2 receipts satisfy the policy
+
+# after (bec6384 and later)
+# notes
+DENIED or FAILED (receipt recorded): Policy denied (no-secrets-read/v2): read_file touched secret path matching ".env*"
+FAIL no-secrets-read at step 2 [policy no-secrets-read/v2 d1e72d1a6c22]: read_file touched secret path matching ".env*"
+```
+
+The rest of the window work hardens the same path (what the agent can reach, and what the gates accept):
+
 All commits on or after 2026-10-22 00:00 UTC, `git log 4cf7afe..main`:
 
 - `37d257f`…`c30da91` (Oct 22, 03:42 UTC): a Playwright E2E suite in Google Chrome over the landing, `/recorder`, `/verify` and the static Pages build at 1280 px and 375 px (`b62dcca`), and four UI fixes it found.

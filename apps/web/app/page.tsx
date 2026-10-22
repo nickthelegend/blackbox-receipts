@@ -87,6 +87,22 @@ const WINDOW: { when: string; what: string; tag: string }[] = [
   { when: 'Next', what: 'That sponsor work built in Cursor, with a screenshot in the deck and the video.', tag: 'Not yet' },
 ];
 
+// The window feature the section leads with: the same two bridge calls and `prove` on a macOS (case-
+// insensitive) disk, on 1977da2 (before bec6384) and on main. Real output from both builds, Oct 23; the
+// .env holds a canary, not a secret.
+const LEAD_COMMANDS = `printf 'TOKEN=canary-not-real\\n' > .env
+call.js --new-session read_file '{"path":"notes.md"}'
+call.js read_file '{"path":".ENV"}'
+cli.js prove`;
+const LEAD_RUNS = [
+  { id: 'before', label: 'Before · 1977da2', output: `# notes
+TOKEN=canary-not-real
+PASS no-secrets-read [policy no-secrets-read/v2 d1e72d1a6c22]: 2/2 receipts satisfy the policy` },
+  { id: 'after', label: 'After · bec6384 and later', output: `# notes
+DENIED or FAILED (receipt recorded): Policy denied (no-secrets-read/v2): read_file touched secret path matching ".env*"
+FAIL no-secrets-read at step 2 [policy no-secrets-read/v2 d1e72d1a6c22]: read_file touched secret path matching ".env*"` },
+];
+
 export default function Landing() {
   const flight = loadFlight();
   const first = flight.steps[0];
@@ -218,6 +234,17 @@ export default function Landing() {
             <p className="stencil">04 · Built in the window</p>
             <h2 id="window-title">Built Oct 22–27, and what is still blocked.</h2>
             <p>The Open Agent Wildcard scores only work from 2026-10-22 00:00 UTC. Everything before that is pre-existing work. The sponsor rows stay “Setup required” until a real call has run; nothing here is simulated.</p>
+          </div>
+          <div className="ld-window-lead">
+            <h3>A case variant of .env is a denied read, not a PASS</h3>
+            <p>On a macOS disk <code>.ENV</code> is the same file as <code>.env</code>. Before the fix the proxy served it and the prover passed the session; now the guard and the prover both match secret paths case-insensitively.</p>
+            <pre className="ld-window-cmd"><code>{LEAD_COMMANDS}</code></pre>
+            <div className="ld-window-runs">
+              {LEAD_RUNS.map((run) => <figure key={run.id} className={`ld-window-run is-${run.id}`}>
+                <figcaption className="stencil">{run.label}</figcaption>
+                <pre><code>{run.output}</code></pre>
+              </figure>)}
+            </div>
           </div>
           <dl className="ld-window-list">
             {WINDOW.map((item) => <div key={item.what} className={`ld-window-row is-${item.tag.toLowerCase().replace(/\s+/g, '-')}`}>
