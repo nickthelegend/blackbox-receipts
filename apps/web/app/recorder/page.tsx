@@ -13,7 +13,7 @@ import type { Explanation } from '@blackbox/proxy/explain';
 import './recorder.css';
 
 type Session = { sessionId: string; receipts: Receipt[]; chain: { valid: boolean; brokenAt: number | null; reason: string | null }; root: string; publicKey: string; walrus: { root?: string; blob?: unknown } | null; walrusConfigured: boolean; tampered?: number[] };
-type ProofResult = { status: 'PASS' | 'FAIL'; step: number | null; reason: string | null; policyId: string; sessionRoot: string; steps?: number; root?: string; proof?: PropertyProof };
+type ProofResult = { status: 'PASS' | 'FAIL'; step: number | null; reason: string | null; policyId: string; sessionRoot: string; chainBrokenAt: number | null; steps?: number; root?: string; proof?: PropertyProof };
 type Integration = { name: string; ok: boolean; detail: string };
 type Tone = 'ok' | 'bad' | 'caution' | 'idle';
 type Lamp = { id: string; label: string; state: string; tone: Tone; detail: string };
@@ -126,7 +126,7 @@ export default function Recorder() {
   const loading = data === null && !loadError;
   const valid = data?.chain.valid ?? false;
   const state: 'idle' | 'good' | 'bad' = !receipts.length ? 'idle' : valid ? 'good' : 'bad';
-  const stale = Boolean(proofResult && data && proofResult.sessionRoot !== data.root);
+  const stale = Boolean(proofResult && data && (proofResult.sessionRoot !== data.root || proofResult.chainBrokenAt !== data.chain.brokenAt));
   const proofPass = proofResult?.status === 'PASS' && !stale;
   const failedStep = proofResult?.status === 'FAIL' && !stale ? proofResult.step : null;
   const secretSteps = receipts.filter((receipt) => receipt.secretsAccessed).map((receipt) => receipt.step);
