@@ -6,6 +6,8 @@
 // browser. The two samples are packs of real agent runs committed under receipts/agent-demo/. The pin
 // defaults to no-secrets-read/v2; the samples were proven under v1 on 2026-10-21, so loading one pins v1,
 // and switching the pin back to v2 shows that a v1 proof does not satisfy the current policy.
+// The signer key is pinned the same way: loading a sample pins the committed demo key; a dropped pack is
+// checked unpinned (amber "PASS (key not pinned)") until the viewer pins the key they expect.
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { parsePack, policyHash, publishedPolicy, PUBLISHED_POLICIES, verifyPack, type Pack, type PackResult, type StepStatus } from '@blackbox/verify';
 import { Logo } from '../components/brand';
@@ -16,6 +18,18 @@ import '../styles.css';
 import './verify.css';
 
 type Loaded = { name: string; text: string; pack: Pack; result: PackResult; edit: string | null; sample: boolean };
+type KeyMode = 'none' | 'demo' | 'custom';
+type KeyPin = { mode: KeyMode; custom: string };
+
+// The proxy key that signed both committed sample runs (receipts/agent-demo/*/public-key.pem).
+const DEMO_KEY = passSample.publicKey;
+const KEY_OPTIONS: { value: KeyMode; label: string }[] = [
+  { value: 'none', label: 'Not pinned (trust the pack’s own key)' },
+  { value: 'demo', label: 'Committed demo key (the two samples)' },
+  { value: 'custom', label: 'Paste a public key…' },
+];
+/** The PEM to pin, or undefined when nothing is pinned. An empty paste box pins nothing yet. */
+const pinnedKey = ({ mode, custom }: KeyPin): string | undefined => (mode === 'demo' ? DEMO_KEY : mode === 'custom' && custom.trim() ? custom : undefined);
 
 // Both committed runs were proven on 2026-10-21 under no-secrets-read/v1, the policy published then.
 const RECORDED_POLICY = 'no-secrets-read/v1';
@@ -36,11 +50,11 @@ const STATUS: Record<StepStatus['status'], { label: string; tone: 'ok' | 'bad' |
 };
 const CHECK_LABEL: Record<PackResult['checks'][number]['name'], string> = { format: 'Pack format', key: 'Public key', chain: 'Signatures and hash links', seal: 'Signed seal (nothing cut off)', property: 'No-secrets proof' };
 
-function load(name: string, text: string, edit: string | null, sample: boolean, pin: string): Loaded | string {
+function load(name: string, text: string, edit: string | null, sample: boolean, pin: string, key: KeyPin): Loaded | string {
   const policy = publishedPolicy(pin) ?? PUBLISHED_POLICIES[0];
   try {
     const pack = parsePack(text);
-    return { name, text, pack, result: verifyPack(pack, { expectedPolicyHash: policyHash(policy), expectedPolicyId: policy.id }), edit, sample };
+    return { name, text, pack, result: verifyPack(pack, { expectedPolicyHash: policyHash(policy), expectedPolicyId: policy.id, pinnedPublicKey: pinnedKey(key) }), edit, sample };
   } catch (error) {
     return error instanceof Error ? error.message : String(error);
   }
@@ -66,10 +80,11 @@ export default function VerifyPage() {
   const [dragging, setDragging] = useState(false);
   const [flipStep, setFlipStep] = useState(1);
   const [pin, setPin] = useState(PUBLISHED_POLICIES[0].id);
+  const [key, setKey] = useState<KeyPin>({ mode: 'none', custom: '' });
   const input = useRef<HTMLInputElement>(null);
 
-  const accept = useCallback((name: string, text: string, edit: string | null, sample: boolean, policy: string) => {
-    const next = load(name, text, edit, sample, policy);
+  const accept = useCallback((name: string, text: string, edit: string | null, sample: boolean, policy: string, signer: KeyPin) => {
+    const next = load(name, text, edit, sample, policy, signer);
     if (typeof next === 'string') { setLoaded(null); setError(`${name}: ${next}`); return; }
     setError(null);
     setLoaded(next);
@@ -77,31 +92,41 @@ export default function VerifyPage() {
   }, []);
 
   function loadSample(file: string, text: string) {
+    const signer = { ...key, mode: 'demo' as const };
     setPin(RECORDED_POLICY);
-    accept(file, text, null, true, RECORDED_POLICY);
+    setKey(signer);
+    accept(file, text, null, true, RECORDED_POLICY, signer);
   }
 
   /** Re-checks the loaded pack (and any one-byte edit) under another pinned policy. */
   function repin(policy: string) {
     setPin(policy);
-    if (loaded) accept(loaded.name, loaded.text, loaded.edit, loaded.sample, policy);
+    if (loaded) accept(loaded.name, loaded.text, loaded.edit, loaded.sample, policy, key);
+  }
+
+  /** Re-checks the loaded pack against another expected signer key. */
+  function rekey(signer: KeyPin) {
+    setKey(signer);
+    if (loaded) accept(loaded.name, loaded.text, loaded.edit, loaded.sample, pin, signer);
   }
 
   async function readFile(file: File | undefined) {
     if (!file) return;
     if (file.size > 20_000_000) { setLoaded(null); setError(`${file.name}: larger than 20 MB, which is not a pack this page will read`); return; }
-    accept(file.name, await file.text(), null, false, pin);
+    accept(file.name, await file.text(), null, false, pin, key);
   }
 
   function flip() {
     if (!loaded) return;
     const changed = flipOneByte(loaded.text, loaded.pack, flipStep);
     if (!changed) { setError(`Could not find step ${flipStep}'s resultHash in this pack's text`); return; }
-    accept(loaded.name, changed.text, `Changed 1 byte (offset ${changed.offset}, inside step ${flipStep}'s resultHash) in this tab only. The file on disk is untouched.`, loaded.sample, pin);
+    accept(loaded.name, changed.text, `Changed 1 byte (offset ${changed.offset}, inside step ${flipStep}'s resultHash) in this tab only. The file on disk is untouched.`, loaded.sample, pin, key);
   }
 
   const result = loaded?.result;
-  const tone = !result ? 'idle' : result.ok ? 'ok' : 'bad';
+  // A PASS whose signer nobody pinned is amber: the pack is consistent, but anyone could have made its key.
+  const tone = !result ? 'idle' : !result.ok ? 'bad' : result.keyPinned ? 'ok' : 'warn';
+  const badge = !result ? '' : !result.ok ? 'FAIL' : result.keyPinned ? 'PASS' : 'PASS (key not pinned)';
   const counts = useMemo(() => {
     const tally = { ok: 0, broken: 0, untrusted: 0, flagged: 0 };
     for (const item of result?.steps ?? []) tally[item.status]++;
@@ -150,6 +175,19 @@ export default function VerifyPage() {
             </span>
             <p className="vf-policy-note">{POLICY_NOTE[pin] ?? ''} A proof made under any other policy fails.</p>
           </div>
+          <div className="vf-signer">
+            <label className="vf-label" htmlFor="vf-signer">Expected signer key</label>
+            <span className="vf-select-wrap">
+              <select id="vf-signer" value={key.mode} onChange={(event) => rekey({ ...key, mode: event.target.value as KeyMode })}>
+                {KEY_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+              </select>
+            </span>
+            {key.mode === 'custom' && <>
+              <label className="vf-sr" htmlFor="vf-signer-pem">Signer public key (PEM)</label>
+              <textarea id="vf-signer-pem" className="vf-pem" rows={4} spellCheck={false} placeholder={'-----BEGIN PUBLIC KEY-----\n…\n-----END PUBLIC KEY-----'} value={key.custom} onChange={(event) => rekey({ ...key, custom: event.target.value })} />
+            </>}
+            <p className="vf-policy-note">{key.mode === 'none' ? 'The pack carries its own key, so a PASS only shows it is internally consistent. Pin the key the proxy operator publishes (cli public-key) to trust who signed it.' : key.mode === 'demo' ? 'The key that signed both committed sample runs. A pack signed by any other key fails.' : 'Paste the PEM the proxy operator publishes. A pack signed by any other key fails.'}</p>
+          </div>
         </div>
       </section>
 
@@ -163,10 +201,10 @@ export default function VerifyPage() {
 
       {loaded && result && <section className={`vf-result vf-${tone}`} aria-live="polite" aria-labelledby="vf-verdict">
         <div className="vf-verdict">
-          <span className={`vf-badge vf-badge-${tone}`}>{result.ok ? 'PASS' : 'FAIL'}</span>
+          <span className={`vf-badge vf-badge-${tone}`}>{badge}</span>
           <div className="vf-verdict-copy">
             <h2 id="vf-verdict" className="vf-headline">{result.headline}</h2>
-            <p className="vf-meta"><span>{loaded.name}</span><span>policy {result.policyId}</span><span>session <code>{result.sessionId ?? 'none'}</code></span></p>
+            <p className="vf-meta"><span>{loaded.name}</span><span>policy {result.policyId}</span><span>session <code>{result.sessionId ?? 'none'}</code></span>{result.keyFingerprint && <span className="vf-fingerprint" title={`SHA-256 of the signer's Ed25519 key: ${result.keyFingerprint}`}>signer <code>{result.keyFingerprint.slice(0, 16)}</code>{result.keyPinned ? ' (pinned)' : ' (not pinned)'}</span>}</p>
             {loaded.sample && pin === RECORDED_POLICY && <p className="vf-policy-note">This sample was proven on 2026-10-21 under {RECORDED_POLICY}, so it is checked under that policy. Pin no-secrets-read/v2 to see that its proof does not satisfy the current policy.</p>}
             {loaded.edit && <p className="vf-edit">{loaded.edit}</p>}
           </div>
@@ -217,7 +255,7 @@ export default function VerifyPage() {
           })}
         </ol>
         {result.root && <p className="vf-root">Merkle root <code>{result.root}</code></p>}
-        <p className="vf-note">The public key comes from the pack itself, so a PASS shows the pack is internally consistent and was signed by that key. To trust who signed it, compare the key with the one the proxy operator publishes (<code>cli public-key</code>) or pin it with <code>BLACKBOX_PUBLIC_KEY</code> in <code>verify-pack</code>.</p>
+        <p className="vf-note">{result.keyPinned ? 'The pack was signed by the key you pinned.' : 'The public key comes from the pack itself, so this PASS shows only that the pack is internally consistent and was signed by that key.'} Pin a key under Expected signer key above, or with <code>BLACKBOX_PUBLIC_KEY</code> in <code>verify-pack</code>, and compare it with the one the proxy operator publishes (<code>cli public-key</code>).</p>
       </section>}
     </main>
   </div>;

@@ -1,7 +1,7 @@
 // A pack is one self-contained JSON file for a session: signed receipts, the proxy's public key, the
 // signed seal, the property proof (when the prover passed) and the prover's verdict line. verifyPack
 // checks all of it with no network, no private key and no raw arguments, and says which step broke.
-import { DEFAULT_POLICY_HASH, merkleRoot, publishedPolicy, publicKeyFromPem, verifyChain, verifyPropertyProof, verifySeal, type PropertyProof, type Receipt, type Seal } from './core.js';
+import { DEFAULT_POLICY_HASH, merkleRoot, publishedPolicy, publicKeyFromPem, sha256Hex, verifyChain, verifyPropertyProof, verifySeal, type PropertyProof, type Receipt, type Seal } from './core.js';
 
 export const PACK_FORMAT = 'blackbox-pack/v1' as const;
 
@@ -38,8 +38,17 @@ export type PackResult = {
   policyId: string;
   steps: StepStatus[];
   checks: PackCheck[];
+  /** True only when a pinned key was given and the pack's key is that key. */
+  keyPinned: boolean;
+  /** SHA-256 of the pack's raw Ed25519 public key (hex), or null when it is not a key. */
+  keyFingerprint: string | null;
 };
 export type PackOptions = { expectedPolicyHash?: string; expectedPolicyId?: string; pinnedPublicKey?: string };
+
+/** SHA-256 (hex) of the raw 32-byte Ed25519 key inside a PEM, the same however the PEM is wrapped. */
+export function keyFingerprint(pem: string): string {
+  return sha256Hex(publicKeyFromPem(pem));
+}
 
 /** Parses a pack file, with a readable error for anything that isn't one. */
 export function parsePack(text: string): Pack {
@@ -57,16 +66,25 @@ export function verifyPack(pack: Pack, options: PackOptions = {}): PackResult {
   const receipts = Array.isArray(pack?.receipts) ? pack.receipts : [];
   const checks: PackCheck[] = [];
   const steps: StepStatus[] = receipts.map((receipt, index) => ({ step: receipt?.step ?? index + 1, tool: String(receipt?.tool ?? '?'), paths: Array.isArray(receipt?.paths) ? receipt.paths : [], outcome: receipt?.outcome ?? null, timestamp: String(receipt?.timestamp ?? ''), hash: String(receipt?.hash ?? ''), status: 'ok', reason: null }));
-  const result = (headline: string, brokenAt: number | null = null): PackResult => ({ ok: checks.every((check) => check.ok), headline, brokenAt, sessionId: receipts[0]?.sessionId ?? null, root: receipts.length ? merkleRoot(receipts.map(({ hash }) => hash)) : null, policyId, steps, checks });
+  let fingerprint: string | null = null;
+  try { fingerprint = typeof pack?.publicKey === 'string' ? keyFingerprint(pack.publicKey) : null; } catch { fingerprint = null; }
+  let keyPinned = false;
+  const result = (headline: string, brokenAt: number | null = null): PackResult => ({ ok: checks.every((check) => check.ok), headline, brokenAt, sessionId: receipts[0]?.sessionId ?? null, root: receipts.length ? merkleRoot(receipts.map(({ hash }) => hash)) : null, policyId, steps, checks, keyPinned, keyFingerprint: fingerprint });
 
   if (pack?.format !== PACK_FORMAT) { checks.push({ name: 'format', ok: false, detail: `Not a ${PACK_FORMAT} pack` }); return result(`FAIL: not a ${PACK_FORMAT} pack`); }
   if (!receipts.length) { checks.push({ name: 'format', ok: false, detail: 'The pack holds no receipts' }); return result('FAIL: the pack holds no receipts, so there is nothing to verify'); }
   checks.push({ name: 'format', ok: true, detail: `${receipts.length} receipts for session ${receipts[0].sessionId}` });
 
   try {
-    publicKeyFromPem(pack.publicKey);
-    if (options.pinnedPublicKey && options.pinnedPublicKey.trim() !== pack.publicKey.trim()) throw new Error('Pack public key does not match the pinned key');
-    checks.push({ name: 'key', ok: true, detail: options.pinnedPublicKey ? 'Ed25519 key, matches the pinned key' : 'Ed25519 key (not pinned: anyone could have made a key; pin it to trust the signer)' });
+    const own = keyFingerprint(pack.publicKey);
+    if (options.pinnedPublicKey !== undefined) {
+      // Compared as raw key bytes, so a pasted PEM with other line endings or wrapping still matches.
+      let pinned: string;
+      try { pinned = keyFingerprint(options.pinnedPublicKey); } catch { throw new Error('The pinned key is not an Ed25519 public key PEM, so no signer can match it'); }
+      if (pinned !== own) throw new Error('Pack public key does not match the pinned key');
+      keyPinned = true;
+    }
+    checks.push({ name: 'key', ok: true, detail: keyPinned ? 'Ed25519 key, matches the pinned key' : 'Ed25519 key (not pinned: anyone could have made a key; pin it to trust the signer)' });
   } catch (error) {
     checks.push({ name: 'key', ok: false, detail: error instanceof Error ? error.message : String(error) });
     return result(`FAIL: ${checks.at(-1)!.detail}`);

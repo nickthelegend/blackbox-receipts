@@ -201,7 +201,7 @@ try {
     const file = resolve(positional[0] ?? '');
     let pack: Pack;
     try { pack = parsePack(await readFile(file, 'utf8')); } catch (error) { console.log(`FAIL: cannot read pack ${positional[0] ?? '(none given)'}: ${error instanceof Error ? error.message : String(error)}`); process.exit(1); }
-    const check = verifyPack(pack, { expectedPolicyHash: pinned.hash, expectedPolicyId: pinned.id, pinnedPublicKey: process.env.BLACKBOX_PUBLIC_KEY });
+    const check = verifyPack(pack, { expectedPolicyHash: pinned.hash, expectedPolicyId: pinned.id, pinnedPublicKey: process.env.BLACKBOX_PUBLIC_KEY || undefined });
     console.log(check.headline);
     for (const item of check.checks) console.log(`  ${item.ok ? 'ok  ' : 'FAIL'} ${item.name}: ${item.detail}`);
     if (!check.ok) process.exitCode = 1;

@@ -1,11 +1,25 @@
 // The offline /verify page: empty state, both sample packs, a one-byte tamper, loading a file by picker and by
 // drop, and a file that is not a pack. After the page has loaded, no request may be made.
-import { readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { REPO } from './env.ts';
 import { expectNoHorizontalScroll, logControls, test, expect } from './fixtures.ts';
 
 const PASS_PACK = join(REPO, 'apps/web/app/verify/samples/agent-pass.json');
+
+/** A real pack from a fresh proxy key: one read_file through the built one-shot bridge, then `cli pack`. */
+function freshKeyPack(): { file: string; publicKey: string } {
+  const cwd = mkdtempSync(join(tmpdir(), 'blackbox-e2e-freshkey-'));
+  writeFileSync(join(cwd, 'notes.md'), '# notes\n');
+  const env = { ...process.env, RECEIPTS_DIR: join(cwd, 'store'), BLACKBOX_KEY_DIR: join(cwd, 'keys'), RECEIPTS_RESUME: '' };
+  const call = spawnSync(process.execPath, [join(REPO, 'packages/proxy/dist/call.js'), '--new-session', 'read_file', '{"path":"notes.md"}'], { cwd, env, encoding: 'utf8' });
+  expect(call.status, call.stderr).toBe(0);
+  const packed = spawnSync(process.execPath, [join(REPO, 'packages/proxy/dist/cli.js'), 'pack', join(cwd, 'fresh-key-pack.json')], { cwd, env, encoding: 'utf8' });
+  expect(packed.status, packed.stdout + packed.stderr).toBe(0);
+  return { file: join(cwd, 'fresh-key-pack.json'), publicKey: readFileSync(join(cwd, 'keys/public-key.pem'), 'utf8') };
+}
 
 test.describe('verify', () => {
   test.beforeEach(async ({ page }) => {
@@ -57,7 +71,7 @@ test.describe('verify', () => {
     await expect(page.locator('.vf-badge')).toHaveText('FAIL');
     await expect(page.locator('.vf-meta')).toContainText('agent-pass.json');
     await page.getByLabel('Pinned policy', { exact: true }).selectOption('no-secrets-read/v1');
-    await expect(page.locator('.vf-badge')).toHaveText('PASS');
+    await expect(page.locator('.vf-badge')).toHaveText('PASS (key not pinned)');
     await expect(page.locator('.vf-meta')).toContainText('policy no-secrets-read/v1');
     const chooser = page.waitForEvent('filechooser');
     await page.getByRole('button', { name: 'Load another pack' }).click();
@@ -80,7 +94,7 @@ test.describe('verify', () => {
     await page.getByLabel('Pinned policy', { exact: true }).selectOption('no-secrets-read/v1');
     await zone.dispatchEvent('drop', { dataTransfer: transfer });
     await expect(zone).not.toHaveClass(/is-drag/);
-    await expect(page.locator('.vf-badge')).toHaveText('PASS');
+    await expect(page.locator('.vf-badge')).toHaveText('PASS (key not pinned)');
     await expect(page.locator('.vf-meta')).toContainText('dropped-pack.json');
   });
 
@@ -109,6 +123,46 @@ test.describe('verify', () => {
     await pin.selectOption('no-secrets-read/v2');
     await expect(page.locator('.vf-headline')).toHaveText('FAIL at step 5: Receipt contents were changed');
     await expect(page.locator('.vf-edit')).toContainText("inside step 5's resultHash");
+    expect(requests, 'requests made after the page loaded').toEqual([]);
+  });
+
+  test('expected signer key: a pack from a fresh key is amber until pinned, red under another key, green under its own', async ({ page }) => {
+    const requests: string[] = [];
+    page.on('request', (request) => requests.push(request.url()));
+    const fresh = freshKeyPack();
+    const signer = page.getByLabel('Expected signer key', { exact: true });
+    await expect(signer).toHaveValue('none');
+    await page.locator('input[type=file]').setInputFiles(fresh.file);
+    // Unpinned: internally consistent, but anyone could have made that key.
+    await expect(page.locator('.vf-badge')).toHaveText('PASS (key not pinned)');
+    await expect(page.locator('.vf-badge')).toHaveClass(/vf-badge-warn/);
+    await expect(page.locator('.vf-result')).toHaveClass(/vf-warn/);
+    const fingerprint = (await page.locator('.vf-fingerprint').getAttribute('title')) ?? '';
+    expect(fingerprint).toMatch(/^SHA-256 of the signer's Ed25519 key: [0-9a-f]{64}$/);
+    await expect(page.locator('.vf-meta')).toContainText(`signer ${fingerprint.slice(-64, -48)}`);
+    await expectNoHorizontalScroll(page);
+    await page.screenshot({ path: test.info().outputPath('verify-unpinned.png'), animations: 'disabled', fullPage: true });
+    // The committed demo key is not the key that signed this pack.
+    await signer.selectOption('demo');
+    await expect(page.locator('.vf-badge')).toHaveText('FAIL');
+    await expect(page.locator('.vf-headline')).toHaveText('FAIL: Pack public key does not match the pinned key');
+    await expectNoHorizontalScroll(page);
+    // Its own key, pasted (with Windows line endings), pins it: green.
+    await signer.selectOption('custom');
+    await page.getByLabel('Signer public key (PEM)').fill(fresh.publicKey.replace(/\n/g, '\r\n'));
+    await expect(page.locator('.vf-badge')).toHaveText('PASS');
+    await expect(page.locator('.vf-badge')).toHaveClass(/vf-badge-ok/);
+    await expect(page.locator('.vf-checks')).toContainText('matches the pinned key');
+    await expectNoHorizontalScroll(page);
+    await page.screenshot({ path: test.info().outputPath('verify-pinned-key.png'), animations: 'disabled', fullPage: true });
+    // Something that is not a key is said to be one, and nothing passes.
+    await page.getByLabel('Signer public key (PEM)').fill('not a key');
+    await expect(page.locator('.vf-badge')).toHaveText('FAIL');
+    await expect(page.locator('.vf-headline')).toContainText('pinned key');
+    // A sample pins the committed demo key, the key it was signed with, so it is green.
+    await page.getByRole('button', { name: /Agent skipped the README’s \.env request/ }).click();
+    await expect(signer).toHaveValue('demo');
+    await expect(page.locator('.vf-badge')).toHaveText('PASS');
     expect(requests, 'requests made after the page loaded').toEqual([]);
   });
 

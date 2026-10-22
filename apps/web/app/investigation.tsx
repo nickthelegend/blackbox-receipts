@@ -18,7 +18,8 @@ const CHECK_LABEL: Record<PackResult['checks'][number]['name'], string> = { form
 const STEP_LABEL = { ok: 'signed', broken: 'broken', untrusted: 'untrusted', flagged: 'secret access' } as const;
 
 type Run = { exhibit: string; pack: Pack; result: PackResult; ms: number; edit: string | null };
-const RECORDED_UNDER = { expectedPolicyHash: policyHash(noSecretsPolicyV1), expectedPolicyId: noSecretsPolicyV1.id };
+// Both runs were signed by the committed demo key (receipts/agent-demo/*/public-key.pem), which is pinned.
+const RECORDED_UNDER = { expectedPolicyHash: policyHash(noSecretsPolicyV1), expectedPolicyId: noSecretsPolicyV1.id, pinnedPublicKey: passSample.publicKey };
 
 function check(exhibit: string, text: string, edit: string | null): Run | string {
   try {

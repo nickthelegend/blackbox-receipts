@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { parsePack, verifyPack, type Pack } from '../packages/verify/src/index.ts';
+import { keyFingerprint, noSecretsPolicyV1, parsePack, policyHash, verifyPack, type Pack } from '../packages/verify/src/index.ts';
 import { connectProxy } from '../packages/proxy/src/client.ts';
 import { repoRoot, runScript } from './fixtures/run.ts';
 
@@ -77,4 +77,21 @@ test('pack CLI: verify-pack exits 0 on the real pack and 1 on a one-byte edit; -
   const result = verifyPack(parsePack(readFileSync(join(cwd, 'agent.json'), 'utf8')));
   assert.deepEqual(result.checks.map((item) => [item.name, item.ok]), [['format', true], ['key', true], ['chain', true], ['seal', true], ['property', false]]);
   assert.equal(result.steps[2].status, 'flagged');
+});
+
+test('verifyPack: keyPinned is true only for a matching pinned key, compared as key bytes, with the key fingerprint', () => {
+  const sample = parsePack(readFileSync(join(repoRoot, 'apps/web/app/verify/samples/agent-pass.json'), 'utf8'));
+  const v1 = { expectedPolicyId: noSecretsPolicyV1.id, expectedPolicyHash: policyHash(noSecretsPolicyV1) };
+  const unpinned = verifyPack(sample, v1);
+  assert.equal(unpinned.ok, true);
+  assert.equal(unpinned.keyPinned, false);
+  assert.match(unpinned.keyFingerprint ?? '', /^[0-9a-f]{64}$/);
+  assert.equal(unpinned.keyFingerprint, keyFingerprint(sample.publicKey));
+  const crlf = verifyPack(sample, { ...v1, pinnedPublicKey: sample.publicKey.replace(/\n/g, '\r\n') });
+  assert.equal(crlf.ok, true);
+  assert.equal(crlf.keyPinned, true);
+  const garbage = verifyPack(sample, { ...v1, pinnedPublicKey: 'not a key' });
+  assert.equal(garbage.ok, false);
+  assert.equal(garbage.keyPinned, false);
+  assert.match(garbage.headline, /^FAIL: The pinned key is not an Ed25519 public key PEM/);
 });
