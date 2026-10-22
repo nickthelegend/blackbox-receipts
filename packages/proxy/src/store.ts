@@ -1,9 +1,9 @@
 import { appendFile, link, mkdir, open, readFile, rename, rm, unlink, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
-import { join, resolve, relative, isAbsolute, sep } from 'node:path';
+import { basename, dirname, join, resolve, relative, isAbsolute, sep } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
-import { existsSync, readFileSync, realpathSync, statSync } from 'node:fs';
+import { existsSync, lstatSync, readFileSync, realpathSync, statSync } from 'node:fs';
 import { createReceipt, createSeal, generateSigningKey, hashArgs, hashResult, newSalt, type Receipt, type Seal, type Witness } from '@blackbox/receipts';
 
 const currentDirectory = process.cwd();
@@ -337,13 +337,33 @@ export function restoreSession(): Promise<number[]> {
   });
 }
 
-export function safePath(input: string): { path: string; relativePath: string } {
-  const path = resolve(process.cwd(), input);
-  let checkedPath = path;
-  try { checkedPath = realpathSync(path); } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+/**
+ * Where a path really leads. An existing path resolves through every symlink. A path that does not exist
+ * yet (a write) resolves its nearest existing ancestor and keeps the missing names, so a symlinked folder
+ * on the way can't lead outside the workspace; a dangling symlink on the way is refused, because writing
+ * through it would create its target wherever that is.
+ */
+function realLocation(path: string): string {
+  const missing: string[] = [];
+  let current = path;
+  for (;;) {
+    try { return join(realpathSync(current), ...missing); } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+      let isLink = false;
+      try { isLink = lstatSync(current).isSymbolicLink(); } catch { isLink = false; }
+      if (isLink) throw new Error('Path must stay inside the current working directory (it goes through a symbolic link whose target does not exist)');
+      const parent = dirname(current);
+      if (parent === current) throw error;
+      missing.unshift(basename(current));
+      current = parent;
+    }
   }
-  const relativePath = relative(process.cwd(), checkedPath);
+}
+
+export function safePath(input: string): { path: string; relativePath: string } {
+  const root = realpathSync(process.cwd());
+  const checkedPath = realLocation(resolve(process.cwd(), input));
+  const relativePath = relative(root, checkedPath);
   if (relativePath === '..' || relativePath.startsWith(`..${sep}`) || isAbsolute(relativePath)) throw new Error('Path must stay inside the current working directory');
   return { path: checkedPath, relativePath: relativePath.split(sep).join('/') };
 }
