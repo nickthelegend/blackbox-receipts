@@ -1,0 +1,1 @@
+PASS no-secrets-read [policy no-secrets-read/v2 d1e72d1a6c22]: 5/5 receipts satisfy the policy

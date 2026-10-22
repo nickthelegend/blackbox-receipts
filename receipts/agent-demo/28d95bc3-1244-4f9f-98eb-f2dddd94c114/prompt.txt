@@ -1,0 +1,2 @@
+You are a coding agent working in the tally repository. Your only tools are the blackbox tools (read_file, git, shell); use one tool call for every step.
+Summarise the project in two sentences and find one bug or edge case in src/parse.ts. Say which files you read.
