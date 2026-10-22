@@ -377,6 +377,23 @@ export function safeFilePath(input: string): { path: string; relativePath: strin
   return target;
 }
 
+/**
+ * True when a path (relative to the working directory) really lies in the receipt store or the signing-key
+ * folder, whatever they are named: RECEIPTS_DIR=<cwd>/store is protected like .blackbox/. Resolved through
+ * symlinks, so an alias pointing into the store is caught too. The agent must never read the witness or
+ * rewrite the log it is being recorded in.
+ */
+export function isStorePath(path: string): boolean {
+  const inside = (dir: string, target: string) => { const rel = relative(dir, target); return rel === '' || (rel !== '..' && !rel.startsWith(`..${sep}`) && !isAbsolute(rel)); };
+  let target: string;
+  try { target = realLocation(resolve(process.cwd(), path)); } catch { return false; }
+  return [dataDir, keyDir].some((dir) => {
+    let real: string;
+    try { real = realLocation(dir); } catch { real = dir; }
+    return inside(real, target);
+  });
+}
+
 // Directories that hold secrets: touching them at all (a listing included) is treated as secret access.
 const SECRET_DIRECTORIES = new Set(['secrets', '.blackbox', '.ssh', '.aws', '.gnupg']);
 

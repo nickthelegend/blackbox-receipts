@@ -11,7 +11,7 @@ import { builtinBackend } from './builtin.js';
 import { connectUpstream } from './upstream.js';
 import { renderExplanation, renderStep } from './explain.js';
 import { explainCurrent } from './report.js';
-import { addReceipt, archiveSession, CorruptLogError, isSecretPath, loadReceipts, resumeSession, sealSession } from './store.js';
+import { addReceipt, archiveSession, CorruptLogError, isSecretPath, isStorePath, loadReceipts, resumeSession, sealSession } from './store.js';
 
 const argv = process.argv.slice(2);
 const upstreamIndex = argv.indexOf('--upstream');
@@ -25,7 +25,10 @@ class PolicyDenied extends Error {
 // The proxy's guard is the prover's own rule set: a call the prover would flag is refused before it runs.
 const policy = defaultSecretPolicy;
 function guard(tool: string, planned: Planned, args: unknown) {
-  const violation = evaluateCall(tool, planned.paths, args, policy) ?? (planned.paths.some(isSecretPath) ? `${tool} touched a secret directory` : null);
+  const violation = evaluateCall(tool, planned.paths, args, policy)
+    ?? (planned.paths.some(isSecretPath) ? `${tool} touched a secret directory` : null)
+    // The store under any name (a RECEIPTS_DIR inside the workspace): its witness and log are off-limits.
+    ?? (planned.paths.some(isStorePath) ? `${tool} touched the receipt store` : null);
   if (violation) throw new PolicyDenied(`Policy denied (${policy.id}): ${violation}`, true);
   if (planned.productionTarget) throw new PolicyDenied('Policy denied production target', false);
 }
