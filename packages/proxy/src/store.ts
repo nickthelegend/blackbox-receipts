@@ -310,3 +310,17 @@ export function isSecretPath(path: string) {
   const normalized = path.replaceAll('\\', '/').split(':').at(-1) ?? path;
   return normalized.split('/').some((part) => part === 'secrets' || part === '.blackbox' || part === '.env' || part.startsWith('.env.')) || /(^|\/)(id_rsa|id_ed25519|credentials\.json|signing-key\.pem)$/i.test(normalized);
 }
+
+/**
+ * Where the dashboard says it reads receipts from: the session file relative to the repo when it is inside
+ * it, else with the home folder written as `~`. A store that is the signing-key folder, or inside it, is
+ * never named, so the dashboard cannot point at the key.
+ */
+export function storeSourceLabel(file: string, root: string, home: string, keys: string): string {
+  const inside = (dir: string, path: string) => { const rel = relative(dir, path); return rel === '' || (!rel.startsWith(`..${sep}`) && rel !== '..' && !isAbsolute(rel)); };
+  if (inside(keys, file)) return 'the session store (shares the signing-key folder, so its path is not shown)';
+  if (inside(root, file)) return relative(root, file).split(sep).join('/');
+  if (inside(home, file)) return `~/${relative(home, file).split(sep).join('/')}`;
+  return file;
+}
+export const sessionSource = storeSourceLabel(sessionFile, monorepoRoot, homedir(), keyDir);

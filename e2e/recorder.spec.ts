@@ -52,6 +52,19 @@ test.describe('recorder: live session', () => {
     await page.screenshot({ path: test.info().outputPath('recorder-live.png'), animations: 'disabled', fullPage: true });
   });
 
+  test('names the session file it really reads (RECEIPTS_DIR), never .blackbox/ or the key folder', async ({ page }) => {
+    // This server's RECEIPTS_DIR is a throwaway folder outside the repo (e2e/env.ts), so the label is its full path.
+    const { RECEIPTS_DIR, BLACKBOX_KEY_DIR } = storeEnv(LIVE.dir);
+    const file = join(RECEIPTS_DIR, 'session.jsonl');
+    expect((await (await page.request.get('/api/session')).json()).source).toBe(file);
+    await expect(page.locator('#tape .rc-note')).toHaveText(`Reads ${file} every 3 s`);
+    const wiring = page.getByLabel('Wiring');
+    await expect(wiring.locator('dt', { hasText: 'Store' }).locator('xpath=following-sibling::dd[1]')).toHaveText(file);
+    await expect(page.locator('body')).not.toContainText('.blackbox/session.jsonl');
+    await expect(page.locator('body')).not.toContainText(BLACKBOX_KEY_DIR);
+    await expectNoHorizontalScroll(page);
+  });
+
   test('show and hide the public key', async ({ page }) => {
     const toggle = page.getByRole('button', { name: 'Show public key' });
     await toggle.click();

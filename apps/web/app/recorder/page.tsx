@@ -12,7 +12,7 @@ import { ExplainDrawer } from '../components/explain-drawer';
 import type { Explanation } from '@blackbox/proxy/explain';
 import './recorder.css';
 
-type Session = { sessionId: string; receipts: Receipt[]; chain: { valid: boolean; brokenAt: number | null; reason: string | null }; root: string; publicKey: string; walrus: { root?: string; blob?: unknown } | null; walrusConfigured: boolean; tampered?: number[] };
+type Session = { sessionId: string; receipts: Receipt[]; chain: { valid: boolean; brokenAt: number | null; reason: string | null }; root: string; publicKey: string; walrus: { root?: string; blob?: unknown } | null; walrusConfigured: boolean; tampered?: number[]; source: string };
 type ProofResult = { status: 'PASS' | 'FAIL'; step: number | null; reason: string | null; policyId: string; sessionRoot: string; chainBrokenAt: number | null; steps?: number; root?: string; proof?: PropertyProof };
 type Integration = { name: string; ok: boolean; detail: string };
 type Tone = 'ok' | 'bad' | 'caution' | 'idle';
@@ -222,7 +222,7 @@ export default function Recorder() {
         <section id="tape" className="rc-panel" aria-labelledby="rc-tape-title">
           <div className="rc-panel-head">
             <div><span className="stencil">Live tape</span><h2 id="rc-tape-title">Session {data ? short(data.sessionId, 8) : '—'}</h2></div>
-            <span className="rc-note">Reads .blackbox/session.jsonl every 3 s</span>
+            <span className="rc-note">Reads {data?.source ?? 'the session store'} every 3 s</span>
           </div>
 
           {receipts.length > 0 && data ? <>
@@ -309,7 +309,7 @@ export default function Recorder() {
             <div><dt>Transport</dt><dd><code>stdio · packages/proxy/dist/server.js</code></dd></div>
             <div><dt>Tools</dt><dd><code>read_file · write_file · git · shell · blackbox_explain</code></dd></div>
             <div><dt>Or proxy</dt><dd><code>server.js --upstream &quot;&lt;any stdio MCP server&gt;&quot;</code></dd></div>
-            <div><dt>Store</dt><dd><code>.blackbox/session.jsonl</code></dd></div>
+            <div><dt>Store</dt><dd><code>{data?.source ?? 'RECEIPTS_DIR/session.jsonl'}</code></dd></div>
           </dl>
         </div>
         <div className="rc-panel">

@@ -22,7 +22,7 @@
 .rc-panel h2{margin:6px 0 0;font-size:22px;font-weight:700;letter-spacing:-.03em;line-height:1.15}
 .rc-panel p{margin:10px 0 0;color:var(--muted);font-size:14.5px;line-height:1.55}
 .rc-panel-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 16px;margin-bottom:20px}
-.rc-note{font:400 12px var(--mono);color:var(--dim)}
+.rc-note{font:400 12px var(--mono);color:var(--dim);overflow-wrap:anywhere;min-width:0}
 
 /* annunciator */
 .rc-annunciator{margin-top:28px}
