@@ -1,6 +1,7 @@
 // The default backend: read_file, read-only git and a restricted shell over the current workspace.
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { constants } from 'node:fs';
+import { mkdir, open, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
@@ -11,6 +12,8 @@ import { safeFilePath, safePath } from './store.js';
 
 const execFileAsync = promisify(execFile);
 const MAX_WRITE_BYTES = 1_000_000;
+// read_file returns (and the receipt hashes) the whole file, so it is capped like the shell's output.
+const MAX_READ_BYTES = 2_000_000;
 // A revision name git cannot read as an option: it starts with a letter or digit.
 const PLAIN_REVISION = /^[A-Za-z0-9][A-Za-z0-9._/~^-]*$/;
 
@@ -26,11 +29,25 @@ const tools: Tool[] = [
   { name: 'shell', description: 'Run a shell command in the current workspace (only pwd, ls and cat). Secret reads and production targets are blocked.', inputSchema: { type: 'object', properties: { command: { type: 'string' } }, required: ['command'] } },
 ];
 
+/**
+ * Reads a regular file of at most MAX_READ_BYTES. Opened non-blocking and checked on the open handle, so a
+ * FIFO can't hang the proxy and a file swapped after a check can't slip past it.
+ */
+async function readCapped(path: string, label: string): Promise<string> {
+  const handle = await open(path, constants.O_RDONLY | constants.O_NONBLOCK);
+  try {
+    const stats = await handle.stat();
+    if (!stats.isFile()) throw new Error(`read_file reads only regular files; ${label} is not one`);
+    if (stats.size > MAX_READ_BYTES) throw new Error(`read_file reads at most ${MAX_READ_BYTES} bytes; ${label} is ${stats.size} bytes`);
+    return await handle.readFile('utf8');
+  } finally { await handle.close(); }
+}
+
 /** Validates a call and works out which paths it touches, without running it. */
 function planBuiltin(name: string, args: Record<string, unknown>): Omit<Planned, 'run'> & { run: () => Promise<unknown> } {
   if (name === 'read_file') {
     const target = safePath(z.string().parse(args.path));
-    return { paths: [target.relativePath], permissions: ['workspace:file:read'], run: () => readFile(target.path, 'utf8') };
+    return { paths: [target.relativePath], permissions: ['workspace:file:read'], run: () => readCapped(target.path, target.relativePath) };
   }
   if (name === 'write_file') {
     const target = safePath(z.string().parse(args.path));
