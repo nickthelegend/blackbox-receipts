@@ -7,7 +7,7 @@ An MCP proxy sits between an agent and its tools. Every call is checked against 
 ```mermaid
 flowchart LR
   A[Agent / MCP client] -->|tools/call| P[Blackbox MCP proxy]
-  P -->|policy check first| G{no-secrets-read/v1}
+  P -->|policy check first| G{no-secrets-read/v2}
   G -->|allowed| U[Built-in read_file · write_file · git · shell<br/>or any stdio MCP server via --upstream]
   G -->|denied| D[refused, still recorded]
   P --> S[Signed, hash-linked receipts + seal]
@@ -52,9 +52,11 @@ Keep `.blackbox/` private (it holds the raw-arguments witness) and keep `~/.blac
 
 ## Prove a property: "the agent never read secrets"
 
-The policy `no-secrets-read/v1` lists secret path globs (`.env*`, `*.pem`, `*.key`, `~/.ssh/**`, `~/.aws/**`, `secrets/**`, `.blackbox/**` and others) and secret-token patterns matched against every string argument, including shell commands (private key blocks, AWS, GitHub, GitLab, `sk-` and Slack tokens). **The proxy runs the same evaluation before each call**, so anything the prover would flag is refused before it runs and recorded as `outcome: "denied"`. The attempt still counts: denied steps fail the proof.
+The policy `no-secrets-read/v2` lists secret path globs and secret-token patterns. The globs cover `.env*`, `*.pem`, `*.key`, SSH and AWS keys (and the `.ssh`, `.aws` and `.gnupg` folders themselves, so listing them counts), `secrets/`, `.blackbox/`, and the places credentials live on a developer machine: `.git/**` (remote URLs with tokens, `.git/credentials`), `.git-credentials`, `.netrc`, `.npmrc`, `.pypirc`, `.pgpass`, `*.p12`/`*.pfx`, `.docker/config.json`, `.kube/config` and `.gnupg/**`. The patterns are matched against every string argument, including shell commands (private key blocks, AWS, GitHub, GitLab, `sk-` and Slack tokens). **The proxy runs the same evaluation before each call**, so anything the prover would flag is refused before it runs and recorded as `outcome: "denied"`. The attempt still counts: denied steps fail the proof.
 
-The prover verifies the chain and the seal, opens each step's salted `argsHash` with its witness, evaluates the policy, and publishes per step only the leaf hash, the proxy's signature, a Merkle inclusion path and a salted property commitment, plus an attestation over all of them. Verifiers **pin the policy**: a proof made under any policy other than `no-secrets-read/v1` fails (`--expect-policy <file>` or `BLACKBOX_POLICY_HASH` to pin another), and every verdict line names the policy.
+The prover verifies the chain and the seal, opens each step's salted `argsHash` with its witness, evaluates the policy, and publishes per step only the leaf hash, the proxy's signature, a Merkle inclusion path and a salted property commitment, plus an attestation over all of them. Verifiers **pin the policy**: a proof made under any policy other than `no-secrets-read/v2` fails (`--expect-policy <id or file>` or `BLACKBOX_POLICY_HASH` to pin another), and every verdict line names the policy.
+
+**v1 is frozen, not accepted by default.** `no-secrets-read/v1` (hash `720836167c0f…`) was the policy until 2026-10-22; it lacked the git, npm, netrc and other credential files above. The two committed agent runs were proven under it, so their verdicts say v1, and they verify only when v1 is pinned explicitly (`--expect-policy no-secrets-read/v1`): the CI script, the landing exhibits and the `/verify` samples do that and say so. Under the default v2 pin, their v1 proof fails with `Proof was made under policy "no-secrets-read/v1" (720836167c0f), not the pinned policy`.
 
 ```sh
 node packages/proxy/dist/cli.js prove            # PASS writes .blackbox/proof-no-secrets.json; FAIL names the step
@@ -68,7 +70,7 @@ node packages/proxy/dist/cli.js verify-pack f.json
 node packages/proxy/dist/cli.js disclose 3       # open one step for an auditor
 ```
 
-Verdicts look like `PASS no-secrets-read [policy no-secrets-read/v1 720836167c0f]: 14/14 receipts satisfy the policy` or `FAIL no-secrets-read at step 3 [policy no-secrets-read/v1 720836167c0f]: read_file touched secret path matching ".env*"`. A changed, reordered or deleted receipt fails at its step; receipts cut off the end fail on the seal (`Seal says 3 receipts …, but the log has 2: receipts were removed from the end`). Exit codes are non-zero on any FAIL.
+Verdicts look like `PASS no-secrets-read [policy no-secrets-read/v2 d1e72d1a6c22]: 5/5 receipts satisfy the policy` or `FAIL no-secrets-read at step 2 [policy no-secrets-read/v2 d1e72d1a6c22]: read_file touched secret path matching ".git/**"`. A changed, reordered or deleted receipt fails at its step; receipts cut off the end fail on the seal (`Seal says 3 receipts …, but the log has 2: receipts were removed from the end`). Exit codes are non-zero on any FAIL.
 
 ## Explain why
 
@@ -99,9 +101,10 @@ Raw arguments appear in an explanation only when they open the step's signed `ar
 ```sh
 npx ./blackbox-verify-0.1.0.tgz pack.json                         # exit 0 PASS, 1 FAIL, 2 usage
 npx ./blackbox-verify-0.1.0.tgz pack.json --public-key proxy.pem  # also require this signer
+npx ./blackbox-verify-0.1.0.tgz pack.json --expect-policy no-secrets-read/v1   # a run proven under v1
 ```
 
-Once the repo is public on GitHub, both files can be fetched directly, for example `npx https://github.com/nickthelegend/blackbox-receipts/raw/main/release/blackbox-verify-0.1.0.tgz pack.json` with a pack from `receipts/agent-demo/<run>/pack.json`. npx installs the two `@noble` dependencies from the npm registry; the check itself makes no network request. The PASS run prints `PASS no-secrets-read/v1: 14 receipts, chain intact, seal matches, proof verified`; the injection run prints `FAIL no-secrets-read/v1 at step 3` with chain and seal intact; changing one hex digit of step 7's `resultHash` prints `FAIL at step 7: Receipt contents were changed` and marks steps 8 to 14 untrusted. `test/verify-bin.test.ts` checks that the committed tarball matches a fresh pack and runs its bin on these cases.
+Once the repo is public on GitHub, both files can be fetched directly, for example `npx https://github.com/nickthelegend/blackbox-receipts/raw/main/release/blackbox-verify-0.1.0.tgz pack.json` with a pack from `receipts/agent-demo/<run>/pack.json`. npx installs the two `@noble` dependencies from the npm registry; the check itself makes no network request. With `--expect-policy no-secrets-read/v1` (both committed runs were proven under v1), the PASS run prints `PASS no-secrets-read/v1: 14 receipts, chain intact, seal matches, proof verified`, and without it `FAIL property: Proof was made under policy "no-secrets-read/v1" (720836167c0f), not the pinned policy`; the injection run prints `FAIL no-secrets-read/v1 at step 3` with chain and seal intact; changing one hex digit of step 7's `resultHash` prints `FAIL at step 7: Receipt contents were changed` and marks steps 8 to 14 untrusted. `test/verify-bin.test.ts` checks that the committed tarball matches a fresh pack and runs its bin on these cases.
 
 ## Receipt-gated merge
 

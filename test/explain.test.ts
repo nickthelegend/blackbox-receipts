@@ -29,7 +29,7 @@ test('blackbox_explain (MCP): listed with the tools, explains one step citing it
     assert.equal((await client.callTool({ name: 'git', arguments: { action: 'log', args: ['-n', '1'] } })).isError, true);
     const one = await client.callTool({ name: 'blackbox_explain', arguments: { step: 2 } });
     assert.equal(one.isError, undefined, text(one));
-    assert.match(text(one), /^# Step 2 of session [0-9a-f-]{36}\n\n`read_file \.env` → \*\*DENIED\*\* — Policy denied \(no-secrets-read\/v1\): read_file touched secret path matching "\.env\*" · violation/);
+    assert.match(text(one), /^# Step 2 of session [0-9a-f-]{36}\n\n`read_file \.env` → \*\*DENIED\*\* — Policy denied \(no-secrets-read\/v2\): read_file touched secret path matching "\.env\*" · violation/);
     assert.match(text(one), /- The proxy refused it before it ran, so the agent never received the contents/);
     assert.match(text(one), /## Cited receipts\n\n- step 2 \(this call\) `[0-9a-f]{64}`: signed record of read_file[^\n]*\n- step 1 \(hash link\) `[0-9a-f]{64}`: read_file README\.md\n/);
     assert.match(text(one), /Verdict for the session: `FAIL no-secrets-read at step 2 /);
@@ -52,7 +52,7 @@ test('blackbox_explain (MCP): listed with the tools, explains one step citing it
   assert.deepEqual(model.steps.map((step) => step.finding), ['allowed', 'violation', 'tool-error', 'allowed', 'allowed', 'tool-error']);
   assert.deepEqual(model.steps[1].cites.map((cite) => [cite.step, cite.role, cite.hash]), [[2, 'this call', receipts[1].hash], [1, 'hash link', receipts[0].hash]]);
   assert.equal(model.steps[1].verdictStep, true);
-  assert.match(model.steps[0].why[0], /^Allowed by no-secrets-read\/v1: its path README\.md matches no secret glob/);
+  assert.match(model.steps[0].why[0], /^Allowed by no-secrets-read\/v2: its path README\.md matches no secret glob/);
   assert.equal(renderExplanation(model), ws.cli('explain').out);
   const step = JSON.parse(ws.cli('explain', '--json', '--step', '3').out) as ExplainStep;
   assert.match(step.why[1], /refused it for another reason: git log does not accept additional arguments/);

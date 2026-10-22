@@ -130,6 +130,8 @@ test.describe('landing', () => {
     await inv.getByRole('button', { name: 'Run the checks' }).click();
     await expect(inv.locator('.iv-stamp')).toHaveText('Pass');
     await expect(inv.locator('.iv-checks li.is-ok')).toHaveCount(5);
+    // Both runs were proven under no-secrets-read/v1 on 2026-10-21 and are checked under it, and the page says so.
+    await expect(inv.locator('.iv-meta')).toContainText('policy no-secrets-read/v1, the one in force when this run was recorded');
     await inv.getByRole('button', { name: 'Flip one byte and re-check' }).click();
     await expect(inv.locator('.iv-stamp')).toHaveText('Fail');
     await expect(inv.locator('.iv-cell.is-broken')).toHaveCount(1);

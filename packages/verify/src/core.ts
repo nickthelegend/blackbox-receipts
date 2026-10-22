@@ -62,18 +62,41 @@ export type PropertyProof = {
 export type PropertyFailure = { valid: false; step: number | null; reason: string };
 export type VerifyPropertyResult = { valid: true; steps: number; root: string; policyHash: string; policyId: string } | PropertyFailure;
 
+const SECRET_ARG_PATTERNS: SecretPolicy['secretArgPatterns'] = [
+  { name: 'private-key-block', pattern: '-----BEGIN [A-Z ]*PRIVATE KEY-----' },
+  { name: 'aws-access-key-id', pattern: '\\bAKIA[0-9A-Z]{16}\\b' },
+  { name: 'github-token', pattern: '\\bgh[pousr]_[A-Za-z0-9]{36,}\\b' },
+  { name: 'gitlab-token', pattern: '\\bglpat-[A-Za-z0-9_-]{20,}\\b' },
+  { name: 'api-secret-key', pattern: '\\bsk-(?:ant-)?[A-Za-z0-9_-]{20,}\\b' },
+  { name: 'slack-token', pattern: '\\bxox[abprs]-[A-Za-z0-9-]{10,}\\b' },
+];
+const V1_PATH_GLOBS = ['.env*', '*.pem', '*.key', 'id_rsa', 'id_ed25519', '~/.ssh/**', '.ssh/**', '~/.aws/**', '.aws/**', 'secrets/**', '.blackbox/**', 'credentials.json'];
+
+/**
+ * no-secrets-read/v1, frozen exactly as published (hash 720836167c0f…). The committed agent runs of
+ * 2026-10-21 were proven under it. It misses git's config and credential store, .npmrc, .netrc and other
+ * credential files, so verifiers no longer accept it unless it is pinned explicitly.
+ */
+export const noSecretsPolicyV1: SecretPolicy = { id: 'no-secrets-read/v1', secretPathGlobs: V1_PATH_GLOBS, secretArgPatterns: SECRET_ARG_PATTERNS };
+
+/**
+ * no-secrets-read/v2, the default: everything in v1, plus the secret directories themselves (listing
+ * ~/.ssh is flagged, not only reading a key in it) and the places credentials live on a developer
+ * machine: git's config and credential store, npm, PyPI, netrc and Postgres credential files, PKCS#12
+ * client certificates, Docker and Kubernetes configs, and the GnuPG home.
+ */
 export const defaultSecretPolicy: SecretPolicy = {
-  id: 'no-secrets-read/v1',
-  secretPathGlobs: ['.env*', '*.pem', '*.key', 'id_rsa', 'id_ed25519', '~/.ssh/**', '.ssh/**', '~/.aws/**', '.aws/**', 'secrets/**', '.blackbox/**', 'credentials.json'],
-  secretArgPatterns: [
-    { name: 'private-key-block', pattern: '-----BEGIN [A-Z ]*PRIVATE KEY-----' },
-    { name: 'aws-access-key-id', pattern: '\\bAKIA[0-9A-Z]{16}\\b' },
-    { name: 'github-token', pattern: '\\bgh[pousr]_[A-Za-z0-9]{36,}\\b' },
-    { name: 'gitlab-token', pattern: '\\bglpat-[A-Za-z0-9_-]{20,}\\b' },
-    { name: 'api-secret-key', pattern: '\\bsk-(?:ant-)?[A-Za-z0-9_-]{20,}\\b' },
-    { name: 'slack-token', pattern: '\\bxox[abprs]-[A-Za-z0-9-]{10,}\\b' },
+  id: 'no-secrets-read/v2',
+  secretPathGlobs: [
+    ...V1_PATH_GLOBS,
+    '.ssh', '.aws', '.gnupg', '.gnupg/**', 'secrets', '.blackbox',
+    '.git/**', '.git-credentials', '.netrc', '.npmrc', '.pypirc', '.pgpass', '*.p12', '*.pfx', '.docker/config.json', '.kube/config',
   ],
+  secretArgPatterns: SECRET_ARG_PATTERNS,
 };
+
+/** The published policies, newest first. A verifier pins exactly one; the default is the first. */
+export const PUBLISHED_POLICIES: readonly SecretPolicy[] = [defaultSecretPolicy, noSecretsPolicyV1];
 
 // ---------------------------------------------------------------- primitives
 
@@ -204,8 +227,13 @@ export function policyHash(policy: SecretPolicy): string {
   return sha256Hex(stableJson(policy));
 }
 
-/** Verifiers accept proofs made under this policy unless they pin another one explicitly. */
+/** Verifiers accept proofs made under this policy (no-secrets-read/v2) unless they pin another one explicitly. */
 export const DEFAULT_POLICY_HASH = policyHash(defaultSecretPolicy);
+
+/** A published policy by its id (`no-secrets-read/v1`) or its full hash; undefined for anything else. */
+export function publishedPolicy(idOrHash: string): SecretPolicy | undefined {
+  return PUBLISHED_POLICIES.find((policy) => policy.id === idOrHash || policyHash(policy) === idOrHash);
+}
 
 /** The hex digest the proxy's attestation over a property proof covers. */
 export function proofStatement(proof: Omit<PropertyProof, 'attestation'>): string {
@@ -220,7 +248,7 @@ function leafIndex(path: StepProof['inclusion']): number {
 /**
  * Verifies a proof using only the proxy public key. Never needs receipt contents or raw args.
  * The policy is pinned: a proof made under any policy other than `expectedPolicyHash` (default
- * no-secrets-read/v1) fails, so a prover can't pass by proving against a weaker policy. Pass null to
+ * no-secrets-read/v2) fails, so a prover can't pass by proving against a weaker policy, v1 included. Pass null to
  * accept any policy (and then read `policyId` from the result).
  */
 export function verifyPropertyProof(proof: PropertyProof, publicKeyPem: string, expectedRoot?: string, expectedPolicyHash: string | null = DEFAULT_POLICY_HASH): VerifyPropertyResult {

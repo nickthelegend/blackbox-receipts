@@ -1,7 +1,7 @@
 // A pack is one self-contained JSON file for a session: signed receipts, the proxy's public key, the
 // signed seal, the property proof (when the prover passed) and the prover's verdict line. verifyPack
 // checks all of it with no network, no private key and no raw arguments, and says which step broke.
-import { DEFAULT_POLICY_HASH, defaultSecretPolicy, merkleRoot, publicKeyFromPem, verifyChain, verifyPropertyProof, verifySeal, type PropertyProof, type Receipt, type Seal } from './core.js';
+import { DEFAULT_POLICY_HASH, merkleRoot, publishedPolicy, publicKeyFromPem, verifyChain, verifyPropertyProof, verifySeal, type PropertyProof, type Receipt, type Seal } from './core.js';
 
 export const PACK_FORMAT = 'blackbox-pack/v1' as const;
 
@@ -53,7 +53,7 @@ export function parsePack(text: string): Pack {
 
 export function verifyPack(pack: Pack, options: PackOptions = {}): PackResult {
   const expectedPolicyHash = options.expectedPolicyHash ?? DEFAULT_POLICY_HASH;
-  const policyId = options.expectedPolicyId ?? (expectedPolicyHash === DEFAULT_POLICY_HASH ? defaultSecretPolicy.id : 'pinned policy');
+  const policyId = options.expectedPolicyId ?? publishedPolicy(expectedPolicyHash)?.id ?? 'pinned policy';
   const receipts = Array.isArray(pack?.receipts) ? pack.receipts : [];
   const checks: PackCheck[] = [];
   const steps: StepStatus[] = receipts.map((receipt, index) => ({ step: receipt?.step ?? index + 1, tool: String(receipt?.tool ?? '?'), paths: Array.isArray(receipt?.paths) ? receipt.paths : [], outcome: receipt?.outcome ?? null, timestamp: String(receipt?.timestamp ?? ''), hash: String(receipt?.hash ?? ''), status: 'ok', reason: null }));

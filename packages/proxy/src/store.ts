@@ -354,9 +354,12 @@ export function safeFilePath(input: string): { path: string; relativePath: strin
   return target;
 }
 
+// Directories that hold secrets: touching them at all (a listing included) is treated as secret access.
+const SECRET_DIRECTORIES = new Set(['secrets', '.blackbox', '.ssh', '.aws', '.gnupg']);
+
 export function isSecretPath(path: string) {
   const normalized = path.replaceAll('\\', '/').split(':').at(-1) ?? path;
-  return normalized.split('/').some((part) => part === 'secrets' || part === '.blackbox' || part === '.env' || part.startsWith('.env.')) || /(^|\/)(id_rsa|id_ed25519|credentials\.json|signing-key\.pem)$/i.test(normalized);
+  return normalized.split('/').some((part) => SECRET_DIRECTORIES.has(part) || part === '.env' || part.startsWith('.env.')) || /(^|\/)(id_rsa|id_ed25519|credentials\.json|signing-key\.pem)$/i.test(normalized);
 }
 
 /**

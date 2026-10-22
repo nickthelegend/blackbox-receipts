@@ -5,7 +5,7 @@ import { DEFAULT_POLICY_HASH, defaultSecretPolicy, merkleRoot, proveProperty, ve
 import { explainModel, type Explanation } from './explain.js';
 import { loadReceipts, loadSeal, loadWitnesses, signingKeys } from './store.js';
 
-/** The policy a verdict is judged against (verifiers pin no-secrets-read/v1 unless told otherwise). */
+/** The policy a verdict is judged against (verifiers pin no-secrets-read/v2 unless told otherwise). */
 export type PinnedPolicy = { id: string; hash: string };
 export const defaultPin: PinnedPolicy = { id: defaultSecretPolicy.id, hash: DEFAULT_POLICY_HASH };
 

@@ -6,6 +6,7 @@
 // shown as "Setup required", never as a pass.
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PropertyProof, Receipt } from '@blackbox/receipts';
+import { defaultSecretPolicy } from '@blackbox/verify';
 import { Logo, Mark } from '../components/brand';
 import { Tape, type TapeStep, type TapeTone } from '../components/strip';
 import { ExplainDrawer } from '../components/explain-drawer';
@@ -153,7 +154,7 @@ export default function Recorder() {
       : state === 'idle' ? { id: 'chain', label: 'Chain', state: 'No data', tone: 'idle', detail: 'Nothing recorded yet' }
       : state === 'good' ? { id: 'chain', label: 'Chain', state: 'Verified', tone: 'ok', detail: `${receipts.length} signatures and links` }
       : { id: 'chain', label: 'Chain', state: `Broken · ${pad(brokenAt)}`, tone: 'bad', detail: data.chain.reason ?? 'Verification failed' },
-    !receipts.length ? { id: 'secret', label: 'Secret paths', state: 'No data', tone: 'idle', detail: 'Policy no-secrets-read/v1' }
+    !receipts.length ? { id: 'secret', label: 'Secret paths', state: 'No data', tone: 'idle', detail: `Policy ${defaultSecretPolicy.id}` }
       : secretSteps.length ? { id: 'secret', label: 'Secret paths', state: `Touched · ${secretSteps.map(pad).join(', ')}`, tone: 'bad', detail: deniedCount ? `${deniedCount} call(s) denied before running` : 'Signed as secret access' }
       : { id: 'secret', label: 'Secret paths', state: 'None', tone: 'ok', detail: 'No receipt is signed as secret access' },
     !proofResult ? { id: 'proof', label: 'No-secrets proof', state: 'Not run', tone: 'idle', detail: 'Run it from the controls' }
@@ -281,9 +282,9 @@ export default function Recorder() {
           </section>
 
           <section id="prove" className="rc-panel rc-control">
-            <span className="stencil">Policy proof · {proofResult?.policyId ?? 'no-secrets-read/v1'}</span>
+            <span className="stencil">Policy proof · {proofResult?.policyId ?? defaultSecretPolicy.id}</span>
             <h2>{!proofResult ? 'Did the agent read secrets?' : stale ? 'Proof is stale' : proofPass ? 'Pass: no secrets read' : failedStep === null ? 'Fail: property not proven' : `Fail at block ${pad(failedStep)}`}</h2>
-            <p>{!proofResult ? 'Checks every step against secret path globs (.env*, *.pem, ~/.ssh/**) and secret patterns in tool args. Reveals inclusion paths and commitments, never the args.' : stale ? 'The log changed after this proof ran. Run it again to cover the current chain.' : proofPass ? `All ${proofResult.steps} signed blocks satisfy the policy, verified from the public key alone.` : proofResult.reason}</p>
+            <p>{!proofResult ? 'Checks every step against secret path globs (.env*, *.pem, ~/.ssh, .git/**, .npmrc, .netrc and more) and secret patterns in tool args. Reveals inclusion paths and commitments, never the args.' : stale ? 'The log changed after this proof ran. Run it again to cover the current chain.' : proofPass ? `All ${proofResult.steps} signed blocks satisfy the policy, verified from the public key alone.` : proofResult.reason}</p>
             {failedStep !== null && data && explainOf(failedStep, receipts.find((receipt) => receipt.step === failedStep)?.hash ?? '') && <button type="button" className="why-btn rc-why-proof" aria-haspopup="dialog" onClick={() => setExplainStep(failedStep)}>Explain why block {pad(failedStep)} fails</button>}
             {proofPass && <div className="rc-proof"><code>{proofResult?.steps} / {receipts.length} leaves · root {proofResult?.root?.slice(0, 16)}…</code><button type="button" className="rc-link" onClick={downloadProof}>Download proof JSON</button></div>}
             <button type="button" className="btn btn-accent rc-wide" disabled={busy || !receipts.length} onClick={() => void proveNoSecrets()}>Prove: no secrets read</button>

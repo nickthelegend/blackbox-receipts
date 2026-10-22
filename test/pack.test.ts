@@ -16,7 +16,7 @@ async function realPack(): Promise<{ text: string; pack: Pack; cwd: string; env:
   try { for (const name of ['a.md', 'b.md', 'c.md', 'd.md', 'e.md']) await client.callTool({ name: 'read_file', arguments: { path: name } }); } finally { await client.close(); }
   const made = runScript('packages/proxy/src/cli.ts', cwd, ['pack', 'session.pack.json'], env);
   assert.equal(made.code, 0, made.out);
-  assert.match(made.out, /^PASS no-secrets-read\/v1: 5 receipts, chain intact, seal matches, proof verified/);
+  assert.match(made.out, /^PASS no-secrets-read\/v2: 5 receipts, chain intact, seal matches, proof verified/);
   const text = readFileSync(join(cwd, 'session.pack.json'), 'utf8');
   assert.doesNotMatch(text, /-----BEGIN PRIVATE KEY-----/);
   return { text, pack: parsePack(text), cwd, env };
@@ -73,7 +73,7 @@ test('pack CLI: verify-pack exits 0 on the real pack and 1 on a one-byte edit; -
   assert.match(bad.out, /^FAIL at step 2: Receipt contents were changed/);
   const failedRun = readdirSync(join(repoRoot, 'receipts/agent-demo')).find((id) => readFileSync(join(repoRoot, 'receipts/agent-demo', id, 'result.txt'), 'utf8').startsWith('FAIL'))!;
   const packed = runScript('packages/proxy/src/cli.ts', cwd, ['pack', join(cwd, 'agent.json'), '--from', join(repoRoot, 'receipts/agent-demo', failedRun)], env);
-  assert.match(packed.out, /^FAIL no-secrets-read\/v1 at step 3: No proof: step 3 \(read_file \.env\) is signed as a secret access/);
+  assert.match(packed.out, /^FAIL no-secrets-read\/v2 at step 3: No proof: step 3 \(read_file \.env\) is signed as a secret access/);
   const result = verifyPack(parsePack(readFileSync(join(cwd, 'agent.json'), 'utf8')));
   assert.deepEqual(result.checks.map((item) => [item.name, item.ok]), [['format', true], ['key', true], ['chain', true], ['seal', true], ['property', false]]);
   assert.equal(result.steps[2].status, 'flagged');

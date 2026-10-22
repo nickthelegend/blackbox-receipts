@@ -1,39 +1,57 @@
 #!/usr/bin/env node
-// blackbox-verify <pack.json> [--public-key key.pem] [--json]
+// blackbox-verify <pack.json> [--public-key key.pem] [--expect-policy id|file] [--json]
 // Checks a Blackbox pack (blackbox-pack/v1) from the file alone: signatures, hash links, the signed seal
 // and the property proof, with the same verifyPack the CLI and the browser verifier run. No network, no
 // private key. Exit 0 PASS, 1 FAIL, 2 usage or unreadable input.
 // This file is the Node entry point; the library itself (index.ts) has no node: imports.
 import { readFileSync } from 'node:fs';
-import { parsePack, verifyPack, type Pack } from './index.js';
+import { parsePack, policyHash, PUBLISHED_POLICIES, publishedPolicy, verifyPack, type Pack, type SecretPolicy } from './index.js';
 
 const VERSION = '0.1.0';
-const USAGE = `Usage: blackbox-verify <pack.json> [--public-key key.pem] [--json]
+const USAGE = `Usage: blackbox-verify <pack.json> [--public-key key.pem] [--expect-policy id|file] [--json]
 
 Verifies a Blackbox Receipts pack offline: every receipt's Ed25519 signature and hash link, the signed
-seal (nothing cut off the end) and the no-secrets-read property proof under policy no-secrets-read/v1.
-  --public-key <file>  require the pack to be signed by this PEM key (or set BLACKBOX_PUBLIC_KEY)
-  --json               print the full result as JSON
+seal (nothing cut off the end) and the no-secrets-read property proof under the pinned policy.
+  --public-key <file>     require the pack to be signed by this PEM key (or set BLACKBOX_PUBLIC_KEY)
+  --expect-policy <id>    pin a published policy (${PUBLISHED_POLICIES.map(({ id }) => id).join(', ')}) or a
+                          policy JSON file; the default is ${PUBLISHED_POLICIES[0].id}. Runs recorded under
+                          no-secrets-read/v1 verify only when it is pinned.
+  --json                  print the full result as JSON
 Exit codes: 0 PASS, 1 FAIL, 2 usage error or unreadable file.`;
 
 const args = process.argv.slice(2);
 if (args.includes('--help') || args.includes('-h')) { console.log(USAGE); process.exit(0); }
 if (args.includes('--version')) { console.log(VERSION); process.exit(0); }
-const keyIndex = args.indexOf('--public-key');
-const files = args.filter((arg, index) => !arg.startsWith("--") && (keyIndex < 0 || index !== keyIndex + 1));
-if (files.length !== 1 || (keyIndex >= 0 && !args[keyIndex + 1])) { console.error(USAGE); process.exit(2); }
+const VALUED = ['--public-key', '--expect-policy'];
+const valueOf = (flag: string) => { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; };
+const files = args.filter((arg, index) => !arg.startsWith('--') && !VALUED.includes(args[index - 1]));
+if (files.length !== 1 || VALUED.some((flag) => args.includes(flag) && !valueOf(flag))) { console.error(USAGE); process.exit(2); }
+
+let expected: SecretPolicy = PUBLISHED_POLICIES[0];
+const policyArg = valueOf('--expect-policy');
+if (policyArg) {
+  const published = publishedPolicy(policyArg);
+  if (published) expected = published;
+  else {
+    try { expected = JSON.parse(readFileSync(policyArg, 'utf8')) as SecretPolicy; } catch {
+      console.error(`--expect-policy ${policyArg} is neither a published policy (${PUBLISHED_POLICIES.map(({ id }) => id).join(', ')}) nor a readable policy file`);
+      process.exit(2);
+    }
+  }
+}
 
 let pack: Pack;
 let pinnedPublicKey: string | undefined;
 try {
   pack = parsePack(readFileSync(files[0], 'utf8'));
-  pinnedPublicKey = keyIndex >= 0 ? readFileSync(args[keyIndex + 1], 'utf8') : process.env.BLACKBOX_PUBLIC_KEY || undefined;
+  const keyFile = valueOf('--public-key');
+  pinnedPublicKey = keyFile ? readFileSync(keyFile, 'utf8') : process.env.BLACKBOX_PUBLIC_KEY || undefined;
 } catch (error) {
   console.error(`FAIL: cannot read ${files[0]}: ${error instanceof Error ? error.message : String(error)}`);
   process.exit(2);
 }
 
-const result = verifyPack(pack, { pinnedPublicKey });
+const result = verifyPack(pack, { pinnedPublicKey, expectedPolicyHash: policyHash(expected), expectedPolicyId: expected.id });
 if (args.includes('--json')) console.log(JSON.stringify(result, null, 2));
 else {
   console.log(result.headline);

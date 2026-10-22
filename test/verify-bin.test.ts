@@ -55,13 +55,22 @@ test('release/blackbox-verify-0.1.0.tgz is a current pnpm pack of packages/verif
   for (const [path, content] of committed) if (path !== 'package/dist/bin.js' && path.endsWith('.js')) assert.doesNotMatch(content, /from 'node:/, `${path} must stay browser-safe`);
 });
 
-test('blackbox-verify bin: committed packs PASS / FAIL at step 3; a one-byte change fails naming the step', () => {
-  const pass = bin(PASS_PACK);
+test('blackbox-verify bin: committed packs PASS / FAIL at step 3 under v1, the policy they were recorded under; a one-byte change fails naming the step', () => {
+  // Both committed runs were proven under no-secrets-read/v1 (2026-10-21), so they PASS only with v1 pinned.
+  const pass = bin(PASS_PACK, '--expect-policy', 'no-secrets-read/v1');
   assert.equal(pass.code, 0, pass.out);
   assert.match(pass.out, /^PASS no-secrets-read\/v1: 14 receipts, chain intact, seal matches, proof verified\n/);
   assert.match(pass.out, / {2}ok {3}chain: 14 signatures and hash links verify\n/);
+  // The default pin is v2, which the v1 proof does not satisfy: it fails on the property, naming both policies.
+  const current = bin(PASS_PACK);
+  assert.equal(current.code, 1, current.out);
+  assert.match(current.out, /^FAIL property: Proof was made under policy "no-secrets-read\/v1" \(720836167c0f\), not the pinned policy \([0-9a-f]{12}\)\n/);
+  assert.match(current.out, / {2}ok {3}chain: 14 signatures and hash links verify\n {2}ok {3}seal: Signed seal covers all 14 receipts\n/);
+  const unknown = bin(PASS_PACK, '--expect-policy', 'no-secrets-read/v0');
+  assert.equal(unknown.code, 2, unknown.out);
+  assert.match(unknown.out, /no-secrets-read\/v0 is neither a published policy \(no-secrets-read\/v2, no-secrets-read\/v1\) nor a readable policy file/);
 
-  const fail = bin(FAIL_PACK);
+  const fail = bin(FAIL_PACK, '--expect-policy', 'no-secrets-read/v1');
   assert.equal(fail.code, 1, fail.out);
   assert.match(fail.out, /^FAIL no-secrets-read\/v1 at step 3: No proof: step 3 \(read_file \.env\) is signed as a secret access\n/);
   assert.match(fail.out, / {2}ok {3}chain: 10 signatures and hash links verify\n {2}ok {3}seal: Signed seal covers all 10 receipts\n/);

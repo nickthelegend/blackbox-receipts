@@ -50,9 +50,15 @@ test.describe('verify', () => {
   });
 
   test('load a pack with the file picker and with "Load another pack"', async ({ page }) => {
+    // A dropped or picked file is checked under the default pin, no-secrets-read/v2. This run was proven under
+    // v1 on 2026-10-21, so it fails on the property until v1 is pinned explicitly.
     await page.locator('input[type=file]').setInputFiles(PASS_PACK);
-    await expect(page.locator('.vf-badge')).toHaveText('PASS');
+    await expect(page.getByLabel('Pinned policy', { exact: true })).toHaveValue('no-secrets-read/v2');
+    await expect(page.locator('.vf-badge')).toHaveText('FAIL');
     await expect(page.locator('.vf-meta')).toContainText('agent-pass.json');
+    await page.getByLabel('Pinned policy', { exact: true }).selectOption('no-secrets-read/v1');
+    await expect(page.locator('.vf-badge')).toHaveText('PASS');
+    await expect(page.locator('.vf-meta')).toContainText('policy no-secrets-read/v1');
     const chooser = page.waitForEvent('filechooser');
     await page.getByRole('button', { name: 'Load another pack' }).click();
     await (await chooser).setFiles({ name: 'not-a-pack.json', mimeType: 'application/json', buffer: Buffer.from('{"hello":"world"}') });
@@ -71,10 +77,39 @@ test.describe('verify', () => {
     const zone = page.locator('.vf-drop');
     await zone.dispatchEvent('dragover', { dataTransfer: transfer });
     await expect(zone).toHaveClass(/is-drag/);
+    await page.getByLabel('Pinned policy', { exact: true }).selectOption('no-secrets-read/v1');
     await zone.dispatchEvent('drop', { dataTransfer: transfer });
     await expect(zone).not.toHaveClass(/is-drag/);
     await expect(page.locator('.vf-badge')).toHaveText('PASS');
     await expect(page.locator('.vf-meta')).toContainText('dropped-pack.json');
+  });
+
+  test('pinned policy: a sample pins v1, the policy it was recorded under; v2 rejects its v1 proof by name', async ({ page }) => {
+    const requests: string[] = [];
+    page.on('request', (request) => requests.push(request.url()));
+    const pin = page.getByLabel('Pinned policy', { exact: true });
+    await expect(pin).toHaveValue('no-secrets-read/v2');
+    await expect(page.locator('.vf-policy')).toContainText('.npmrc');
+    await page.getByRole('button', { name: /Agent resisted the injection/ }).click();
+    await expect(pin).toHaveValue('no-secrets-read/v1');
+    await expect(page.locator('.vf-badge')).toHaveText('PASS');
+    await expect(page.locator('.vf-verdict')).toContainText('proven on 2026-10-21 under no-secrets-read/v1');
+    await pin.selectOption('no-secrets-read/v2');
+    await expect(page.locator('.vf-badge')).toHaveText('FAIL');
+    await expect(page.locator('.vf-headline')).toContainText('Proof was made under policy "no-secrets-read/v1" (720836167c0f), not the pinned policy');
+    await expect(page.locator('.vf-checks li.is-ok')).toHaveCount(4);
+    await expect(page.locator('.vf-step-ok')).toHaveCount(14);
+    await expectNoHorizontalScroll(page);
+    await page.screenshot({ path: test.info().outputPath('verify-pinned-v2.png'), animations: 'disabled', fullPage: true });
+    // A one-byte edit survives a change of pin: it is re-checked, still broken at its step.
+    await pin.selectOption('no-secrets-read/v1');
+    await expect(page.locator('.vf-badge')).toHaveText('PASS');
+    await page.getByLabel('Step to edit').selectOption('5');
+    await page.getByRole('button', { name: 'Flip one byte' }).click();
+    await pin.selectOption('no-secrets-read/v2');
+    await expect(page.locator('.vf-headline')).toHaveText('FAIL at step 5: Receipt contents were changed');
+    await expect(page.locator('.vf-edit')).toContainText("inside step 5's resultHash");
+    expect(requests, 'requests made after the page loaded').toEqual([]);
   });
 
   test('header links', async ({ page }) => {

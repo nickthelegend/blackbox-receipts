@@ -2,7 +2,7 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, relative, resolve, sep } from 'node:path';
-import { createSeal, signDigest, parsePack, PACK_FORMAT, verifyPack, type Pack, DEFAULT_POLICY_HASH, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
+import { createSeal, signDigest, parsePack, PACK_FORMAT, PUBLISHED_POLICIES, publishedPolicy, verifyPack, type Pack, DEFAULT_POLICY_HASH, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
 import { renderExplanation, renderStep } from './explain.js';
 import { narrate, renderNarrative, type Narrative } from './narrate.js';
 import { failLine as formatFailLine, explainCurrent, policyTag as tagFor, proveCurrent as proveWith } from './report.js';
@@ -14,13 +14,23 @@ const option = (name: string) => { const index = rest.indexOf(`--${name}`); retu
 const positional = rest.filter((item, index) => !item.startsWith('--') && !rest[index - 1]?.startsWith('--'));
 const defaultProofFile = resolve(dataDir, 'proof-no-secrets.json');
 
-// The policy a verdict is judged against. Verifiers pin no-secrets-read/v1 unless told otherwise with
-// --expect-policy <file> or BLACKBOX_POLICY_HASH; proofs made under any other policy fail.
+// The policy a verdict is judged against. Verifiers pin no-secrets-read/v2 unless told otherwise with
+// --expect-policy <published id | policy file> or BLACKBOX_POLICY_HASH; proofs made under any other
+// policy fail. Runs recorded under v1 verify with --expect-policy no-secrets-read/v1.
 async function loadPinnedPolicy(): Promise<{ id: string; hash: string }> {
-  const file = option('expect-policy');
-  if (file) { const policy = JSON.parse(await readFile(resolve(file), 'utf8')) as SecretPolicy; return { id: policy.id, hash: policyHash(policy) }; }
+  const value = option('expect-policy');
+  if (value) {
+    const published = publishedPolicy(value);
+    if (published) return { id: published.id, hash: policyHash(published) };
+    let policy: SecretPolicy;
+    try { policy = JSON.parse(await readFile(resolve(value), 'utf8')) as SecretPolicy; } catch {
+      console.error(`--expect-policy ${value} is neither a published policy (${PUBLISHED_POLICIES.map(({ id }) => id).join(', ')}) nor a readable policy file`);
+      process.exit(2);
+    }
+    return { id: policy.id, hash: policyHash(policy) };
+  }
   const hash = process.env.BLACKBOX_POLICY_HASH?.trim();
-  if (hash && hash !== DEFAULT_POLICY_HASH) return { id: 'pinned-by-hash', hash };
+  if (hash && hash !== DEFAULT_POLICY_HASH) return { id: publishedPolicy(hash)?.id ?? 'pinned-by-hash', hash };
   return { id: defaultSecretPolicy.id, hash: DEFAULT_POLICY_HASH };
 }
 const pinned = await loadPinnedPolicy();
@@ -248,7 +258,7 @@ try {
   } else if (command === 'restore') {
     console.log(`Restored block(s) ${(await restoreSession()).join(', ')} to their signed originals.`);
   } else {
-    console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | explain [--json] [--step N] [--out file] [--model meterless] | pack [out.json] [--from exportDir] | verify-pack <file> | attest-diff --base <sha> [--from dir] [--junit file] [--out file] | disclose <step> | public-key | tamper [step] | restore]\nVerdicts are judged against no-secrets-read/v1 unless you pin another policy with --expect-policy <file> or BLACKBOX_POLICY_HASH.');
+    console.error('Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | explain [--json] [--step N] [--out file] [--model meterless] | pack [out.json] [--from exportDir] | verify-pack <file> | attest-diff --base <sha> [--from dir] [--junit file] [--out file] | disclose <step> | public-key | tamper [step] | restore]\nVerdicts are judged against no-secrets-read/v2 unless you pin another policy with --expect-policy <id or file> (no-secrets-read/v1 for runs recorded under it) or BLACKBOX_POLICY_HASH.');
     process.exitCode = 2;
   }
 } catch (error) {

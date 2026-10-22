@@ -3,9 +3,11 @@
 // Offline verifier. A dropped pack is checked entirely in this tab by @blackbox/verify (the same code
 // the CLI's verify-pack runs): Ed25519 signatures with @noble/curves, SHA-256 hash links, the signed
 // seal and the no-secrets proof under the pinned policy. No request is made; the file never leaves the
-// browser. The two samples are packs of real agent runs committed under receipts/agent-demo/.
+// browser. The two samples are packs of real agent runs committed under receipts/agent-demo/. The pin
+// defaults to no-secrets-read/v2; the samples were proven under v1 on 2026-10-21, so loading one pins v1,
+// and switching the pin back to v2 shows that a v1 proof does not satisfy the current policy.
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { parsePack, verifyPack, type Pack, type PackResult, type StepStatus } from '@blackbox/verify';
+import { parsePack, policyHash, publishedPolicy, PUBLISHED_POLICIES, verifyPack, type Pack, type PackResult, type StepStatus } from '@blackbox/verify';
 import { Logo } from '../components/brand';
 import { recorder, route } from '../site';
 import passSample from './samples/agent-pass.json';
@@ -13,12 +15,18 @@ import failSample from './samples/agent-fail.json';
 import '../styles.css';
 import './verify.css';
 
-type Loaded = { name: string; text: string; pack: Pack; result: PackResult; edit: string | null };
+type Loaded = { name: string; text: string; pack: Pack; result: PackResult; edit: string | null; sample: boolean };
 
+// Both committed runs were proven on 2026-10-21 under no-secrets-read/v1, the policy published then.
+const RECORDED_POLICY = 'no-secrets-read/v1';
 const SAMPLES = [
   { id: 'pass', label: 'Agent resisted the injection', tone: 'ok' as const, file: 'agent-pass.json', text: JSON.stringify(passSample, null, 2) },
   { id: 'fail', label: 'Agent tried to read .env', tone: 'bad' as const, file: 'agent-fail.json', text: JSON.stringify(failSample, null, 2) },
 ];
+const POLICY_NOTE: Record<string, string> = {
+  'no-secrets-read/v2': 'Current default. Adds git config and credentials, .npmrc, .netrc, .pgpass, .pypirc, .p12/.pfx, Docker, Kubernetes and GnuPG files, and the .ssh, .aws and .gnupg folders to v1.',
+  'no-secrets-read/v1': 'Frozen as published on 2026-10-21, when the two sample runs were recorded. It does not list git credentials, .npmrc or .netrc.',
+};
 
 const STATUS: Record<StepStatus['status'], { label: string; tone: 'ok' | 'bad' | 'warn' | 'dim' }> = {
   ok: { label: 'Signed', tone: 'ok' },
@@ -28,10 +36,11 @@ const STATUS: Record<StepStatus['status'], { label: string; tone: 'ok' | 'bad' |
 };
 const CHECK_LABEL: Record<PackResult['checks'][number]['name'], string> = { format: 'Pack format', key: 'Public key', chain: 'Signatures and hash links', seal: 'Signed seal (nothing cut off)', property: 'No-secrets proof' };
 
-function load(name: string, text: string, edit: string | null = null): Loaded | string {
+function load(name: string, text: string, edit: string | null, sample: boolean, pin: string): Loaded | string {
+  const policy = publishedPolicy(pin) ?? PUBLISHED_POLICIES[0];
   try {
     const pack = parsePack(text);
-    return { name, text, pack, result: verifyPack(pack), edit };
+    return { name, text, pack, result: verifyPack(pack, { expectedPolicyHash: policyHash(policy), expectedPolicyId: policy.id }), edit, sample };
   } catch (error) {
     return error instanceof Error ? error.message : String(error);
   }
@@ -56,27 +65,39 @@ export default function VerifyPage() {
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const [flipStep, setFlipStep] = useState(1);
+  const [pin, setPin] = useState(PUBLISHED_POLICIES[0].id);
   const input = useRef<HTMLInputElement>(null);
 
-  const accept = useCallback((name: string, text: string, edit: string | null = null) => {
-    const next = load(name, text, edit);
+  const accept = useCallback((name: string, text: string, edit: string | null, sample: boolean, policy: string) => {
+    const next = load(name, text, edit, sample, policy);
     if (typeof next === 'string') { setLoaded(null); setError(`${name}: ${next}`); return; }
     setError(null);
     setLoaded(next);
-    setFlipStep(Math.min(Math.max(1, Math.ceil(next.pack.receipts.length / 2)), next.pack.receipts.length || 1));
+    if (!edit) setFlipStep(Math.min(Math.max(1, Math.ceil(next.pack.receipts.length / 2)), next.pack.receipts.length || 1));
   }, []);
+
+  function loadSample(file: string, text: string) {
+    setPin(RECORDED_POLICY);
+    accept(file, text, null, true, RECORDED_POLICY);
+  }
+
+  /** Re-checks the loaded pack (and any one-byte edit) under another pinned policy. */
+  function repin(policy: string) {
+    setPin(policy);
+    if (loaded) accept(loaded.name, loaded.text, loaded.edit, loaded.sample, policy);
+  }
 
   async function readFile(file: File | undefined) {
     if (!file) return;
     if (file.size > 20_000_000) { setLoaded(null); setError(`${file.name}: larger than 20 MB, which is not a pack this page will read`); return; }
-    accept(file.name, await file.text());
+    accept(file.name, await file.text(), null, false, pin);
   }
 
   function flip() {
     if (!loaded) return;
     const changed = flipOneByte(loaded.text, loaded.pack, flipStep);
     if (!changed) { setError(`Could not find step ${flipStep}'s resultHash in this pack's text`); return; }
-    accept(loaded.name, changed.text, `Changed 1 byte (offset ${changed.offset}, inside step ${flipStep}'s resultHash) in this tab only. The file on disk is untouched.`);
+    accept(loaded.name, changed.text, `Changed 1 byte (offset ${changed.offset}, inside step ${flipStep}'s resultHash) in this tab only. The file on disk is untouched.`, loaded.sample, pin);
   }
 
   const result = loaded?.result;
@@ -117,9 +138,18 @@ export default function VerifyPage() {
         </label>
         <div className="vf-samples">
           <p className="vf-label">Or load a real agent run</p>
-          {SAMPLES.map((sample) => <button key={sample.id} type="button" className={`vf-sample vf-sample-${sample.tone}`} onClick={() => accept(sample.file, sample.text)}>
+          {SAMPLES.map((sample) => <button key={sample.id} type="button" className={`vf-sample vf-sample-${sample.tone}`} onClick={() => loadSample(sample.file, sample.text)}>
             <span className="vf-sample-dot" aria-hidden />{sample.label}<span className="vf-sample-file">{sample.file}</span>
           </button>)}
+          <div className="vf-policy">
+            <label className="vf-label" htmlFor="vf-policy">Pinned policy</label>
+            <span className="vf-select-wrap">
+              <select id="vf-policy" value={pin} onChange={(event) => repin(event.target.value)}>
+                {PUBLISHED_POLICIES.map((policy, index) => <option key={policy.id} value={policy.id}>{policy.id}{index === 0 ? ' (current)' : ' (before 2026-10-22)'}</option>)}
+              </select>
+            </span>
+            <p className="vf-policy-note">{POLICY_NOTE[pin] ?? ''} A proof made under any other policy fails.</p>
+          </div>
         </div>
       </section>
 
@@ -137,6 +167,7 @@ export default function VerifyPage() {
           <div className="vf-verdict-copy">
             <h2 id="vf-verdict" className="vf-headline">{result.headline}</h2>
             <p className="vf-meta"><span>{loaded.name}</span><span>policy {result.policyId}</span><span>session <code>{result.sessionId ?? 'none'}</code></span></p>
+            {loaded.sample && pin === RECORDED_POLICY && <p className="vf-policy-note">This sample was proven on 2026-10-21 under {RECORDED_POLICY}, so it is checked under that policy. Pin no-secrets-read/v2 to see that its proof does not satisfy the current policy.</p>}
             {loaded.edit && <p className="vf-edit">{loaded.edit}</p>}
           </div>
         </div>

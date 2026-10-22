@@ -28,8 +28,8 @@ test('guard: *.pem and *.key reads are denied before running, recorded as denied
   } finally { await client.close(); }
   const texts = results.map((result) => (result.content as { text: string }[])[0].text);
   assert.deepEqual(results.map((result) => Boolean(result.isError)), [false, true, true, false]);
-  assert.equal(texts[1], 'Policy denied (no-secrets-read/v1): read_file touched secret path matching "*.pem"');
-  assert.equal(texts[2], 'Policy denied (no-secrets-read/v1): shell touched secret path matching "*.key"');
+  assert.equal(texts[1], 'Policy denied (no-secrets-read/v2): read_file touched secret path matching "*.pem"');
+  assert.equal(texts[2], 'Policy denied (no-secrets-read/v2): shell touched secret path matching "*.key"');
   assert.ok(!texts.join('').includes('CANARY'));
   const receipts = readFileSync(join(dataDir, 'session.jsonl'), 'utf8').trim().split('\n').map((line) => JSON.parse(line) as Receipt);
   const witnesses = readFileSync(join(dataDir, 'witness.jsonl'), 'utf8').trim().split('\n').map((line) => JSON.parse(line) as Witness);
@@ -40,5 +40,5 @@ test('guard: *.pem and *.key reads are denied before running, recorded as denied
   assert.deepEqual(verdicts, [null, 'read_file touched secret path matching "*.pem"', 'shell touched secret path matching "*.key"', null]);
   const proved = runScript('packages/proxy/src/cli.ts', cwd, ['prove'], env);
   assert.equal(proved.code, 1);
-  assert.match(proved.out, /^FAIL no-secrets-read at step 2 \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: read_file touched secret path matching "\*\.pem"/);
+  assert.match(proved.out, /^FAIL no-secrets-read at step 2 \[policy no-secrets-read\/v2 [0-9a-f]{12}\]: read_file touched secret path matching "\*\.pem"/);
 });

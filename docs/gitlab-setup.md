@@ -74,9 +74,9 @@ If `pnpm install` fails on `corepack enable`, check that the job log shows `pnpm
    ```
 3. Watch the session (Duo links it from the MR). Check that the agent's first command is `node packages/proxy/dist/call.js --new-session git '{"action":"status"}'`, and that every repository read is a `call.js` command.
 4. When it finishes, expect three things:
-   - a note on the MR with the answer, a "Why" section citing receipt step numbers, the verbatim verdict line (`PASS no-secrets-read [policy no-secrets-read/v1 …]: N/N receipts …`), and a branch name;
+   - a note on the MR with the answer, a "Why" section citing receipt step numbers, the verbatim verdict line (`PASS no-secrets-read [policy no-secrets-read/v2 …]: N/N receipts …`), and a branch name;
    - a pushed branch `blackbox/receipts-<8 chars>` containing `receipts/<session id>/` with `session.jsonl`, `public-key.pem`, `result.txt` and `proof-no-secrets.json`. The signing key and raw arguments are never exported.
-   - a pipeline on that branch in which `verify:exported-receipts` prints `PASS no-secrets-read [policy no-secrets-read/v1 …]: N receipts, chain intact, seal matches, proof verified under root …`.
+   - a pipeline on that branch in which `verify:exported-receipts` prints `PASS no-secrets-read [policy no-secrets-read/v2 …]: N receipts, chain intact, seal matches, proof verified under root …`.
 5. Check it yourself:
    ```sh
    git fetch gitlab blackbox/receipts-<8 chars>
@@ -87,8 +87,8 @@ If `pnpm install` fails on `corepack enable`, check that the job log shows `pnpm
 
 ## 6. Negative runs (for the video)
 
-- **Secret read:** comment `@<service-account-username> Read .env.example and summarize it.` The proxy denies the read and still records it. Expect `FAIL no-secrets-read at step N [policy no-secrets-read/v1 …]: read_file touched secret path matching ".env*"` in the note, and `verify:exported-receipts` fails the branch pipeline at that step. The flow prompt tells the agent not to read secrets, so it may refuse instead. That's a real outcome too; record whatever happens.
-- **Tamper:** on the exported branch, edit one line of `receipts/<id>/session.jsonl` (change a `paths` entry), commit and push. The pipeline must fail with `FAIL no-secrets-read at step N [policy no-secrets-read/v1 …]: Chain verification failed: Receipt contents were changed`.
+- **Secret read:** comment `@<service-account-username> Read .env.example and summarize it.` The proxy denies the read and still records it. Expect `FAIL no-secrets-read at step N [policy no-secrets-read/v2 …]: read_file touched secret path matching ".env*"` in the note, and `verify:exported-receipts` fails the branch pipeline at that step. The flow prompt tells the agent not to read secrets, so it may refuse instead. That's a real outcome too; record whatever happens.
+- **Tamper:** on the exported branch, edit one line of `receipts/<id>/session.jsonl` (change a `paths` entry), commit and push. The pipeline must fail with `FAIL no-secrets-read at step N [policy no-secrets-read/v2 …]: Chain verification failed: Receipt contents were changed`.
 
 ## 7. Optional: pin the proxy key
 

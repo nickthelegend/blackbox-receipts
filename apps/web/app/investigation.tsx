@@ -3,8 +3,10 @@
 // Crash investigation: verifies the exported packs of the two committed agent runs in this tab with
 // @blackbox/verify, the same code `verify-pack` runs. Signatures, hash links, the signed seal and the
 // no-secrets proof are all computed here on click; nothing is precomputed and no request is made.
+// Both runs were proven on 2026-10-21 under no-secrets-read/v1, the policy published then, so they are
+// checked under that policy, as recorded (the default pin is now v2; see /verify to switch).
 import { useState } from 'react';
-import { parsePack, verifyPack, type Pack, type PackResult } from '@blackbox/verify';
+import { noSecretsPolicyV1, parsePack, policyHash, verifyPack, type Pack, type PackResult } from '@blackbox/verify';
 import failSample from './verify/samples/agent-fail.json';
 import passSample from './verify/samples/agent-pass.json';
 
@@ -16,12 +18,13 @@ const CHECK_LABEL: Record<PackResult['checks'][number]['name'], string> = { form
 const STEP_LABEL = { ok: 'signed', broken: 'broken', untrusted: 'untrusted', flagged: 'secret access' } as const;
 
 type Run = { exhibit: string; pack: Pack; result: PackResult; ms: number; edit: string | null };
+const RECORDED_UNDER = { expectedPolicyHash: policyHash(noSecretsPolicyV1), expectedPolicyId: noSecretsPolicyV1.id };
 
 function check(exhibit: string, text: string, edit: string | null): Run | string {
   try {
     const started = performance.now();
     const pack = parsePack(text);
-    const result = verifyPack(pack);
+    const result = verifyPack(pack, RECORDED_UNDER);
     return { exhibit, pack, result, ms: performance.now() - started, edit };
   } catch (error) { return error instanceof Error ? error.message : String(error); }
 }
@@ -83,7 +86,7 @@ export function Investigation() {
           <span className="iv-stamp">{result.ok ? 'Pass' : 'Fail'}</span>
           <div>
             <p className="iv-headline">{result.headline}</p>
-            <p className="iv-meta">Checked in {current.ms < 1 ? '<1' : current.ms.toFixed(1)} ms in this tab · policy {result.policyId}</p>
+            <p className="iv-meta">Checked in {current.ms < 1 ? '<1' : current.ms.toFixed(1)} ms in this tab · policy {result.policyId}, the one in force when this run was recorded</p>
             {current.edit && <p className="iv-edit">{current.edit} The committed file is untouched.</p>}
           </div>
         </div>

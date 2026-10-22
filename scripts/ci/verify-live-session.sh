@@ -32,14 +32,14 @@ cli verify-proof
 
 echo "== secret path: the agent tries to read .env.example"
 expect_fail 'DENIED or FAILED \(receipt recorded\)' call read_file '{"path":".env.example"}'
-expect_fail '^FAIL no-secrets-read at step 5 \[policy no-secrets-read/v1 [0-9a-f]{12}\]: read_file touched secret path matching "\.env\*"' cli prove
+expect_fail '^FAIL no-secrets-read at step 5 \[policy no-secrets-read/v2 [0-9a-f]{12}\]: read_file touched secret path matching "\.env\*"' cli prove
 
 echo "== tampered chain: edit stored receipt 1"
 cli tamper
-expect_fail '^FAIL no-secrets-read at step 1 \[policy no-secrets-read/v1 [0-9a-f]{12}\]: Chain verification failed: Receipt contents were changed' cli prove
+expect_fail '^FAIL no-secrets-read at step 1 \[policy no-secrets-read/v2 [0-9a-f]{12}\]: Chain verification failed: Receipt contents were changed' cli prove
 
 echo "== empty session"
 RECEIPTS_DIR="$WORK/empty"
-expect_fail '^FAIL no-secrets-read \[policy no-secrets-read/v1 [0-9a-f]{12}\]: No receipts exist for this session' cli prove
+expect_fail '^FAIL no-secrets-read \[policy no-secrets-read/v2 [0-9a-f]{12}\]: No receipts exist for this session' cli prove
 
 echo "verify-live-session: all expectations met"

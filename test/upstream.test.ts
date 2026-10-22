@@ -40,7 +40,7 @@ test('upstream: tools/list passes through; calls are forwarded, recorded, and a 
     assert.deepEqual(note.content, [{ type: 'text', text: 'hello from the note\n' }]);
     const secret = await client.callTool({ name: 'read_note', arguments: { path: 'keys/server.pem' } });
     assert.equal(secret.isError, true);
-    assert.deepEqual(secret.content, [{ type: 'text', text: 'Policy denied (no-secrets-read/v1): read_note touched secret path matching "*.pem"' }]);
+    assert.deepEqual(secret.content, [{ type: 'text', text: 'Policy denied (no-secrets-read/v2): read_note touched secret path matching "*.pem"' }]);
     const failed = await client.callTool({ name: 'fail', arguments: {} });
     assert.equal(failed.isError, true);
     assert.match(JSON.stringify(failed.content), /upstream refused/);
@@ -56,7 +56,7 @@ test('upstream: tools/list passes through; calls are forwarded, recorded, and a 
   assert.deepEqual(verifyChain(receipts, readFileSync(join(ws.dataDir, 'public-key.pem'), 'utf8')), { valid: true, brokenAt: null, reason: null });
   const proved = runScript('packages/proxy/src/cli.ts', ws.cwd, ['prove'], ws.env);
   assert.equal(proved.code, 1);
-  assert.match(proved.out, /^FAIL no-secrets-read at step 4 \[policy no-secrets-read\/v1 [0-9a-f]{12}\]: read_note touched secret path matching "\*\.pem"/);
+  assert.match(proved.out, /^FAIL no-secrets-read at step 4 \[policy no-secrets-read\/v2 [0-9a-f]{12}\]: read_note touched secret path matching "\*\.pem"/);
 });
 
 test('upstream: 20 parallel calls through the proxy keep one chain; export and verify-export PASS', async () => {
