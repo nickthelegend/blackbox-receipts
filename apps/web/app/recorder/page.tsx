@@ -230,8 +230,8 @@ export default function Recorder() {
             <div className="rc-legend" aria-hidden>
               <span><i className="lg-ok" />Signed call</span><span><i className="lg-error" />Tool error</span><span><i className="lg-alarm" />Secret access or failure</span><span><i className="lg-untrusted" />Untrusted (after a break)</span><span><i className="lg-trace" />Hash link</span>
             </div>
-            <h3 className="stencil rc-log-title">Tape log</h3>
-            <ol className="rc-log">{receipts.map((receipt) => {
+            <h3 id="rc-log-title" className="stencil rc-log-title">Tape log</h3>
+            <ol className="rc-log" aria-labelledby="rc-log-title">{receipts.map((receipt) => {
               const status = blockStatus(receipt);
               const open = expanded === receipt.step;
               return <li id={`block-${receipt.step}`} key={`${receipt.sessionId}-${receipt.step}`} className={`rc-row is-${STATUS_TONE[status]}${status === 'downstream' ? ' is-down' : ''}`}>
