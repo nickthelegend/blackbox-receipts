@@ -83,6 +83,9 @@
 .ld-log-out{text-align:right}
 .ld-log-cmd{font-size:13px !important;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ld-log-why{justify-self:end;align-self:center}
+/* The whole tape log row opens its explanation: the Why button's hit area is stretched over the row. */
+.ld-log li{position:relative}
+.ld-log-why::after{content:'';position:absolute;inset:0}
 .ld-log-note{grid-column:3/-1;font-size:13px;color:var(--muted)}
 .ld-log li.is-error .ld-log-out{color:var(--caution)}
 .ld-log li.is-alarm{margin:0 -12px;padding-inline:12px;background:var(--bad-bg);box-shadow:inset 3px 0 0 var(--bad)}
