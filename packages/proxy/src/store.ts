@@ -19,6 +19,8 @@ const sessionFile = resolve(dataDir, 'session.jsonl');
 const witnessFile = resolve(dataDir, 'witness.jsonl');
 // The signing key lives outside the workspace (default ~/.blackbox/, or BLACKBOX_KEY_DIR), so an agent
 // working in the repo can't read it through ordinary file access and it can't be committed by mistake.
+// With RECEIPTS_SIGNING_KEY set (CI), the key is in the proxy's environment; an --upstream server is
+// started without it (upstreamEnv in upstream.ts), so its tools can't hand it back to the agent.
 // The public key is also copied next to the receipts, where exports and the dashboard pick it up.
 export const keyDir = resolve(process.env.BLACKBOX_KEY_DIR ?? join(homedir(), '.blackbox'));
 const keyFile = resolve(keyDir, 'signing-key.pem');

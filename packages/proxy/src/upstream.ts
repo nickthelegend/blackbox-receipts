@@ -23,10 +23,27 @@ export function pathsFromArgs(value: unknown, key = '', into = new Set<string>()
   return [...into];
 }
 
+// The upstream server is whatever command the user configured, and the policy scans a call's arguments,
+// not its results, so a secret in that server's environment could flow back to the agent. It gets the
+// proxy's environment minus the signing key, the key and store folders, sponsor credentials and anything
+// named like a key, token, secret or password. BLACKBOX_UPSTREAM_ENV (comma-separated names) passes
+// named variables through anyway, for a server that needs its own token; the signing key never passes.
+const NEVER_PASSED = new Set(['RECEIPTS_SIGNING_KEY', 'BLACKBOX_KEY_DIR']);
+const SCRUBBED = /^(?:RECEIPTS_|BLACKBOX_KEY|ZETARIS_|METERLESS_|WALRUS_)|^(?:GITLAB_TOKEN|CI_JOB_TOKEN|CI_JOB_JWT(?:_V\d)?)$|(?:API_?KEY|TOKEN|SECRET|PASSWORD|PASSWD|PRIVATE_KEY|CREDENTIALS?)$/i;
+
+export function upstreamEnv(source: NodeJS.ProcessEnv): Record<string, string> {
+  const allowed = new Set((source.BLACKBOX_UPSTREAM_ENV ?? '').split(',').map((name) => name.trim()).filter(Boolean));
+  return Object.fromEntries(Object.entries(source).filter((entry): entry is [string, string] => {
+    const [name, value] = entry;
+    if (value === undefined || NEVER_PASSED.has(name)) return false;
+    return allowed.has(name) || !SCRUBBED.test(name);
+  }));
+}
+
 export async function connectUpstream(command: string): Promise<Backend> {
   const [executable, ...args] = splitCommand(command);
   if (!executable) throw new Error('--upstream needs a command, for example --upstream "npx -y @modelcontextprotocol/server-filesystem ."');
-  const env = Object.fromEntries(Object.entries(process.env).filter((entry): entry is [string, string] => entry[1] !== undefined));
+  const env = upstreamEnv(process.env);
   const client = new Client({ name: 'blackbox-receipts-proxy', version: '0.2.0' });
   try {
     await client.connect(new StdioClientTransport({ command: executable, args, cwd: process.cwd(), env, stderr: 'inherit' }));

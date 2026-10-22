@@ -30,7 +30,7 @@ test('upstream: tools/list passes through; calls are forwarded, recorded, and a 
   try {
     const listed = await client.listTools();
     // The upstream's tools pass through; the proxy adds its own blackbox_explain after them.
-    assert.deepEqual(listed.tools.map((tool) => tool.name), ['echo', 'add', 'read_note', 'fail', 'blackbox_explain']);
+    assert.deepEqual(listed.tools.map((tool) => tool.name), ['echo', 'add', 'read_note', 'fail', 'env', 'blackbox_explain']);
     assert.deepEqual(listed.tools[1].inputSchema, { type: 'object', properties: { a: { type: 'number' }, b: { type: 'number' } }, required: ['a', 'b'] });
     const echoed = await client.callTool({ name: 'echo', arguments: { text: 'hi' } });
     assert.deepEqual(echoed.content, [{ type: 'text', text: 'hi' }]);
@@ -86,4 +86,29 @@ test('upstream: a command that cannot start fails loudly', () => {
 test('upstream helpers: command splitting and path extraction', () => {
   assert.deepEqual(splitCommand(`node "/a b/server.js" --root '.' -v`), ['node', '/a b/server.js', '--root', '.', '-v']);
   assert.deepEqual(pathsFromArgs({ path: 'a.ts', options: { targetDir: 'out' }, files: ['b.ts', 'c.ts'], query: 'x', uri: 'file:///tmp/d%20e.txt' }), ['a.ts', 'out', 'b.ts', 'c.ts', '/tmp/d e.txt']);
+});
+
+// The upstream server runs whatever command the user configured, and the policy scans arguments, not
+// results: any secret in its environment could come back to the agent. The proxy passes it a scrubbed
+// environment: no signing key, key or store folder, sponsor keys or tokens, unless BLACKBOX_UPSTREAM_ENV
+// names one (the signing key and its folder never pass).
+test('upstream: the signing key, the store paths and API keys/tokens are not in the upstream server\'s environment', async () => {
+  const ws = workspace();
+  const canary = 'CANARY-not-a-real-value';
+  const { generateKeyPairSync } = await import('node:crypto');
+  const throwawayKey = generateKeyPairSync('ed25519').privateKey.export({ type: 'pkcs8', format: 'pem' }).toString();
+  const env: Record<string, string | undefined> = { ...ws.env, RECEIPTS_SIGNING_KEY: throwawayKey, ZETARIS_API_KEY: canary, METERLESS_STATE_DIR: '/tmp/x', GITLAB_TOKEN: canary, CI_JOB_TOKEN: canary, OPENROUTER_API_KEY: canary, SOME_SERVICE_SECRET: canary, GITHUB_TOKEN: canary, BLACKBOX_UPSTREAM_ENV: 'GITHUB_TOKEN,RECEIPTS_SIGNING_KEY', HARMLESS_SETTING: 'kept' };
+  const upstream = `node "${join(repoRoot, 'test/fixtures/upstream-server.mjs')}"`;
+  const client = await connectProxy({ cwd: ws.cwd, env, args: ['--upstream', upstream] });
+  const seen: Record<string, string> = {};
+  try {
+    for (const name of ['RECEIPTS_SIGNING_KEY', 'BLACKBOX_KEY_DIR', 'RECEIPTS_DIR', 'ZETARIS_API_KEY', 'METERLESS_STATE_DIR', 'GITLAB_TOKEN', 'CI_JOB_TOKEN', 'OPENROUTER_API_KEY', 'SOME_SERVICE_SECRET', 'GITHUB_TOKEN', 'HARMLESS_SETTING', 'PATH']) {
+      const result = await client.callTool({ name: 'env', arguments: { name } });
+      seen[name] = (result.content as { text: string }[])[0].text;
+    }
+  } finally { await client.close(); }
+  for (const name of ['RECEIPTS_SIGNING_KEY', 'BLACKBOX_KEY_DIR', 'RECEIPTS_DIR', 'ZETARIS_API_KEY', 'METERLESS_STATE_DIR', 'GITLAB_TOKEN', 'CI_JOB_TOKEN', 'OPENROUTER_API_KEY', 'SOME_SERVICE_SECRET']) assert.equal(seen[name], 'undefined', name);
+  assert.equal(seen.GITHUB_TOKEN, `set:${canary}`, 'BLACKBOX_UPSTREAM_ENV passes a named variable through');
+  assert.equal(seen.HARMLESS_SETTING, 'set:kept');
+  assert.match(seen.PATH, /^set:/);
 });

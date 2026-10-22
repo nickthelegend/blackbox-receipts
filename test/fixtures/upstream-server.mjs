@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // A tiny, real stdio MCP server used as the proxy's upstream in tests and the overhead benchmark.
 // Hand-written JSON-RPC (no SDK), so the proxy is tested against an implementation it doesn't share.
-// Tools: echo {text}, add {a, b}, read_note {path} (reads a file under the cwd), fail {}.
+// Tools: echo {text}, add {a, b}, read_note {path} (reads a file under the cwd), fail {}, env {name}
+// (whether that variable is set in this server's environment, so tests can see what the proxy passes on).
 // If UPSTREAM_LOG is set, every tools/call it receives is appended there, so tests can prove that a
 // denied call never reached it. UPSTREAM_NO_DELAY=1 turns off the random 0-5 ms reply delay (benchmark).
 import { appendFileSync, readFileSync } from 'node:fs';
@@ -12,6 +13,7 @@ const tools = [
   { name: 'add', description: 'Adds two numbers.', inputSchema: { type: 'object', properties: { a: { type: 'number' }, b: { type: 'number' } }, required: ['a', 'b'] } },
   { name: 'read_note', description: 'Reads a text file relative to the working directory.', inputSchema: { type: 'object', properties: { path: { type: 'string' } }, required: ['path'] } },
   { name: 'fail', description: 'Always returns a tool error.', inputSchema: { type: 'object', properties: {} } },
+  { name: 'env', description: 'Says whether an environment variable is set in this server, and its value.', inputSchema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] } },
 ];
 
 const send = (message) => process.stdout.write(`${JSON.stringify({ jsonrpc: '2.0', ...message })}\n`);
@@ -24,6 +26,7 @@ async function callTool(name, args = {}) {
   if (name === 'add') return { ...text(args.a + args.b), structuredContent: { sum: args.a + args.b } };
   if (name === 'read_note') return text(readFileSync(args.path, 'utf8'));
   if (name === 'fail') return text('upstream refused: this tool always fails', true);
+  if (name === 'env') return text(process.env[args.name] === undefined ? 'undefined' : `set:${process.env[args.name]}`);
   throw Object.assign(new Error(`Unknown tool ${name}`), { code: -32602 });
 }
 
