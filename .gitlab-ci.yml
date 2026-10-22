@@ -37,6 +37,8 @@ build:
       - packages/receipts/dist
       - packages/proxy/dist
       - packages/meterless/dist
+      # apps/web imports @blackbox/zetaris; the test job's typecheck needs its built types.
+      - packages/zetaris/dist
     expire_in: 1 day
 
 test:
