@@ -11,6 +11,8 @@ import { safeFilePath, safePath } from './store.js';
 
 const execFileAsync = promisify(execFile);
 const MAX_WRITE_BYTES = 1_000_000;
+// A revision name git cannot read as an option: it starts with a letter or digit.
+const PLAIN_REVISION = /^[A-Za-z0-9][A-Za-z0-9._/~^-]*$/;
 
 /** The id `git hash-object` gives these bytes (SHA-1 object format, no filters). */
 export function gitBlobId(content: Buffer): string {
@@ -50,17 +52,23 @@ function planBuiltin(name: string, args: Record<string, unknown>): Omit<Planned,
       if (!requested.length || requested.some((path) => path.startsWith('-') || /[*?\[\]]/.test(path))) throw new Error('git diff requires explicit, literal file paths');
       paths = requested.map((path) => safeFilePath(path).relativePath);
     }
+    let showSpec = '';
     if (action === 'show') {
-      if (requested.length !== 1 || !requested[0].includes(':') || /[*?\[\]]/.test(requested[0])) throw new Error('git show requires one revision:path argument');
-      paths = [safeFilePath(requested[0].split(':').at(-1)!).relativePath];
+      // One plain revision and one literal path. An option in its place (`--output=<file>:x`) would make git write a file.
+      const separator = requested.length === 1 ? requested[0].indexOf(':') : -1;
+      const rev = separator > 0 ? requested[0].slice(0, separator) : '';
+      const path = separator > 0 ? requested[0].slice(separator + 1) : '';
+      if (!PLAIN_REVISION.test(rev) || !path || path.startsWith('-') || /[*?\[\]]/.test(path)) throw new Error('git show requires one revision:path argument with a plain revision (no options)');
+      paths = [safeFilePath(path).relativePath];
+      showSpec = `${rev}:${path}`;
     }
-    if (action === 'show_stat' && (requested.length > 1 || requested.some((rev) => !/^[A-Za-z0-9][A-Za-z0-9._/~^-]*$/.test(rev)))) throw new Error('git show_stat accepts at most one plain revision');
+    if (action === 'show_stat' && (requested.length > 1 || requested.some((rev) => !PLAIN_REVISION.test(rev)))) throw new Error('git show_stat accepts at most one plain revision');
     const gitArgs: Record<string, string[]> = {
       status: ['status', '--short'],
-      diff: ['diff', '--', ...paths],
+      diff: ['diff', '--no-ext-diff', '--no-textconv', '--', ...paths],
       log: ['log', '-n', '20', '--oneline'],
-      show: ['show', requested[0]],
-      show_stat: ['show', '--stat', '--format=%H %s', requested[0] ?? 'HEAD', '--'],
+      show: ['show', '--no-ext-diff', '--no-textconv', showSpec],
+      show_stat: ['show', '--no-ext-diff', '--stat', '--format=%H %s', requested[0] ?? 'HEAD', '--'],
     };
     return { paths, permissions: ['workspace:git:read'], run: async () => (await execFileAsync('git', gitArgs[action], { cwd: process.cwd(), maxBuffer: 2_000_000 })).stdout };
   }
