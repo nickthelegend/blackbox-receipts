@@ -100,8 +100,14 @@ function commitmentFor(digest: string, step: number, leaf: string, argsHash: str
   return sha256(stableJson({ property: NO_SECRETS_PROPERTY, policyHash: digest, step, leaf, argsHash, verdict: 'pass', salt }));
 }
 
-function witnessFor(witnesses: Witness[], receipt: Receipt): Witness | undefined {
-  return witnesses.find((item) => item.sessionId === receipt.sessionId && item.step === receipt.step);
+/**
+ * The witness that opens this receipt's argsHash. A proxy killed between appending a witness and its
+ * receipt leaves an orphan line with the same step number as the next real call, so the first match is
+ * not enough: prefer the one whose args and salt open the signed hash, else the last one for that step.
+ */
+export function witnessFor(witnesses: Witness[], receipt: Receipt): Witness | undefined {
+  const candidates = witnesses.filter((item) => item.sessionId === receipt.sessionId && item.step === receipt.step);
+  return candidates.find((item) => argsMatch(receipt.argsHash, item.args, item.salt)) ?? candidates.at(-1);
 }
 
 /** Checks the chain, evaluates the policy on every step and returns a shareable proof or the first failing step. */

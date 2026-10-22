@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { connectProxy } from '../packages/proxy/src/client.ts';
@@ -112,4 +112,30 @@ test('torn log line: a one-shot bridge call resuming that session refuses to run
   assert.match(call.out, /session\.jsonl is corrupt at line 2: .*Not resuming it/);
   assert.equal(existsSync(join(ws.cwd, 'should-not-exist.txt')), false, 'the tool must not run when its receipt cannot be appended');
   assert.equal(readFileSync(log, 'utf8'), damaged, 'the damaged log is left as it was');
+});
+
+// A proxy killed after appending a call's witness but before appending its receipt leaves an orphan
+// witness line for the next step. The next call records that step again; the prover must use the witness
+// that opens the signed argsHash, not the first one with that step number.
+test('orphan witness: a witness line left by a kill before its receipt does not break the next proof', async () => {
+  const cwd = mkdtempSync(join(tmpdir(), 'blackbox-orphan-'));
+  writeFileSync(join(cwd, 'notes.md'), '# notes\n');
+  writeFileSync(join(cwd, 'todo.md'), '# todo\n');
+  const dataDir = join(cwd, '.blackbox');
+  const env = { RECEIPTS_DIR: dataDir, BLACKBOX_KEY_DIR: mkdtempSync(join(tmpdir(), 'blackbox-keys-')), RECEIPTS_RESUME: undefined };
+  const client = await connectProxy({ cwd, env });
+  try {
+    await client.callTool({ name: 'read_file', arguments: { path: 'notes.md' } });
+    const { sessionId } = JSON.parse(readFileSync(join(dataDir, 'session.jsonl'), 'utf8').trim()) as { sessionId: string };
+    appendFileSync(join(dataDir, 'witness.jsonl'), `${JSON.stringify({ sessionId, step: 2, args: { path: 'orphan' }, salt: '00' })}\n`);
+    await client.callTool({ name: 'read_file', arguments: { path: 'todo.md' } });
+  } finally { await client.close(); }
+  const proved = runScript('packages/proxy/src/cli.ts', cwd, ['prove'], env);
+  assert.equal(proved.code, 0, proved.out);
+  assert.match(proved.out, /^PASS no-secrets-read/);
+  assert.match(proved.out, /2\/2|2 steps|2 receipts/);
+  const disclosed = runScript('packages/proxy/src/cli.ts', cwd, ['disclose', '2'], env);
+  assert.equal(disclosed.code, 0, disclosed.out);
+  assert.match(disclosed.out, /todo\.md/);
+  assert.doesNotMatch(disclosed.out, /orphan/);
 });

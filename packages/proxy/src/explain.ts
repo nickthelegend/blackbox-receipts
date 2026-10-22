@@ -3,7 +3,7 @@
 // `explainModel` builds the structured form (`blackbox-receipts explain --json`, the dashboard's step
 // drawer, the proxy's blackbox_explain tool); `renderExplanation` turns it into the markdown
 // `blackbox-receipts explain` prints. The markdown is a pure function of the JSON.
-import { argsMatch, evaluateStep, type Receipt, type SecretPolicy, type Witness } from '@blackbox/receipts';
+import { argsMatch, evaluateStep, witnessFor, type Receipt, type SecretPolicy, type Witness } from '@blackbox/receipts';
 
 export type ExplainInput = {
   receipts: Receipt[];
@@ -78,7 +78,7 @@ export function explainModel({ receipts, witnesses, policy, verdict, chain, root
   const verdictAt = Number(verdict.match(/ at step (\d+) /)?.[1] ?? NaN);
   const opened = new Map<number, { witness: Witness | undefined; ok: boolean }>();
   for (const receipt of receipts) {
-    const witness = witnesses.find((item) => item.sessionId === receipt.sessionId && item.step === receipt.step);
+    const witness = witnessFor(witnesses, receipt);
     opened.set(receipt.step, { witness, ok: Boolean(witness && argsMatch(receipt.argsHash, witness.args, witness.salt)) });
   }
   const commandOf = (receipt: Receipt) => {
