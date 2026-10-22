@@ -347,7 +347,8 @@ function realLocation(path: string): string {
   const missing: string[] = [];
   let current = path;
   for (;;) {
-    try { return join(realpathSync(current), ...missing); } catch (error) {
+    // The native realpath returns the on-disk case on a case-insensitive disk (`.ENV` comes back as `.env`).
+    try { return join(realpathSync.native(current), ...missing); } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
       let isLink = false;
       try { isLink = lstatSync(current).isSymbolicLink(); } catch { isLink = false; }
@@ -361,7 +362,7 @@ function realLocation(path: string): string {
 }
 
 export function safePath(input: string): { path: string; relativePath: string } {
-  const root = realpathSync(process.cwd());
+  const root = realpathSync.native(process.cwd());
   const checkedPath = realLocation(resolve(process.cwd(), input));
   const relativePath = relative(root, checkedPath);
   if (relativePath === '..' || relativePath.startsWith(`..${sep}`) || isAbsolute(relativePath)) throw new Error('Path must stay inside the current working directory');
@@ -378,7 +379,8 @@ export function safeFilePath(input: string): { path: string; relativePath: strin
 const SECRET_DIRECTORIES = new Set(['secrets', '.blackbox', '.ssh', '.aws', '.gnupg']);
 
 export function isSecretPath(path: string) {
-  const normalized = path.replaceAll('\\', '/').split(':').at(-1) ?? path;
+  // Lowercased: on a case-insensitive disk `.ENV` and `Secrets/` are the same files as `.env` and `secrets/`.
+  const normalized = (path.replaceAll('\\', '/').split(':').at(-1) ?? path).toLowerCase();
   return normalized.split('/').some((part) => SECRET_DIRECTORIES.has(part) || part === '.env' || part.startsWith('.env.')) || /(^|\/)(id_rsa|id_ed25519|credentials\.json|signing-key\.pem)$/i.test(normalized);
 }
 

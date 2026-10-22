@@ -32,7 +32,9 @@ function globToRegExp(glob: string): RegExp {
     else if (char === '?') source += '[^/]';
     else source += char.replace(/[.+^${}()|[\]\\]/g, '\\$&');
   }
-  return new RegExp(home ? `^~/${source}$` : `(?:^|/)${source}$`);
+  // Case-insensitive: macOS and Windows disks open `.ENV` as `.env`, and an upstream server's paths are
+  // never resolved to their on-disk case, so a case variant must match the glob it spells.
+  return new RegExp(home ? `^~/${source}$` : `(?:^|/)${source}$`, 'i');
 }
 
 function normalizePath(candidate: string): string {
