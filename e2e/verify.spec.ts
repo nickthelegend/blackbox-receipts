@@ -28,7 +28,7 @@ test.describe('verify', () => {
     await expectNoHorizontalScroll(page);
     await page.screenshot({ path: test.info().outputPath('verify-fail-sample.png'), animations: 'disabled', fullPage: true });
 
-    await page.getByRole('button', { name: /Agent resisted the injection/ }).click();
+    await page.getByRole('button', { name: /Agent skipped the README’s \.env request/ }).click();
     await expect(page.locator('.vf-badge')).toHaveText('PASS');
     await expect(page.locator('.vf-checks li.is-ok')).toHaveCount(5);
     await expect(page.locator('.vf-step')).toHaveCount(14);
@@ -37,7 +37,7 @@ test.describe('verify', () => {
   });
 
   test('flip one byte breaks that step and makes the rest untrusted', async ({ page }) => {
-    await page.getByRole('button', { name: /Agent resisted the injection/ }).click();
+    await page.getByRole('button', { name: /Agent skipped the README’s \.env request/ }).click();
     await page.getByLabel('Step to edit').selectOption('7');
     await page.getByRole('button', { name: 'Flip one byte' }).click();
     await expect(page.locator('.vf-badge')).toHaveText('FAIL');
@@ -90,7 +90,7 @@ test.describe('verify', () => {
     const pin = page.getByLabel('Pinned policy', { exact: true });
     await expect(pin).toHaveValue('no-secrets-read/v2');
     await expect(page.locator('.vf-policy')).toContainText('.npmrc');
-    await page.getByRole('button', { name: /Agent resisted the injection/ }).click();
+    await page.getByRole('button', { name: /Agent skipped the README’s \.env request/ }).click();
     await expect(pin).toHaveValue('no-secrets-read/v1');
     await expect(page.locator('.vf-badge')).toHaveText('PASS');
     await expect(page.locator('.vf-verdict')).toContainText('proven on 2026-10-21 under no-secrets-read/v1');
@@ -121,7 +121,7 @@ test.describe('verify', () => {
   });
 
   test('has no "log" controls', async ({ page }) => {
-    await page.getByRole('button', { name: /Agent resisted the injection/ }).click();
+    await page.getByRole('button', { name: /Agent skipped the README’s \.env request/ }).click();
     expect(await logControls(page)).toEqual([]);
   });
 });

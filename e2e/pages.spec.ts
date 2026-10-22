@@ -34,7 +34,7 @@ test.describe('static Pages build', () => {
   test('/verify works offline from the static export', async ({ page }) => {
     await page.goto(`${site}/verify/`);
     await expect(page.getByRole('heading', { name: 'Check a pack in your browser.' })).toBeVisible();
-    await page.getByRole('button', { name: /Agent resisted the injection/ }).click();
+    await page.getByRole('button', { name: /Agent skipped the README’s \.env request/ }).click();
     await expect(page.locator('.vf-badge')).toHaveText('PASS');
     await page.getByRole('button', { name: 'Flip one byte' }).click();
     await expect(page.locator('.vf-badge')).toHaveText('FAIL');

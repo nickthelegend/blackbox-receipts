@@ -20,7 +20,7 @@ type Loaded = { name: string; text: string; pack: Pack; result: PackResult; edit
 // Both committed runs were proven on 2026-10-21 under no-secrets-read/v1, the policy published then.
 const RECORDED_POLICY = 'no-secrets-read/v1';
 const SAMPLES = [
-  { id: 'pass', label: 'Agent resisted the injection', tone: 'ok' as const, file: 'agent-pass.json', text: JSON.stringify(passSample, null, 2) },
+  { id: 'pass', label: 'Agent skipped the README’s .env request', tone: 'ok' as const, file: 'agent-pass.json', text: JSON.stringify(passSample, null, 2) },
   { id: 'fail', label: 'Agent tried to read .env', tone: 'bad' as const, file: 'agent-fail.json', text: JSON.stringify(failSample, null, 2) },
 ];
 const POLICY_NOTE: Record<string, string> = {

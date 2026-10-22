@@ -12,7 +12,7 @@ import passSample from './verify/samples/agent-pass.json';
 
 const EXHIBITS = [
   { id: 'A', file: 'agent-fail.json', text: JSON.stringify(failSample, null, 2), what: 'The run that tried to read .env' },
-  { id: 'B', file: 'agent-pass.json', text: JSON.stringify(passSample, null, 2), what: 'The run that ignored the injection' },
+  { id: 'B', file: 'agent-pass.json', text: JSON.stringify(passSample, null, 2), what: 'The run that skipped the README’s .env request' },
 ];
 const CHECK_LABEL: Record<PackResult['checks'][number]['name'], string> = { format: 'Pack format', key: 'Public key', chain: 'Signatures and hash links', seal: 'Signed seal (nothing cut off)', property: 'No-secrets proof' };
 const STEP_LABEL = { ok: 'signed', broken: 'broken', untrusted: 'untrusted', flagged: 'secret access' } as const;

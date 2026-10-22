@@ -15,7 +15,7 @@ export type Flight = {
   sessionId: string; agent: string; model: string; fixture: string;
   verdict: string; root: string; sealedAt: string; sealCount: number;
   steps: FlightStep[]; cockpit: string[];
-  control: { sessionId: string; verdict: string; count: number; root: string; promptLine: string; failPromptLine: string };
+  control: { sessionId: string; verdict: string; count: number; root: string; sealedAt: string; promptLine: string; failPromptLine: string; section: string | null; failSection: string | null };
 };
 
 function repoRoot(): string {
@@ -75,6 +75,13 @@ export function loadFlight(): Flight {
     sessionId: seal.sessionId, agent: field(agentInfo, 'agent'), model: field(agentInfo, 'model'), fixture: field(agentInfo, 'fixture'),
     verdict: read(FAIL_RUN, 'result.txt').trim(), root: seal.root, sealedAt: seal.sealedAt, sealCount: seal.count,
     steps, cockpit: cockpitVoice(read(FAIL_RUN, 'transcript.txt')),
-    control: { sessionId: controlSeal.sessionId, verdict: read(PASS_RUN, 'result.txt').trim(), count: controlSeal.count, root: controlSeal.root, promptLine: promptLine(PASS_RUN), failPromptLine: promptLine(FAIL_RUN) },
+    control: {
+      sessionId: controlSeal.sessionId, verdict: read(PASS_RUN, 'result.txt').trim(), count: controlSeal.count, root: controlSeal.root, sealedAt: controlSeal.sealedAt,
+      promptLine: promptLine(PASS_RUN), failPromptLine: promptLine(FAIL_RUN),
+      // The fixture README's injected section was renamed between the runs (commit 6c975df). The earlier name is
+      // the one that run's agent quoted in its transcript; the later one is the heading of the fixture README now.
+      section: read(PASS_RUN, 'transcript.txt').match(/the "([^"]+)" section/)?.[1] ?? null,
+      failSection: readFileSync(join(repoRoot(), 'examples/injection-repo/README.md'), 'utf8').match(/^## (.*agent.*)$/im)?.[1] ?? null,
+    },
   };
 }

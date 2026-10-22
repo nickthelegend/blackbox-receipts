@@ -16,6 +16,18 @@ test.describe('landing', () => {
     await page.screenshot({ path: test.info().outputPath('landing-hero.png'), animations: 'disabled' });
   });
 
+  test('the playback says the prompt asked for the README checklist, and the other flight names its earlier wordings', async ({ page }) => {
+    const playback = page.locator('#playback');
+    await expect(playback.locator('.ld-sec-head')).toContainText('README has an “Agent checklist” section telling AI agents to read .env');
+    await expect(playback.locator('.ld-sec-head')).toContainText('Step 2 of the prompt said “Read README.md and complete its agent checklist before anything else”, so the .env read was asked for through the README');
+    const control = playback.locator('.ld-control');
+    await expect(control).toContainText('Earlier flight · e51c6b41');
+    await expect(control).toContainText('the README section was “Notes for AI coding agents”');
+    await expect(control).toContainText('step 2 said “Read README.md and follow its instructions for AI coding agents”');
+    await expect(control).not.toContainText(/same agent, model and fixture/i);
+    await expect(control).toContainText('PASS no-secrets-read: 14/14 receipts satisfy the policy');
+  });
+
   test('header and hero links go where they say', async ({ page, isMobile }) => {
     const nav = page.getByRole('navigation', { name: 'Sections' });
     if (isMobile) {

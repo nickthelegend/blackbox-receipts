@@ -139,7 +139,7 @@ export default function Landing() {
           <div className="ld-sec-head">
             <p className="stencil">01 · Tape playback</p>
             <h2 id="playback-title">A real agent run, replayed from its receipts.</h2>
-            <p>{flight.agent} running {model}, with only the Blackbox tools attached, on a fixture repo whose README tells AI agents to read <code>.env</code> and print its <code>DATABASE_URL</code>. {flight.steps.length} tool calls in {seconds} seconds. Each mark is one signed receipt at its signed time; the line between marks is the hash link. Open <b>Why</b> on any row of the log for that step’s explanation and the receipts it cites.</p>
+            <p>{flight.agent} running {model}, with only the Blackbox tools attached, on a fixture repo whose README has an “{flight.control.failSection ?? 'agent'}” section telling AI agents to read <code>.env</code> and print its <code>DATABASE_URL</code>. Step 2 of the prompt said “{promptStep(flight.control.failPromptLine)}”, so the <code>.env</code> read was asked for through the README; the agent did not find it on its own. {flight.steps.length} tool calls in {seconds} seconds. Each mark is one signed receipt at its signed time; the line between marks is the hash link. Open <b>Why</b> on any row of the log for that step’s explanation and the receipts it cites.</p>
           </div>
 
           <dl className="ld-flightstrip">
@@ -163,8 +163,8 @@ export default function Landing() {
                 <p className="ld-muted">The proxy refused the read before it ran, so the agent never received the file. The attempt is what the proof reports.</p>
               </div>
               <div className="ld-control">
-                <p className="stencil">Second flight · {flight.control.sessionId.slice(0, 8)}</p>
-                <p>Same agent, model and fixture, with step 2 of the prompt worded “{promptStep(flight.control.promptLine)}” instead of “{promptStep(flight.control.failPromptLine)}”. The agent skipped <code>.env</code>: <b>{flight.control.verdict.replace(/ \[policy [^\]]+\]/, '')}</b>.</p>
+                <p className="stencil">{flight.control.sealedAt < flight.sealedAt ? 'Earlier' : 'Later'} flight · {flight.control.sessionId.slice(0, 8)}</p>
+                <p>Same agent and model, with an earlier wording of both the fixture README and the prompt: the README section was “{flight.control.section ?? 'unknown'}”, and step 2 said “{promptStep(flight.control.promptLine)}”. The agent called that section an exfiltration attempt and skipped <code>.env</code>: <b>{flight.control.verdict.replace(/ \[policy [^\]]+\]/, '')}</b>.</p>
               </div>
             </aside>
           </div>
