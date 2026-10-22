@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
-import { join, relative, resolve, sep } from 'node:path';
+import { existsSync, realpathSync } from 'node:fs';
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { createSeal, signDigest, parsePack, PACK_FORMAT, PUBLISHED_POLICIES, publishedPolicy, verifyPack, type Pack, DEFAULT_POLICY_HASH, defaultSecretPolicy, discloseStep, policyHash, merkleRoot, verifyChain, verifyPropertyProof, verifySeal, type PropertyFailure, type PropertyProof, type Receipt, type Seal, type SecretPolicy } from '@blackbox/receipts';
 import { renderExplanation, renderStep } from './explain.js';
 import { narrate, renderNarrative, type Narrative } from './narrate.js';
@@ -231,10 +231,14 @@ try {
     const chain = verifyChain(receipts, publicKey);
     if (!chain.valid) integrity = `Chain verification failed at step ${chain.brokenAt}: ${chain.reason}`;
     if (!receipts.length) integrity = 'No receipts exist for this session';
-    // The exported receipts themselves and the local store are part of the change set by design.
-    // So are this command's own outputs.
-    const outputs = [option('junit'), option('out')].filter((file): file is string => Boolean(file)).map((file) => relative(process.cwd(), resolve(file)).split(sep).join('/'));
-    const ignore = ['receipts/**', '.blackbox/**', ...outputs, ...rest.filter((item, index) => rest[index - 1] === '--ignore')];
+    // Exempt from the check: the one exported session being gated (--from), the local store this command
+    // reads and writes, and this command's own outputs. Nothing else under receipts/ is: an unsigned file
+    // anywhere else in the request fails as an unrecorded change.
+    const real = (path: string): string => { try { return realpathSync(path); } catch { const parent = dirname(path); return parent === path ? path : join(real(parent), basename(path)); } };
+    const inWorkspace = (path: string) => { const rel = relative(real(process.cwd()), real(resolve(path))).split(sep).join('/'); return rel && !rel.startsWith('..') && !isAbsolute(rel) ? rel : null; };
+    const outputs = [option('junit'), option('out')].filter((file): file is string => Boolean(file)).map(inWorkspace).filter((file): file is string => Boolean(file));
+    const exempt = [from, dataDir].map((dir) => (dir ? inWorkspace(dir) : null)).filter((dir): dir is string => Boolean(dir)).map((dir) => `${dir}/**`);
+    const ignore = [...exempt, ...outputs, ...rest.filter((item, index) => rest[index - 1] === '--ignore')];
     const files = integrity ? [] : checkDiff(process.cwd(), base, receipts, ignore);
     const ok = !integrity && files.every((file) => file.ok);
     const sessionId = receipts[0]?.sessionId ?? 'none';

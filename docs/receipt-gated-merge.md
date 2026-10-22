@@ -20,8 +20,11 @@ equal the latest blob a signed, successful `write_file` step recorded for that p
 | It was deleted | `FAIL unrecorded change: src/x.ts was deleted` (no signed step deletes files) |
 
 Before comparing, the receipts are checked: the chain must verify, an export's seal must match exactly,
-and with `BLACKBOX_PUBLIC_KEY` set the export's key must be the pinned one. `receipts/**`, `.blackbox/**`
-and the command's own output files are ignored. `--junit` writes one test case per file for CI test
+and with `BLACKBOX_PUBLIC_KEY` set the export's key must be the pinned one. Only three things are exempt: the
+one exported session being gated (the `--from` folder, `receipts/<session>/`), the local store the command
+reads and writes (`.blackbox/` by default), and the command's own output files. Any other file, anywhere
+under `receipts/` included, must come from a signed write like the rest (`FAIL unrecorded change:
+receipts/other/evil.js`). `--junit` writes one test case per file for CI test
 reports; `--out` writes a JSON attestation (base, HEAD, session, Merkle root, per-file verdicts) signed
 with the key of whoever runs the command, whose public key it embeds.
 

