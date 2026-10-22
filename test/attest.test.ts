@@ -188,7 +188,7 @@ test('attest-diff --from: an export key nobody pinned is labelled UNPINNED; a pi
   repo.cli('export', 'receipts/run');
   commitAll(repo, 'agent change with its exported receipts');
   const exportKey = readFileSync(join(repo.cwd, 'receipts/run/public-key.pem'), 'utf8');
-  const unpinned = runPrScript(repo.cwd, repo.base, { ...repo.env, BLACKBOX_PUBLIC_KEY: undefined });
+  const unpinned = runPrScript(repo.cwd, repo.base, { ...repo.env, BLACKBOX_PUBLIC_KEY: undefined, BLACKBOX_REQUIRE_PINNED_KEY: '0' });
   assert.equal(unpinned.code, 0, unpinned.out);
   assert.match(unpinned.out, /PASS attest-diff \(UNPINNED: the export's own key was trusted; set BLACKBOX_PUBLIC_KEY\): 2 changed file\(s\)/);
   assert.match(unpinned.out, /^blackbox attest-diff [0-9a-f]{40} \(session [^)]+\) UNPINNED: 2 test\(s\), 0 failure\(s\)$/m);
@@ -204,5 +204,48 @@ test('attest-diff --from: an export key nobody pinned is labelled UNPINNED; a pi
   assert.match(wrong.out, /FAIL attest-diff: Export public key does not match the pinned BLACKBOX_PUBLIC_KEY/);
   const required = runPrScript(repo.cwd, repo.base, { ...repo.env, BLACKBOX_PUBLIC_KEY: undefined, BLACKBOX_REQUIRE_PINNED_KEY: '1' });
   assert.equal(required.code, 1, required.out);
-  assert.match(required.out, /FAIL attest-diff: BLACKBOX_REQUIRE_PINNED_KEY is set but no BLACKBOX_PUBLIC_KEY is pinned/);
+  assert.match(required.out, /FAIL attest-diff: Setup required: set BLACKBOX_PUBLIC_KEY \(PEM of the proxy key\)\. BLACKBOX_REQUIRE_PINNED_KEY is set but no BLACKBOX_PUBLIC_KEY is pinned/);
+});
+
+// The CI gate fails closed. An unpinned export vouches for itself (anyone can sign a matching log with a
+// fresh key), so attest-diff-pr.sh requires a pinned key unless BLACKBOX_REQUIRE_PINNED_KEY=0 is set on
+// purpose, and an agent branch (blackbox/*) that carries no export is red instead of NOT APPLICABLE.
+test('attest-diff-pr.sh fails closed: unpinned is red with Setup required by default; REQUIRE=0 opts out to UNPINNED; a blackbox/* branch needs an export', async () => {
+  const repo = await agentRepo();
+  appendFileSync(join(repo.cwd, '.git/info/exclude'), '.blackbox/\nci-out/\n');
+  repo.cli('export', 'receipts/run');
+  commitAll(repo, 'agent change with its exported receipts');
+  const unpinned = runPrScript(repo.cwd, repo.base, { ...repo.env, BLACKBOX_PUBLIC_KEY: undefined, BLACKBOX_REQUIRE_PINNED_KEY: undefined });
+  assert.equal(unpinned.code, 1, unpinned.out);
+  assert.match(unpinned.out, /FAIL attest-diff: Setup required: set BLACKBOX_PUBLIC_KEY/);
+  assert.doesNotMatch(unpinned.out, /^PASS/m);
+  const optedOut = runPrScript(repo.cwd, repo.base, { ...repo.env, BLACKBOX_PUBLIC_KEY: undefined, BLACKBOX_REQUIRE_PINNED_KEY: '0' });
+  assert.equal(optedOut.code, 0, optedOut.out);
+  assert.match(optedOut.out, /PASS attest-diff \(UNPINNED: the export's own key was trusted; set BLACKBOX_PUBLIC_KEY\)/);
+
+  const plain = await agentRepo();
+  appendFileSync(join(plain.cwd, '.git/info/exclude'), '.blackbox/\nci-out/\n');
+  commitAll(plain, 'agent branch without its receipts');
+  const agentBranch = runPrScript(plain.cwd, plain.base, { ...plain.env, BLACKBOX_AGENT_BRANCH: 'blackbox/receipts-1234abcd' });
+  assert.equal(agentBranch.code, 1, agentBranch.out);
+  assert.match(agentBranch.out, /^FAIL attest-diff: blackbox\/receipts-1234abcd is an agent branch \(blackbox\/\*\) but adds no exported session/);
+  const humanBranch = runPrScript(plain.cwd, plain.base, { ...plain.env, BLACKBOX_AGENT_BRANCH: 'feature/docs' });
+  assert.equal(humanBranch.code, 0, humanBranch.out);
+  assert.match(humanBranch.out, /^NOT APPLICABLE attest-diff/);
+});
+
+test('verify-export fails closed under BLACKBOX_REQUIRE_PINNED_KEY=1 with no pinned key; a pinned key passes', async () => {
+  // A clean session (one allowed write) so the export carries a proof.
+  const cwd = mkdtempSync(join(tmpdir(), 'blackbox-pin-'));
+  const env = { RECEIPTS_DIR: join(cwd, '.blackbox'), BLACKBOX_KEY_DIR: mkdtempSync(join(tmpdir(), 'blackbox-keys-')), RECEIPTS_RESUME: undefined };
+  const client = await connectProxy({ cwd, env });
+  try { await client.callTool({ name: 'write_file', arguments: { path: 'a.txt', content: 'a\n' } }); } finally { await client.close(); }
+  const cli = (args: string[], extra: Record<string, string | undefined> = {}) => runScript('packages/proxy/src/cli.ts', cwd, args, { ...env, ...extra });
+  assert.equal(cli(['export', 'receipts/run']).code, 0);
+  const required = cli(['verify-export', 'receipts/run'], { BLACKBOX_PUBLIC_KEY: undefined, BLACKBOX_REQUIRE_PINNED_KEY: '1' });
+  assert.equal(required.code, 1, required.out);
+  assert.match(required.out, /^FAIL no-secrets-read \[policy [^\]]+\]: Setup required: set BLACKBOX_PUBLIC_KEY/m);
+  const pinned = cli(['verify-export', 'receipts/run'], { BLACKBOX_PUBLIC_KEY: readFileSync(join(cwd, 'receipts/run/public-key.pem'), 'utf8'), BLACKBOX_REQUIRE_PINNED_KEY: '1' });
+  assert.equal(pinned.code, 0, pinned.out);
+  assert.match(pinned.out, /^PASS no-secrets-read/m);
 });

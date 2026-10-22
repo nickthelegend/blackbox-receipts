@@ -5,8 +5,13 @@
 # Each run is checked under the published policy its result.txt names (the one in force when it was
 # recorded): the 2026-10-21 runs under the frozen no-secrets-read/v1. verify-export would refuse their v1
 # proofs under the default no-secrets-read/v2 pin, so the policy is pinned explicitly and printed.
-# Needs the build (packages/*/dist).
+# Needs the build (packages/*/dist). BLACKBOX_CLI overrides the CLI (CI passes one built from the MR base).
+# These are committed demo runs, each recorded by a local proxy with its own key, so they are checked
+# against the key in their export: a project-wide BLACKBOX_PUBLIC_KEY pin applies to new exports
+# (verify:exported-receipts, attest-diff), not to them.
 set -euo pipefail
+CLI="${BLACKBOX_CLI:-packages/proxy/dist/cli.js}"
+unset BLACKBOX_PUBLIC_KEY BLACKBOX_REQUIRE_PINNED_KEY
 shopt -s nullglob
 dirs=(receipts/agent-demo/*/)
 [ ${#dirs[@]} -gt 0 ] || { echo "no agent-demo exports to check"; exit 0; }
@@ -16,7 +21,7 @@ for dir in "${dirs[@]}"; do
   policy="$(sed -nE 's/.*\[policy ([^ ]+) [0-9a-f]{12}\].*/\1/p' <<<"$recorded" | head -n1)"
   [ -n "$policy" ] || { echo "No policy named in $dir/result.txt" >&2; exit 1; }
   echo "== $dir (recorded under $policy)"
-  set +e; out="$(node packages/proxy/dist/cli.js verify-export "$dir" --expect-policy "$policy")"; code=$?; set -e
+  set +e; out="$(node "$CLI" verify-export "$dir" --expect-policy "$policy")"; code=$?; set -e
   echo "$out"
   case "$recorded" in
     PASS*) [ "$code" -eq 0 ] || { echo "Expected PASS for $dir" >&2; exit 1; } ;;

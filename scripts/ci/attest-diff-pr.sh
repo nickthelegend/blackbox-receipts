@@ -11,7 +11,12 @@
 # (JUnit) and attest-diff.json (signed attestation) to out-dir (default: the current directory), then
 # prints the JUnit summary. Exit code: 0 green, 1 red, 2 usage.
 #
-# Pin the proxy key with BLACKBOX_PUBLIC_KEY (PEM). The attestation is signed with a throwaway key made
+# Fails closed. Pin the proxy key with BLACKBOX_PUBLIC_KEY (PEM): without it an export vouches for itself
+# (anyone can sign a matching log with a fresh key), so the gate is red with "Setup required" unless
+# BLACKBOX_REQUIRE_PINNED_KEY=0 is set on purpose, in which case a pass is labelled UNPINNED.
+# BLACKBOX_AGENT_BRANCH is the request's source branch: an agent branch (blackbox/*, what the Duo flow
+# pushes) that carries no export is red instead of NOT APPLICABLE.
+# The attestation is signed with a throwaway key made
 # for this run unless RECEIPTS_SIGNING_KEY or BLACKBOX_KEY_DIR is set.
 # BLACKBOX_CLI overrides the CLI entry point (default: packages/proxy/dist/cli.js next to this script).
 set -euo pipefail
@@ -20,6 +25,7 @@ BASE="${1:-}"
 OUT="${2:-.}"
 [ -n "$BASE" ] || { echo "Usage: attest-diff-pr.sh <base-sha> [out-dir]" >&2; exit 2; }
 CLI="${BLACKBOX_CLI:-$ROOT/packages/proxy/dist/cli.js}"
+export BLACKBOX_REQUIRE_PINNED_KEY="${BLACKBOX_REQUIRE_PINNED_KEY:-1}"
 [ -f "$CLI" ] || { echo "Setup required: $CLI not found (run pnpm install && pnpm build)" >&2; exit 2; }
 git rev-parse --verify --quiet "$BASE^{commit}" >/dev/null || { echo "FAIL attest-diff: base $BASE is not a commit in this clone (fetch with full history)" >&2; exit 1; }
 
@@ -37,6 +43,11 @@ while IFS= read -r file; do
 done < <(git diff --name-only --diff-filter=AM "$BASE" -- 'receipts/*/session.jsonl' | grep -E '^receipts/[^/]+/session\.jsonl$' || true)
 
 if [ "${#SESSIONS[@]}" -eq 0 ]; then
+  case "${BLACKBOX_AGENT_BRANCH:-}" in
+    blackbox/*)
+      echo "FAIL attest-diff: $BLACKBOX_AGENT_BRANCH is an agent branch (blackbox/*) but adds no exported session (receipts/<session>/session.jsonl), so nothing vouches for its changes."
+      exit 1 ;;
+  esac
   echo "NOT APPLICABLE attest-diff: this request adds no exported agent session (receipts/<session>/session.jsonl), so there are no receipts to gate it on."
   exit 0
 fi

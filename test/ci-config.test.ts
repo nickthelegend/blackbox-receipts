@@ -60,3 +60,39 @@ test('ci: the receipt gate is built and run from the base commit, not from the r
   }
   assert.doesNotMatch(gitlabJob, /needs: \[build\]/, 'gitlab: the gate job must not use the request head build artifacts');
 });
+
+/** One top-level block of .gitlab-ci.yml (from `start`), up to the next top-level key. */
+function topLevelBlock(yaml: string, start: number, headerLength: number): string {
+  const next = yaml.slice(start + headerLength).search(/\n[^\s#]/);
+  return yaml.slice(start, next < 0 ? undefined : start + headerLength + next);
+}
+
+/** One top-level job of .gitlab-ci.yml, with each YAML alias (`*name`) it uses replaced by its anchored block. */
+function gitlabJob(yaml: string, name: string): string {
+  const start = yaml.indexOf(`\n${name}:\n`);
+  assert.ok(start >= 0, `.gitlab-ci.yml has no ${name} job`);
+  return topLevelBlock(yaml, start, name.length + 3).replace(/\*([A-Za-z0-9_-]+)/g, (alias, anchor: string) => {
+    const at = yaml.search(new RegExp(`\\n[^\\s#][^\\n]*&${anchor}\\b`));
+    assert.ok(at >= 0, `alias ${alias} has no anchor`);
+    return topLevelBlock(yaml, at, 1);
+  });
+}
+
+// The export checks fail closed and, on a merge request, never run the request's own verifier: an MR
+// that edits verifyChain to return valid must not be able to green its own receipts.
+test('gitlab ci: verify:exported-receipts and verify:agent-demo run a verifier built from the MR base; exports need a pinned key', () => {
+  const yaml = readFileSync(join(repoRoot, '.gitlab-ci.yml'), 'utf8');
+  for (const name of ['verify:exported-receipts', 'verify:agent-demo']) {
+    const job = gitlabJob(yaml, name);
+    assert.ok(job.includes('git worktree add --detach "$GATE" "$CI_MERGE_REQUEST_DIFF_BASE_SHA"'), `${name}: no worktree at the MR base`);
+    assert.match(job, /cd "\$GATE" && pnpm install --frozen-lockfile/, `${name}: the verifier is not built in the base worktree`);
+    assert.match(job, /BLACKBOX_CLI="\$GATE\/packages\/proxy\/dist\/cli\.js"/, `${name}: the MR pipeline does not use the base build`);
+    assert.match(job, /GIT_DEPTH: 0/, `${name}: the base commit may be missing from a shallow clone`);
+  }
+  assert.match(gitlabJob(yaml, 'verify:exported-receipts'), /BLACKBOX_REQUIRE_PINNED_KEY: "1"/);
+  assert.match(gitlabJob(yaml, 'verify:exported-receipts'), /node "\$BLACKBOX_CLI" verify-export/);
+  assert.match(gitlabJob(yaml, 'verify:agent-demo'), /bash "\$SCRIPTS\/verify-agent-demo\.sh"/);
+  // The attest-diff gates know the source branch, so an agent branch without an export is red.
+  assert.match(gitlabJob(yaml, 'verify:attest-diff'), /BLACKBOX_AGENT_BRANCH: \$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME/);
+  assert.match(readFileSync(join(repoRoot, '.github/workflows/attest-diff.yml'), 'utf8'), /BLACKBOX_AGENT_BRANCH: \$\{\{ github\.head_ref \}\}/);
+});

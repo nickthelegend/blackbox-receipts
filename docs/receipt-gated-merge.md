@@ -30,9 +30,13 @@ with the key of whoever runs the command, whose public key it embeds.
 
 **Pin the key.** An export carries its own `public-key.pem`. Without `BLACKBOX_PUBLIC_KEY` the gate
 checks the chain against that key, so anyone can produce a passing export by signing a matching log with a
-fresh key. An unpinned run still passes, but its PASS line reads `PASS attest-diff (UNPINNED: the export's
-own key was trusted; set BLACKBOX_PUBLIC_KEY)` and the JUnit suite name ends in `UNPINNED`.
-`BLACKBOX_REQUIRE_PINNED_KEY=1` makes an unpinned run FAIL instead.
+fresh key. The CI entry point (`attest-diff-pr.sh`) therefore fails closed: it sets
+`BLACKBOX_REQUIRE_PINNED_KEY=1` unless the caller set it, so an unpinned run is `FAIL attest-diff: Setup
+required: set BLACKBOX_PUBLIC_KEY …`. Setting `BLACKBOX_REQUIRE_PINNED_KEY=0` on purpose (a repository or
+CI/CD variable) trusts the export's own key; the PASS line then reads `PASS attest-diff (UNPINNED: the
+export's own key was trusted; set BLACKBOX_PUBLIC_KEY)` and the JUnit suite name ends in `UNPINNED`. The
+CLI run by hand keeps the old default (unpinned is labelled, not failed). `verify-export` honours the same
+variable, and the GitLab `verify:exported-receipts` job sets it.
 
 **Run the gate from the base commit.** A gate built from the request's own checkout runs the code under
 review: a request could change `checkDiff` to return nothing, or edit `attest-diff-pr.sh`, and pass itself.
@@ -46,7 +50,8 @@ In this repo the gate runs as `.github/workflows/attest-diff.yml` (pull requests
 `verify:attest-diff` job in `.gitlab-ci.yml` (merge requests; not run yet, as the GitLab project doesn't
 exist). Both call `scripts/ci/attest-diff-pr.sh <base> [out-dir]`, which picks the exported session the
 request adds at `receipts/<session>/session.jsonl` (deeper folders such as `receipts/agent-demo/` are not
-a request's own session), prints NOT APPLICABLE and passes when there is none, fails when there are two,
+a request's own session), prints NOT APPLICABLE and passes when there is none (except on an agent branch,
+`blackbox/*` from `BLACKBOX_AGENT_BRANCH`, which must carry one), fails when there are two,
 and otherwise runs `attest-diff --from` it and prints the JUnit summary.
 
 `bash scripts/demo-attest-diff.sh` shows all three outcomes on real branches in a temp clone of this repo
@@ -57,6 +62,7 @@ For another repo, adapt the examples in [examples/ci/receipt-gated-merge.github.
 and [examples/ci/receipt-gated-merge.gitlab-ci.yml](../examples/ci/receipt-gated-merge.gitlab-ci.yml).
 
 Limits: the gate proves where each changed byte came from, not that the change is good. It trusts the
-proxy key (pin it; unpinned runs say `UNPINNED`). Renames show up as a delete plus an add, so a rename fails unless the new file was
+proxy key (pin it; the CI gate is red until you do, or says `UNPINNED` if you opt out). It is opt-in: a
+request that carries no export is not gated, unless its branch is `blackbox/*`. Renames show up as a delete plus an add, so a rename fails unless the new file was
 written through `write_file` and the delete is accepted by hand. The attestation's signer is the CI
 runner's key unless you provide one with `RECEIPTS_SIGNING_KEY`.

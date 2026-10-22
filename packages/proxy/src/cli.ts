@@ -46,6 +46,11 @@ function fail(result: PropertyFailure) {
 /** Proves the current session and checks the bundle the way a third party would, from the public key alone. */
 const proveCurrent = async () => proveWith(await loadPolicy(), pinned);
 
+// A CI gate that trusts an export's own key certifies any log signed with a fresh key. With
+// BLACKBOX_REQUIRE_PINNED_KEY=1 (the CI default) an unpinned export is a FAIL, not a labelled PASS.
+const requirePinnedKey = () => process.env.BLACKBOX_REQUIRE_PINNED_KEY === '1';
+const UNPINNED_SETUP = 'Setup required: set BLACKBOX_PUBLIC_KEY (PEM of the proxy key). BLACKBOX_REQUIRE_PINNED_KEY is set but no BLACKBOX_PUBLIC_KEY is pinned, so the export\'s own key would be trusted';
+
 /** The receipts of an exported session directory (receipts/<session>/session.jsonl). */
 const readExportLog = async (dir: string) => parseJsonLines<Receipt>(await readFile(join(dir, 'session.jsonl'), 'utf8'), 'session.jsonl');
 
@@ -59,8 +64,9 @@ async function verifyExport(dir: string): Promise<string> {
     receipts = await readExportLog(dir);
     publicKey = await readFile(join(dir, 'public-key.pem'), 'utf8');
   } catch (error) { return failure(error instanceof CorruptLogError ? error.message : `Cannot read export: ${error instanceof Error ? error.message : String(error)}`); }
-  const pinnedKey = process.env.BLACKBOX_PUBLIC_KEY;
-  if (pinnedKey && pinnedKey.trim() !== publicKey.trim()) return failure('Exported public key does not match the pinned BLACKBOX_PUBLIC_KEY');
+  const pinnedKey = process.env.BLACKBOX_PUBLIC_KEY?.trim();
+  if (!pinnedKey && requirePinnedKey()) return failure(UNPINNED_SETUP);
+  if (pinnedKey && pinnedKey !== publicKey.trim()) return failure('Exported public key does not match the pinned BLACKBOX_PUBLIC_KEY');
   if (!receipts.length) return failure('No receipts exist for this session, so there is nothing to prove');
   const chain = verifyChain(receipts, publicKey);
   if (!chain.valid) return failure(`Chain verification failed: ${chain.reason}`, chain.brokenAt);
@@ -225,7 +231,7 @@ try {
       if (process.env.BLACKBOX_PUBLIC_KEY && process.env.BLACKBOX_PUBLIC_KEY.trim() !== publicKey.trim()) integrity = 'Export public key does not match the pinned BLACKBOX_PUBLIC_KEY';
       // Without a pinned key the export vouches for itself: anyone can sign a matching log with a fresh key.
       unpinned = !process.env.BLACKBOX_PUBLIC_KEY?.trim();
-      if (unpinned && process.env.BLACKBOX_REQUIRE_PINNED_KEY === '1') integrity = 'BLACKBOX_REQUIRE_PINNED_KEY is set but no BLACKBOX_PUBLIC_KEY is pinned, so the export\'s own key would be trusted';
+      if (unpinned && requirePinnedKey()) integrity = UNPINNED_SETUP;
     } else {
       receipts = await loadReceipts();
       publicKey = (await signingKeys()).publicKey;

@@ -7,6 +7,8 @@ attest-diff:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   variables:
     GIT_DEPTH: 0
+    # Fail closed: with no pinned key the job is red ("Setup required") instead of trusting the export's own key.
+    BLACKBOX_REQUIRE_PINNED_KEY: "1"
   script:
     - git clone --depth 1 https://github.com/nickthelegend/blackbox-receipts ../blackbox
     - (cd ../blackbox && corepack enable && pnpm install --frozen-lockfile && pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/meterless build && pnpm --filter @blackbox/proxy build)

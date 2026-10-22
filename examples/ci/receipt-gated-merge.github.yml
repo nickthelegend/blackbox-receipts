@@ -19,6 +19,8 @@ jobs:
         env:
           # Pin the proxy's public key (PEM) so an export signed by any other key fails.
           BLACKBOX_PUBLIC_KEY: ${{ vars.BLACKBOX_PUBLIC_KEY }}
+          # Fail closed: with no pinned key the job is red ("Setup required") instead of trusting the export's own key.
+          BLACKBOX_REQUIRE_PINNED_KEY: '1'
         run: |
           SESSION_DIR="$(ls -d receipts/*/ | head -n1)"
           node ../blackbox/packages/proxy/dist/cli.js attest-diff --base "${{ github.event.pull_request.base.sha }}" --from "$SESSION_DIR" --junit attest-diff.xml --out attest-diff.json

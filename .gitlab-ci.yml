@@ -3,7 +3,8 @@
 #   verifier PASSes it and FAILs a secret read, a tampered log and an empty session.
 # - verify:attest-diff gates merge requests that carry an agent export on its signed writes.
 # - verify:exported-receipts runs when a commit contains receipts/<session>/ exported by the Duo flow,
-#   and fails the pipeline unless every exported session verifies.
+#   and fails the pipeline unless every exported session verifies against the pinned BLACKBOX_PUBLIC_KEY
+#   (on an MR, with a verifier built from the MR's base commit).
 # - pages publishes the static, read-only site (landing + offline /verify) to GitLab Pages from the
 #   default branch. The recorder dashboard and its API are local-only and are not part of it.
 workflow:
@@ -55,29 +56,56 @@ verify:live-session:
   script:
     - bash scripts/ci/verify-live-session.sh
 
+# On a merge request, both export checks run a verifier built from the MR's base commit in its own
+# worktree (like verify:attest-diff), so an MR that edits packages/verify or the CLI can't green its own
+# receipts. Branch pipelines (the default branch after merge) use this pipeline's build.
+.verifier-from-base: &verifier-from-base
+  - |
+    BLACKBOX_CLI=packages/proxy/dist/cli.js
+    SCRIPTS=scripts/ci
+    if [ "$CI_PIPELINE_SOURCE" = "merge_request_event" ]; then
+      git fetch --quiet origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+      GATE="$(mktemp -d)/gate"
+      git worktree add --detach "$GATE" "$CI_MERGE_REQUEST_DIFF_BASE_SHA"
+      (cd "$GATE" && pnpm install --frozen-lockfile && pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/meterless build && pnpm --filter @blackbox/proxy build)
+      BLACKBOX_CLI="$GATE/packages/proxy/dist/cli.js"
+      SCRIPTS="$GATE/scripts/ci"
+    fi
+    export BLACKBOX_CLI SCRIPTS
+
 verify:agent-demo:
   stage: verify
   needs: [build]
   rules:
     - exists:
         - receipts/agent-demo/*/session.jsonl
+  variables:
+    GIT_DEPTH: 0
   script:
-    - bash scripts/ci/verify-agent-demo.sh
+    - *verifier-from-base
+    - bash "$SCRIPTS/verify-agent-demo.sh"
 
+# Fails closed: an export is checked against the pinned BLACKBOX_PUBLIC_KEY (CI/CD variable, PEM). Without
+# one the job is red with "Setup required: set BLACKBOX_PUBLIC_KEY"; a project variable
+# BLACKBOX_REQUIRE_PINNED_KEY=0 overrides that on purpose (the export's own key is then trusted).
 verify:exported-receipts:
   stage: verify
   needs: [build]
   rules:
     - exists:
         - receipts/*/session.jsonl
+  variables:
+    GIT_DEPTH: 0
+    BLACKBOX_REQUIRE_PINNED_KEY: "1"
   script:
-    # Set BLACKBOX_PUBLIC_KEY (CI/CD variable, PEM) to require that exports were signed by a known proxy key.
-    - node packages/proxy/dist/cli.js verify-export
+    - *verifier-from-base
+    - node "$BLACKBOX_CLI" verify-export
 
 # Receipt-gated merge: on a merge request that carries an agent's exported session
 # (receipts/<session>/session.jsonl), every other changed file must be exactly what a signed write_file
 # step produced. Results show in the merge request's test report; the signed attestation is an artifact.
-# Merge requests without an exported session print NOT APPLICABLE and pass.
+# Merge requests without an exported session print NOT APPLICABLE and pass, except agent branches
+# (blackbox/*), which must carry one. The gate is opt-in for every other merge request.
 # The gate is built and run from the base commit in its own worktree, never from the merge request's
 # code, so a request that edits checkDiff, the CLI or attest-diff-pr.sh can't certify itself.
 verify:attest-diff:
@@ -87,11 +115,14 @@ verify:attest-diff:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
   variables:
     GIT_DEPTH: 0
+    # An agent branch (blackbox/*, what the Duo flow pushes) without an export is red, not NOT APPLICABLE.
+    BLACKBOX_AGENT_BRANCH: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
   before_script:
     - corepack enable
     - pnpm config set store-dir "$CI_PROJECT_DIR/.pnpm-store"
   script:
-    # Set BLACKBOX_PUBLIC_KEY (CI/CD variable, PEM) to pin the proxy key. Unset, the result says UNPINNED.
+    # Fails closed: set BLACKBOX_PUBLIC_KEY (CI/CD variable, PEM) to pin the proxy key. Unset, the job is red
+    # with "Setup required" unless the project sets BLACKBOX_REQUIRE_PINNED_KEY=0 (then it says UNPINNED).
     - git fetch --quiet origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
     - GATE="$(mktemp -d)/gate"
     - git worktree add --detach "$GATE" "$CI_MERGE_REQUEST_DIFF_BASE_SHA"

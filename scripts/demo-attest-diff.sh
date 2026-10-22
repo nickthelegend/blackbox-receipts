@@ -47,7 +47,8 @@ gate() {
   echo
   echo "== CI gate on $1: bash scripts/ci/attest-diff-pr.sh <base>"
   local code=0
-  BLACKBOX_KEY_DIR= bash "$ROOT/scripts/ci/attest-diff-pr.sh" "$BASE" "$OUT/$1" > "$OUT/$1/gate.txt" 2>&1 || code=$?
+  # Pinned to the agent proxy's public key, as CI must be (the gate fails closed without a pin).
+  BLACKBOX_PUBLIC_KEY="$(cat "$TMP/agent-proxy-key/public-key.pem")" BLACKBOX_KEY_DIR= bash "$ROOT/scripts/ci/attest-diff-pr.sh" "$BASE" "$OUT/$1" > "$OUT/$1/gate.txt" 2>&1 || code=$?
   sed 's/^/   /' "$OUT/$1/gate.txt"
   echo "$code" > "$OUT/$1/exit-code"
   git diff --stat "$BASE" HEAD > "$OUT/$1/changes.txt"
