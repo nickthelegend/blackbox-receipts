@@ -25,7 +25,9 @@ export { expect };
 
 /** The page must not scroll sideways at its current viewport width. */
 export async function expectNoHorizontalScroll(page: Page) {
-  const { scroll, width } = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, width: window.innerWidth }));
+  // clientWidth, not innerWidth: in mobile emulation a too-wide page widens the layout viewport (innerWidth grows
+  // with it), so innerWidth would hide the overflow it is meant to catch.
+  const { scroll, width } = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, width: document.documentElement.clientWidth }));
   expect(scroll, `page is ${scroll}px wide in a ${width}px viewport`).toBeLessThanOrEqual(width);
 }
 

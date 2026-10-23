@@ -10,8 +10,9 @@ test.describe('static Pages build', () => {
     await page.goto(`${site}/`);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Every tool call your agent makes/);
     await expectNoHorizontalScroll(page);
-    const recorderLink = page.getByRole('link', { name: 'Run the recorder locally' }).first();
-    await expect(recorderLink).toHaveAttribute('href', /#setup$/);
+    // The header's short label fits a 375 px header; the closing call to action carries the long one.
+    await expect(page.locator('header').getByRole('link', { name: 'Run it locally' })).toHaveAttribute('href', /#setup$/);
+    await expect(page.getByRole('link', { name: 'Run the recorder locally' })).toHaveAttribute('href', /#setup$/);
     await expect(page.getByRole('link', { name: 'Open recorder' })).toHaveCount(0);
     await expect(page.getByRole('link', { name: 'Blackbox Receipts, home' })).toHaveAttribute('href', `${PAGES.base}/`);
 
@@ -39,7 +40,7 @@ test.describe('static Pages build', () => {
     await page.getByRole('button', { name: 'Flip one byte' }).click();
     await expect(page.locator('.vf-badge')).toHaveText('FAIL');
     await expectNoHorizontalScroll(page);
-    await expect(page.getByRole('link', { name: 'Run the recorder locally' })).toHaveAttribute('href', /#setup$/);
+    await expect(page.getByRole('link', { name: 'Run it locally' })).toHaveAttribute('href', /#setup$/);
     await page.getByRole('link', { name: 'Blackbox Receipts, home' }).click();
     await expect(page).toHaveURL(`${site}/`);
   });

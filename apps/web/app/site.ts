@@ -11,5 +11,5 @@ export const route = (path: '/' | '/verify') => (STATIC_SITE ? `${BASE_PATH}${pa
 
 /** The recorder needs the local proxy store, so the static site links to how to run it instead. */
 export const recorder = STATIC_SITE
-  ? { href: `${REPO_URL}#setup`, short: 'Run the recorder locally', long: 'Run the recorder locally' }
+  ? { href: `${REPO_URL}#setup`, short: 'Run it locally', long: 'Run the recorder locally' }
   : { href: '/recorder', short: 'Open recorder', long: 'Open the recorder' };
