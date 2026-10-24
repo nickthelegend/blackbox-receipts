@@ -6,7 +6,7 @@ An MCP proxy sits between an agent and its tools. Every call is checked against 
 
 | | |
 |---|---|
-| Live site | Not published yet. After `main` is pushed and Pages is set to "GitHub Actions": `https://nickthelegend.github.io/blackbox-receipts/` (overview) and `…/verify/` (offline verifier) |
+| Live site | https://blackbox-landing-olive.vercel.app (overview) and [`/verify`](https://blackbox-landing-olive.vercel.app/verify/) (offline verifier); the same build on GitHub Pages: https://nickthelegend.github.io/blackbox-receipts/. Static and read-only: the recorder and its API run locally ([Setup](#setup)) |
 | Slide deck | [`docs/deck/index.html`](docs/deck/index.html) · [PDF](docs/deck/blackbox-receipts-deck.pdf) |
 | Videos | Not recorded yet ([scripts](docs/demo-video-script.md): Open Agent Wildcard and GitLab Transcend cuts) |
 | Hackathon window | [What was built from Oct 22](#built-in-the-window-oct-2227), and what is still missing |
@@ -136,7 +136,7 @@ Measured over 20 sessions of 25 sequential calls (Apple M4, Node 26.5): **about 
 
 ### Static site (GitLab Pages / GitHub Pages)
 
-`pnpm build:pages` builds the workspace packages, then `scripts/build-pages.mjs` exports a static, read-only copy of the overview and the offline `/verify` page to `public/`. Pass `--base-path /blackbox-receipts` (or set `PAGES_BASE_PATH`) when the site is served under a sub-path. The recorder and its API are left out because they are local-only, so the static site's recorder links point to [Setup](#setup) instead. The `pages` job in `.gitlab-ci.yml` publishes it from the default branch after the tests pass, and it reads the base path from `CI_PAGES_URL`. `.github/workflows/pages.yml` is the GitHub Pages fallback (`https://nickthelegend.github.io/blackbox-receipts/` after the push; set Settings → Pages → Source to "GitHub Actions" first). Nothing has been published yet.
+`pnpm build:pages` builds the workspace packages, then `scripts/build-pages.mjs` exports a static, read-only copy of the overview and the offline `/verify` page to `public/`. Pass `--base-path /blackbox-receipts` (or set `PAGES_BASE_PATH`) when the site is served under a sub-path. The recorder and its API are left out because they are local-only, so the static site's recorder links point to [Setup](#setup) instead. The `pages` job in `.gitlab-ci.yml` publishes it from the default branch after the tests pass, and it reads the base path from `CI_PAGES_URL`. `.github/workflows/pages.yml` is the GitHub Pages fallback (`https://nickthelegend.github.io/blackbox-receipts/` after the push; set Settings → Pages → Source to "GitHub Actions" first). Published: GitHub Pages at https://nickthelegend.github.io/blackbox-receipts/ (from `pages.yml`) and the Vercel project `blackbox-landing` at https://blackbox-landing-olive.vercel.app (built with base path `/`). GitLab Pages has not deployed: the GitLab project's pipelines haven't run yet (see [Submission status](#submission-status)).
 
 ## Sponsor technology
 
@@ -185,14 +185,14 @@ Done and in this repo:
 - Slide deck: [`docs/deck/index.html`](docs/deck/index.html) and [PDF](docs/deck/blackbox-receipts-deck.pdf).
 - Zetaris and Meterless clients, plus the dashboard live-check panel.
 - GitLab Duo flow and GitLab CI (including the merge-request attest-diff job).
-- Static Pages build of the overview and `/verify` (`pnpm build:pages`), with a GitLab `pages` job and a GitHub Pages fallback workflow. Not published yet.
+- Static Pages build of the overview and `/verify` (`pnpm build:pages`), with a GitLab `pages` job and a GitHub Pages fallback workflow. Live on GitHub Pages and Vercel (links at the top); not on GitLab Pages yet.
 
 Still missing:
 
-- A public GitLab repo for the Transcend entry, a live GitLab Duo run, and pipeline history from it.
+- A public GitLab repo for the Transcend entry, a live GitLab Duo run, and pipeline history from it. The project exists (`thenar-group1/thenar-project`, `main` mirrored) but it and its group are private, the group is on GitLab Free, and its first pipeline failed before any job started because the account hasn't completed GitLab's identity verification for pipelines and Duo.
 - Zetaris keys, and a running Meterless Runtime, then one real call inside the agent loop and a live test that isn't skipped. **BLOCKED** until those exist (Zetaris: `ZETARIS_API_KEY` + `ZETARIS_ORG_ID`; Meterless: the Nightshift app installed and running, then `METERLESS_STATE_DIR`).
 - Work built in Cursor for the Open Agent entry (rule 5.1), with evidence (a Cursor screenshot in the deck and in the video). None yet: see below.
-- The demo videos (Open Agent and GitLab Transcend), and `main` pushed to GitHub (the public repo is behind) with Pages on.
+- The demo videos (Open Agent and GitLab Transcend).
 
 ## Built in the window (Oct 22–27)
 

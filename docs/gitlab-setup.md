@@ -1,6 +1,6 @@
 # GitLab setup: Duo Agent Platform flow with Blackbox Receipts
 
-Nick runs these steps once he has a GitLab project. Nothing on the GitLab side has been exercised yet. Everything below follows GitLab's docs as of October 2026, and every GitLab response in the demo must come from a real run. Where a step depends on behavior the docs don't confirm, it says so; record what actually happens.
+Nick runs these steps once he has a GitLab project. State on 2026-10-24: the project `thenar-group1/thenar-project` exists with `main` pushed, but no job has run (the first pipeline failed at GitLab's identity verification, step 0) and no flow has been created. Everything below follows GitLab's docs as of October 2026, and every GitLab response in the demo must come from a real run. Where a step depends on behavior the docs don't confirm, it says so; record what actually happens.
 
 ## How it works
 
@@ -29,6 +29,8 @@ Files involved:
 
 ## 0. Prerequisites (check before starting)
 
+- **Identity verification** on the GitLab.com account that pushes (the banner "Verify your identity to run this pipeline"). Until it's done, every pipeline fails before a job starts, and the Duo panel says "Identity Verification required". It's separate from the email confirmation at sign-up.
+- **Public visibility** for both the top-level group and the project (Settings > General > Visibility). A project can't be more visible than its group, so a private group keeps the project private whatever the project setting says.
 - A **top-level group** on GitLab.com with GitLab Duo Agent Platform available: Premium or Ultimate, or Free with GitLab Credits. Check the Transcend rules for which tier the hackathon provides.
 - **Custom flows turned on** for the group: **Settings > GitLab Duo**, Owner role. They're on unless someone turned them off.
 - **Maintainer or Owner** role on the project, which is needed to create and enable flows and triggers.
