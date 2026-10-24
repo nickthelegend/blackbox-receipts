@@ -7,7 +7,8 @@
 // defaults to no-secrets-read/v2; the samples were proven under v1 on 2026-10-21, so loading one pins v1,
 // and switching the pin back to v2 shows that a v1 proof does not satisfy the current policy.
 // The signer key is pinned the same way: loading a sample pins the committed demo key; a dropped pack is
-// checked unpinned (amber "PASS (key not pinned)") until the viewer pins the key they expect.
+// checked unpinned (amber "PASS (key not pinned)") until the viewer pins the key they expect. Pins a
+// sample set are dropped again when the viewer loads their own pack; pins the viewer chose are kept.
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { parsePack, policyHash, publishedPolicy, PUBLISHED_POLICIES, verifyPack, type Pack, type PackResult, type StepStatus } from '@blackbox/verify';
 import { Logo } from '../components/brand';
@@ -81,6 +82,8 @@ export default function VerifyPage() {
   const [flipStep, setFlipStep] = useState(1);
   const [pin, setPin] = useState(PUBLISHED_POLICIES[0].id);
   const [key, setKey] = useState<KeyPin>({ mode: 'none', custom: '' });
+  // True while the pins are the ones a sample set (v1 and the demo key), not ones the viewer chose.
+  const [samplePins, setSamplePins] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
   const accept = useCallback((name: string, text: string, edit: string | null, sample: boolean, policy: string, signer: KeyPin) => {
@@ -95,25 +98,36 @@ export default function VerifyPage() {
     const signer = { ...key, mode: 'demo' as const };
     setPin(RECORDED_POLICY);
     setKey(signer);
+    setSamplePins(true);
     accept(file, text, null, true, RECORDED_POLICY, signer);
   }
 
   /** Re-checks the loaded pack (and any one-byte edit) under another pinned policy. */
   function repin(policy: string) {
     setPin(policy);
+    setSamplePins(false);
     if (loaded) accept(loaded.name, loaded.text, loaded.edit, loaded.sample, policy, key);
   }
 
   /** Re-checks the loaded pack against another expected signer key. */
   function rekey(signer: KeyPin) {
     setKey(signer);
+    setSamplePins(false);
     if (loaded) accept(loaded.name, loaded.text, loaded.edit, loaded.sample, pin, signer);
   }
 
   async function readFile(file: File | undefined) {
     if (!file) return;
     if (file.size > 20_000_000) { setLoaded(null); setError(`${file.name}: larger than 20 MB, which is not a pack this page will read`); return; }
-    accept(file.name, await file.text(), null, false, pin, key);
+    const text = await file.text();
+    if (!samplePins) { accept(file.name, text, null, false, pin, key); return; }
+    // The viewer's own pack is checked under the defaults, not the pins a sample set for itself.
+    const policy = PUBLISHED_POLICIES[0].id;
+    const signer = { ...key, mode: 'none' as const };
+    setPin(policy);
+    setKey(signer);
+    setSamplePins(false);
+    accept(file.name, text, null, false, policy, signer);
   }
 
   function flip() {

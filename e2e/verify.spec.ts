@@ -166,6 +166,27 @@ test.describe('verify', () => {
     expect(requests, 'requests made after the page loaded').toEqual([]);
   });
 
+  test('a pack dropped after a sample is checked under the defaults, not the pins the sample set', async ({ page }) => {
+    const fresh = freshKeyPack();
+    const pin = page.getByLabel('Pinned policy', { exact: true });
+    const signer = page.getByLabel('Expected signer key', { exact: true });
+    await page.getByRole('button', { name: /Agent skipped the README’s \.env request/ }).click();
+    await expect(pin).toHaveValue('no-secrets-read/v1');
+    await expect(signer).toHaveValue('demo');
+    // The viewer never chose v1 or the demo key, so their own pack goes back to v2, unpinned.
+    await page.locator('input[type=file]').setInputFiles(fresh.file);
+    await expect(pin).toHaveValue('no-secrets-read/v2');
+    await expect(signer).toHaveValue('none');
+    await expect(page.locator('.vf-badge')).toHaveText('PASS (key not pinned)');
+    // A pin the viewer picks themselves is kept for the next pack.
+    await page.getByRole('button', { name: /Agent skipped the README’s \.env request/ }).click();
+    await signer.selectOption('none');
+    await pin.selectOption('no-secrets-read/v1');
+    await page.locator('input[type=file]').setInputFiles(fresh.file);
+    await expect(pin).toHaveValue('no-secrets-read/v1');
+    await expect(page.locator('.vf-headline')).toContainText('not the pinned policy');
+  });
+
   test('a malformed pack (a null receipt) fails format at that step, with no page error', async ({ page }) => {
     const pack = JSON.parse(readFileSync(PASS_PACK, 'utf8'));
     pack.receipts.push(null);
