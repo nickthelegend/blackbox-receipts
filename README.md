@@ -171,7 +171,7 @@ Two workspace packages call each sponsor's real interface. Neither has mock resp
 
 ## Tests
 
-`pnpm test` runs 96 tests: 91 pass and 5 are skipped because they need sponsor keys or a running sponsor runtime (Zetaris, Meterless) that aren't configured; those print a `⚠️ SKIPPING LIVE … TESTS` banner. `pnpm test:e2e` runs 37 browser tests in Google Chrome at 1280 px and at 375 px (74 runs), all passing. Counts per file, and what each suite runs against: [TESTING.md](TESTING.md).
+`pnpm test` runs 96 tests: 91 pass and 5 are skipped because they need sponsor keys or a running sponsor runtime (Zetaris, Meterless) that aren't configured; those print a `⚠️ SKIPPING LIVE … TESTS` banner. `pnpm test:e2e` runs 38 browser tests in Google Chrome at 1280 px and at 375 px (76 runs), all passing. Counts per file, and what each suite runs against: [TESTING.md](TESTING.md).
 
 ## Submission status
 
