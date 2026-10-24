@@ -31,6 +31,7 @@ test.describe('verify', () => {
     const requests: string[] = [];
     page.on('request', (request) => requests.push(request.url()));
     await expect(page.getByLabel('No pack loaded')).toContainText('No pack loaded yet');
+    await expect(page).toHaveTitle('Verify a pack · Blackbox Receipts');
     await expectNoHorizontalScroll(page);
     await page.screenshot({ path: test.info().outputPath('verify-empty.png'), animations: 'disabled' });
 

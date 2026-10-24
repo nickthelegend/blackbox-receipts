@@ -34,6 +34,7 @@ test.describe('recorder: live session', () => {
     expect(body.chain.valid).toBe(true);
     const denied = body.receipts.find((receipt) => receipt.outcome === 'denied')!;
     await expect(lamp(page, 'Chain')).toContainText('Verified');
+    await expect(page).toHaveTitle('Recorder · Blackbox Receipts');
     await expect(lamp(page, 'Secret paths')).toContainText(`Touched · ${pad(denied.step)}`);
     await expect(lamp(page, 'No-secrets proof')).toContainText('Not run');
     await expect(lamp(page, 'Tamper test')).toContainText('Off');
