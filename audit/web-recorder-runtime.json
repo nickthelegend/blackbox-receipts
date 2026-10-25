@@ -1,0 +1,35 @@
+{
+  "state": "/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/bb-recorder-audit-6slYkn",
+  "unset": [
+    "ZETARIS_API_KEY",
+    "ZETARIS_ORG_ID",
+    "METERLESS_TOKEN",
+    "METERLESS_STATE_DIR",
+    "WALRUS_PUBLISHER_URL"
+  ],
+  "sessionId": "933f87da-572a-47f6-8cd3-004ea187da31",
+  "fixtureCalls": [
+    [
+      "--new-session",
+      "git",
+      "{\"action\":\"log\"}"
+    ],
+    [
+      "read_file",
+      "{\"path\":\"README.md\"}"
+    ],
+    [
+      "shell",
+      "{\"command\":\"ls packages\"}"
+    ],
+    [
+      "read_file",
+      "{\"path\":\".env\"}"
+    ],
+    [
+      "git",
+      "{\"action\":\"show_stat\",\"args\":[\"HEAD\"]}"
+    ]
+  ],
+  "capturedAt": "2026-10-25T21:22:53.998Z"
+}

@@ -1,0 +1,43 @@
+[
+  {
+    "args": [
+      "--new-session",
+      "git",
+      "{\"action\":\"log\"}"
+    ],
+    "status": 0,
+    "stderr": ""
+  },
+  {
+    "args": [
+      "read_file",
+      "{\"path\":\"README.md\"}"
+    ],
+    "status": 0,
+    "stderr": ""
+  },
+  {
+    "args": [
+      "shell",
+      "{\"command\":\"ls packages\"}"
+    ],
+    "status": 0,
+    "stderr": ""
+  },
+  {
+    "args": [
+      "read_file",
+      "{\"path\":\".env\"}"
+    ],
+    "status": 1,
+    "stderr": "DENIED or FAILED (receipt recorded): Policy denied (no-secrets-read/v2): read_file touched secret path matching \".env*\"\n"
+  },
+  {
+    "args": [
+      "git",
+      "{\"action\":\"show_stat\",\"args\":[\"HEAD\"]}"
+    ],
+    "status": 0,
+    "stderr": ""
+  }
+]

@@ -1,0 +1,35 @@
+{
+  "id": "EDGE-WIDTH-375-RECORDER",
+  "status": "PASS",
+  "problems": [],
+  "detail": {
+    "sizes": {
+      "initial": {
+        "scroll": 375,
+        "client": 375
+      },
+      "expanded": {
+        "scroll": 375,
+        "client": 375
+      },
+      "drawer": {
+        "scroll": 375,
+        "client": 375
+      }
+    },
+    "drawer": {
+      "scroll": 375,
+      "client": 375
+    }
+  },
+  "viewport": "375x812",
+  "unset": [
+    "ZETARIS_API_KEY",
+    "ZETARIS_ORG_ID",
+    "METERLESS_TOKEN",
+    "METERLESS_STATE_DIR",
+    "WALRUS_PUBLISHER_URL"
+  ],
+  "capturedAt": "2026-10-25T21:23:21.256Z",
+  "fix": ""
+}

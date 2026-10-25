@@ -1,0 +1,61 @@
+{
+  "id": "EDGE-RECORDER-CROSS-SITE-POST",
+  "status": "FAIL",
+  "error": "expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 6\n\n- Array []\n+ Array [\n+   \"console error: Failed to load resource: the server responded with a status of 403 (Forbidden)\",\n+   \"console error: Failed to load resource: the server responded with a status of 403 (Forbidden)\",\n+   \"console error: Failed to load resource: the server responded with a status of 403 (Forbidden)\",\n+   \"console error: Failed to load resource: the server responded with a status of 403 (Forbidden)\",\n+ ]\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate",
+  "problems": [
+    "console error: Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "console error: Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "console error: Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    "console error: Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  "detail": {
+    "statuses": [
+      {
+        "origin": "http://127.0.0.1:33219",
+        "path": "/api/restore",
+        "status": 403,
+        "type": "opaque",
+        "tampered": [
+          2
+        ]
+      },
+      {
+        "origin": "http://127.0.0.1:33219",
+        "path": "/api/prove",
+        "status": 403,
+        "type": "opaque",
+        "tampered": [
+          2
+        ]
+      },
+      {
+        "origin": "http://localhost:33219",
+        "path": "/api/restore",
+        "status": 403,
+        "type": "opaque",
+        "tampered": [
+          2
+        ]
+      },
+      {
+        "origin": "http://localhost:33219",
+        "path": "/api/prove",
+        "status": 403,
+        "type": "opaque",
+        "tampered": [
+          2
+        ]
+      }
+    ]
+  },
+  "viewport": "1280x800",
+  "unset": [
+    "ZETARIS_API_KEY",
+    "ZETARIS_ORG_ID",
+    "METERLESS_TOKEN",
+    "METERLESS_STATE_DIR",
+    "WALRUS_PUBLISHER_URL"
+  ],
+  "capturedAt": "2026-10-25T21:23:20.624Z",
+  "fix": "Required error status is correct, but Chrome emits a resource console error. Cause: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome; session 409 comes from apps/web/app/api/corrupt.ts, CSRF 403 from apps/web/middleware.ts. Kept the required API refusal contract; global zero-console-error rule fails."
+}

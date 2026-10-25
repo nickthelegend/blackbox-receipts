@@ -1,0 +1,26 @@
+{
+  "id": "WEB-FLOW-RECORDER-NEW-CALL",
+  "status": "PASS",
+  "problems": [],
+  "detail": {
+    "elapsedMs": 2999,
+    "result": {
+      "args": [
+        "read_file",
+        "{\"path\":\"package.json\"}"
+      ],
+      "status": 0,
+      "stderr": ""
+    }
+  },
+  "viewport": "1280x800",
+  "unset": [
+    "ZETARIS_API_KEY",
+    "ZETARIS_ORG_ID",
+    "METERLESS_TOKEN",
+    "METERLESS_STATE_DIR",
+    "WALRUS_PUBLISHER_URL"
+  ],
+  "capturedAt": "2026-10-25T21:23:09.125Z",
+  "fix": ""
+}

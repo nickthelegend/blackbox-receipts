@@ -1,0 +1,38 @@
+[
+  {
+    "origin": "http://127.0.0.1:33219",
+    "path": "/api/restore",
+    "status": 403,
+    "type": "opaque",
+    "tampered": [
+      2
+    ]
+  },
+  {
+    "origin": "http://127.0.0.1:33219",
+    "path": "/api/prove",
+    "status": 403,
+    "type": "opaque",
+    "tampered": [
+      2
+    ]
+  },
+  {
+    "origin": "http://localhost:33219",
+    "path": "/api/restore",
+    "status": 403,
+    "type": "opaque",
+    "tampered": [
+      2
+    ]
+  },
+  {
+    "origin": "http://localhost:33219",
+    "path": "/api/prove",
+    "status": 403,
+    "type": "opaque",
+    "tampered": [
+      2
+    ]
+  }
+]

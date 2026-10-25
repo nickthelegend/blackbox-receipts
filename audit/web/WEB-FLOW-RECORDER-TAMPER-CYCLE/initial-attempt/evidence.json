@@ -1,0 +1,17 @@
+{
+  "id": "WEB-FLOW-RECORDER-TAMPER-CYCLE",
+  "status": "FAIL",
+  "error": "expect(locator).toHaveText(expected) failed\n\nLocator:  getByLabel('Readouts').locator('div').filter({ has: locator('.stencil').filter({ hasText: /^Rejected$/ }) }).locator('b')\nExpected: \"01\"\nReceived: \"04\"\nTimeout:  5000ms\n\nCall log:\n  - Expect \"toHaveText\" getByLabel('Readouts').locator('div').filter({ has: locator('.stencil').filter({ hasText: /^Rejected$/ }) }).locator('b') with timeout 5000ms\n  - waiting for getByLabel('Readouts').locator('div').filter({ has: locator('.stencil').filter({ hasText: /^Rejected$/ }) }).locator('b')\n    14 × locator resolved to <b>04</b>\n       - unexpected value \"04\"\n",
+  "problems": [],
+  "detail": {},
+  "viewport": "1280x800",
+  "unset": [
+    "ZETARIS_API_KEY",
+    "ZETARIS_ORG_ID",
+    "METERLESS_TOKEN",
+    "METERLESS_STATE_DIR",
+    "WALRUS_PUBLISHER_URL"
+  ],
+  "capturedAt": "2026-10-25T21:21:26.653Z",
+  "fix": ""
+}

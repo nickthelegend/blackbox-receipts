@@ -1,0 +1,90 @@
+[
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/recorder",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/_next/static/css/ea6c74c1b48aeb92.css",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/_next/static/css/735d478a0c6e0d43.css",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/_next/static/chunks/webpack-bb74b508448ddf40.js",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/_next/static/chunks/main-app-b2f95ad301b751cd.js",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/_next/static/chunks/367-e9b8f9b40241541e.js",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/_next/static/chunks/920-2277c259ad757e93.js",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/_next/static/chunks/app/recorder/page-07c26a73796ad55b.js",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/_next/static/chunks/79-7cc5d50eb914987b.js",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/_next/static/chunks/d6e00b03-13849fdf938b9eba.js",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/api/integrations",
+    "status": 200,
+    "body": "{\"integrations\":[{\"name\":\"Zetaris\",\"ok\":false,\"detail\":\"Zetaris not configured: missing ZETARIS_API_KEY, ZETARIS_ORG_ID. Create an API key in the Zetaris Console and get your Org ID from Zetaris Support/Admin, then set them in .env.local.\"},{\"name\":\"Meterless\",\"ok\":false,\"detail\":\"Meterless not configured: set METERLESS_TOKEN, or METERLESS_STATE_DIR (the runtime writes its token to <stateDir>/proxy-token). Meterless runs locally; there is no hosted API key.\"}]}"
+  },
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/api/session",
+    "status": 200,
+    "body": "{\"sessionId\":\"933f87da-572a-47f6-8cd3-004ea187da31\",\"receipts\":[],\"chain\":{\"valid\":true,\"brokenAt\":null,\"reason\":null},\"root\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"publicKey\":\"-----BEGIN PUBLIC KEY-----\\nMCowBQYDK2VwAyEAkYeovWCZXS0kp9TJqXWyf81lQ68s2BLAO5jh8H64RP4=\\n-----END PUBLIC KEY-----\\n\",\"walrus\":null,\"walrusConfigured\":false,\"tampered\":[],\"source\":\"/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/bb-recorder-audit-6slYkn/empty/session/session.jsonl\"}"
+  },
+  {
+    "method": "GET",
+    "url": "https://fonts.gstatic.com/s/manrope/v20/xn7gYHE41ni1AdIRggexSvfedN4.woff2",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "https://fonts.gstatic.com/s/firacode/v27/uU9NCBsR6Z2vfE9aq3bh3dSDqFGedA.woff2",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/icon.svg?22f1035d28cba464",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "http://127.0.0.1:33218/api/session",
+    "status": 200,
+    "body": "{\"sessionId\":\"933f87da-572a-47f6-8cd3-004ea187da31\",\"receipts\":[],\"chain\":{\"valid\":true,\"brokenAt\":null,\"reason\":null},\"root\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"publicKey\":\"-----BEGIN PUBLIC KEY-----\\nMCowBQYDK2VwAyEAkYeovWCZXS0kp9TJqXWyf81lQ68s2BLAO5jh8H64RP4=\\n-----END PUBLIC KEY-----\\n\",\"walrus\":null,\"walrusConfigured\":false,\"tampered\":[],\"source\":\"/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/bb-recorder-audit-6slYkn/empty/session/session.jsonl\"}"
+  }
+]

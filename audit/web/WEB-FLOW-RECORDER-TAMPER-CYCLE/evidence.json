@@ -1,0 +1,16 @@
+{
+  "id": "WEB-FLOW-RECORDER-TAMPER-CYCLE",
+  "status": "PASS",
+  "problems": [],
+  "detail": {},
+  "viewport": "1280x800",
+  "unset": [
+    "ZETARIS_API_KEY",
+    "ZETARIS_ORG_ID",
+    "METERLESS_TOKEN",
+    "METERLESS_STATE_DIR",
+    "WALRUS_PUBLISHER_URL"
+  ],
+  "capturedAt": "2026-10-25T21:23:05.336Z",
+  "fix": "Rejected counts the rejected signature; downstream receipts remain Untrusted."
+}

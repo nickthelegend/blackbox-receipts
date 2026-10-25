@@ -1,0 +1,12 @@
+{
+  "released": true,
+  "serverPids": [
+    54748,
+    54839
+  ],
+  "serversExited": true,
+  "at": "2026-10-25T21:23:21.431Z",
+  "temporaryStoresRemoved": true,
+  "portsListeningAfterCleanup": [],
+  "heavySlotPresentAfterCleanup": false
+}
