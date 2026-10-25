@@ -1,0 +1,30 @@
+{
+  "id": "WEB-STATIC-RECORDER-LINK",
+  "start": "2026-10-25T21:42:25.031Z",
+  "url": "http://127.0.0.1:3329/blackbox-receipts/",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP http://127.0.0.1:3329/blackbox-receipts/",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "Run it locally href",
+      "actual": "https://github.com/nickthelegend/blackbox-receipts#setup",
+      "expected": "https://github.com/nickthelegend/blackbox-receipts#setup",
+      "ok": true
+    },
+    {
+      "name": "Run the recorder locally href",
+      "actual": "https://github.com/nickthelegend/blackbox-receipts#setup",
+      "expected": "https://github.com/nickthelegend/blackbox-receipts#setup",
+      "ok": true
+    }
+  ],
+  "failures": []
+}

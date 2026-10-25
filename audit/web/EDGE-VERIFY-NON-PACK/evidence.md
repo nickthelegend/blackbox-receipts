@@ -1,11 +1,19 @@
-# EDGE-VERIFY-NON-PACK
+# EDGE-VERIFY-NON-PACK: FAIL
 
-Status: UNTESTED
+Captured 2026-10-25T21:43:04.641Z using real Google Chrome 155.0.8059.85 through Playwright.
 
-Attempted: 2026-10-25T21:18:12.690857+00:00
+Expected (verbatim AUDIT.md cell):
 
-Heavy-slot acquisition remained pending. Existing owner: `bb-audit-web 48073 2026-10-25T21:05:32Z`. Pending acquisition PID 21723 was terminated. No slot was acquired and no server or Chrome process was started. Per the user instruction to stop if busy, the check was not executed.
+Loading a non-pack JSON file (such as `{"hello":"world"}`) into `/verify` renders alert `<div className="vf-alert" role="alert"><strong>Could not verify.</strong> <filename>: expected a blackbox-pack/v1 object, got ...</div>`, hides result section, and triggers zero unhandled page errors. Zero console errors, page errors, or unexpected failed same-origin 4xx/5xx requests.
 
-Screenshot: unavailable (browser not started). Console and network logs explicitly record non-capture.
+Observed URL: http://127.0.0.1:3327/verify
 
-Fix: rerun this exact AUDIT.md row after the machine slot becomes available.
+Viewport: {"width":1280,"height":800}.
+
+3/4 assertions passed.
+
+- .vf-alert includes not-a-pack.json: expected a blackbox-pack/v1 object, got: got false; expected true
+
+Artifacts: [screenshot](screenshot.png), [checks](checks.json), [console](console.log), [network](network.log), [rendered text](body.txt). Additional named screenshots capture intermediate states.
+
+Disposition: packages/verify/src/pack.ts:83 returns "Not a Blackbox pack (expected "format": "blackbox-pack/v1")", rather than "expected a blackbox-pack/v1 object, got ...". Rejection, result clearing, and absence of crashes pass. Package edits are prohibited.

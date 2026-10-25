@@ -1,0 +1,162 @@
+{
+  "id": "WEB-FLOW-TAPE-LOG-DRAWER",
+  "start": "2026-10-25T21:43:36.661Z",
+  "url": "http://127.0.0.1:3327/evidence",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /evidence",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "log rows",
+      "actual": 10,
+      "expected": 10,
+      "ok": true
+    },
+    {
+      "name": "[role=dialog] includes Explain why · step 01",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "step 1 restores Why focus",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "[role=dialog] includes Explain why · step 02",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "step 2 restores Why focus",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "[role=dialog] includes Explain why · step 03",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "[role=dialog] includes Policy violation",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "[role=dialog] includes outcome denied",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "[role=dialog] includes Explain why · step 01",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "step 3 restores Why focus",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "[role=dialog] includes Explain why · step 04",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "step 4 restores Why focus",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "[role=dialog] includes Explain why · step 05",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "step 5 restores Why focus",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "[role=dialog] includes Explain why · step 06",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "step 6 restores Why focus",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "[role=dialog] includes Explain why · step 07",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "step 7 restores Why focus",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "[role=dialog] includes Explain why · step 08",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "step 8 restores Why focus",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "[role=dialog] includes Explain why · step 09",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "step 9 restores Why focus",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "[role=dialog] includes Explain why · step 10",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "step 10 restores Why focus",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

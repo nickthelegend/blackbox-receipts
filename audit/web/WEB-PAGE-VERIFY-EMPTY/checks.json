@@ -1,0 +1,66 @@
+{
+  "id": "WEB-PAGE-VERIFY-EMPTY",
+  "start": "2026-10-25T21:42:01.093Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "title",
+      "actual": "Verify a pack · Blackbox Receipts",
+      "expected": "Verify a pack · Blackbox Receipts",
+      "ok": true
+    },
+    {
+      "name": "h1",
+      "actual": "Check a pack in your browser.",
+      "expected": "Check a pack in your browser.",
+      "ok": true
+    },
+    {
+      "name": ".vf-kicker includes Offline verifier",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".vf-drop includes Drop a pack here, or choose a file",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "sample buttons",
+      "actual": 2,
+      "expected": 2,
+      "ok": true
+    },
+    {
+      "name": "default policy",
+      "actual": "no-secrets-read/v2",
+      "expected": "no-secrets-read/v2",
+      "ok": true
+    },
+    {
+      "name": "default signer",
+      "actual": "none",
+      "expected": "none",
+      "ok": true
+    },
+    {
+      "name": ".vf-empty includes No pack loaded yet",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

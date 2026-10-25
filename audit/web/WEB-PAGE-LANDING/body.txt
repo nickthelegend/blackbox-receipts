@@ -1,0 +1,76 @@
+Skip to content
+Blackbox
+How it works
+Proof
+Evidence
+Verify a pack
+Open recorder
+
+FLIGHT RECORDER FOR AI AGENTS
+
+Every tool call your agent makes, on the record.
+
+An MCP proxy signs a hash-chained receipt for every call. Edit or cut one, and verification names the step.
+
+Play back a real run
+Verify a pack
+AGENT RECORDER
+DO NOT EDIT · NE PAS MODIFIER
+S/N 933F87DA
+RCPT 10/10 SEALED
+ROOT C30BB904394A
+1
+2
+3
+4
+Drawn from recorded session 933f87da: 10 receipts, sealed.
+Three steps from a tool call to a verdict.
+
+01
+
+Record
+
+An MCP proxy signs a receipt for every tool call, chained to the one before.
+
+02
+
+Seal
+
+The session is sealed under a Merkle root. The key stays outside the workspace.
+
+03
+
+Verify
+
+Anyone checks the pack offline. An edit, reorder or cut names the step.
+
+A real agent asked for .env. The tape caught it.
+RECEIPTS
+10
+DENIED
+1
+TESTS
+91
+See the evidence
+What’s live today
+Live
+
+The offline verifier and both recorded runs’ packs, checked in your browser.
+
+Setup required
+
+Zetaris and Meterless need API keys. The GitLab Duo flow has not run yet.
+
+Put it between your agent and its tools.
+
+Point any MCP client at the proxy, or wrap an existing stdio MCP server.
+
+pnpm --filter @blackbox/proxy start
+node packages/proxy/dist/server.js --upstream "<stdio MCP server>"
+pnpm dev   # dashboard at localhost:3000/recorder
+Open the recorder
+Verify a pack
+
+Signatures prove what the proxy observed. They do not prove the proxy machine was uncompromised. TEE attestation is future work.
+
+BLACKBOX RECEIPTS · ED25519 · SHA-256 · MERKLE · MIT

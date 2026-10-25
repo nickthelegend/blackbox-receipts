@@ -1,0 +1,66 @@
+{
+  "id": "WEB-STATIC-BUILD",
+  "start": "2026-10-25T21:42:23.845Z",
+  "url": "http://127.0.0.1:3329/blackbox-receipts/",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP http://127.0.0.1:3329/blackbox-receipts/",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "export index.html",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "export evidence/index.html",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "export verify/index.html",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "export .nojekyll",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "excludes api",
+      "actual": false,
+      "expected": false,
+      "ok": true
+    },
+    {
+      "name": "excludes recorder",
+      "actual": false,
+      "expected": false,
+      "ok": true
+    },
+    {
+      "name": "pnpm build completed",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "export log success",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

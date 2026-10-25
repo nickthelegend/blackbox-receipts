@@ -1,0 +1,60 @@
+{
+  "id": "WEB-FLOW-VERIFY-FILE-PICKER",
+  "start": "2026-10-25T21:42:56.596Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "default policy",
+      "actual": "no-secrets-read/v2",
+      "expected": "no-secrets-read/v2",
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "PASS (key not pinned)",
+      "expected": "PASS (key not pinned)",
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "PASS (key not pinned)",
+      "expected": "PASS (key not pinned)",
+      "ok": true
+    },
+    {
+      "name": "valid chooser used",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "invalid file alerts",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "loaded cleared",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

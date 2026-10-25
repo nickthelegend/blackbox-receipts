@@ -1,0 +1,30 @@
+{
+  "id": "EDGE-WIDTH-375-DECK",
+  "start": "2026-10-25T21:43:17.879Z",
+  "url": "http://127.0.0.1:3329/docs/deck/index.html",
+  "viewport": {
+    "width": 375,
+    "height": 812
+  },
+  "checks": [
+    {
+      "name": "HTTP http://127.0.0.1:3329/docs/deck/index.html",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "all-slides no horizontal overflow (375/375)",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "all slide content fits page",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

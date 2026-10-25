@@ -1,11 +1,17 @@
-# WEB-LIVE-VERCEL-EVIDENCE
+# WEB-LIVE-VERCEL-EVIDENCE: PASS
 
-Status: UNTESTED
+Captured 2026-10-25T21:42:30.933Z using real Google Chrome 155.0.8059.85 through Playwright.
 
-Attempted: 2026-10-25T21:18:12.690857+00:00
+Expected (verbatim AUDIT.md cell):
 
-Heavy-slot acquisition remained pending. Existing owner: `bb-audit-web 48073 2026-10-25T21:05:32Z`. Pending acquisition PID 21723 was terminated. No slot was acquired and no server or Chrome process was started. Per the user instruction to stop if busy, the check was not executed.
+Returns HTTP 200, renders h1 "The tape, the checks and the limits.", strip chart playback, investigation exhibits, limits placard, and window section. Zero console errors, page errors, or unexpected failed same-origin 4xx/5xx requests.
 
-Screenshot: unavailable (browser not started). Console and network logs explicitly record non-capture.
+Observed URL: https://blackbox-landing-olive.vercel.app/evidence/
 
-Fix: rerun this exact AUDIT.md row after the machine slot becomes available.
+Viewport: {"width":1280,"height":800}.
+
+6/6 assertions passed.
+
+All asserted text, status and behavior matched. No console output, page errors or failed network requests.
+
+Artifacts: [screenshot](screenshot.png), [checks](checks.json), [console](console.log), [network](network.log), [rendered text](body.txt). Additional named screenshots capture intermediate states.

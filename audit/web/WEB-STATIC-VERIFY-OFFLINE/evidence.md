@@ -1,11 +1,17 @@
-# WEB-STATIC-VERIFY-OFFLINE
+# WEB-STATIC-VERIFY-OFFLINE: PASS
 
-Status: UNTESTED
+Captured 2026-10-25T21:42:27.791Z using real Google Chrome 155.0.8059.85 through Playwright.
 
-Attempted: 2026-10-25T21:18:12.690857+00:00
+Expected (verbatim AUDIT.md cell):
 
-Heavy-slot acquisition remained pending. Existing owner: `bb-audit-web 48073 2026-10-25T21:05:32Z`. Pending acquisition PID 21723 was terminated. No slot was acquired and no server or Chrome process was started. Per the user instruction to stop if busy, the check was not executed.
+Page `/blackbox-receipts/verify/` loads, sample packs load and verify, one-byte flip changes badge to "FAIL", 0 network requests triggered after initial asset load. Zero console errors, page errors, or unexpected failed same-origin 4xx/5xx requests.
 
-Screenshot: unavailable (browser not started). Console and network logs explicitly record non-capture.
+Observed URL: http://127.0.0.1:3329/blackbox-receipts/verify/
 
-Fix: rerun this exact AUDIT.md row after the machine slot becomes available.
+Viewport: {"width":1280,"height":800}.
+
+5/5 assertions passed.
+
+All asserted text, status and behavior matched. No console output, page errors or failed network requests.
+
+Artifacts: [screenshot](screenshot.png), [checks](checks.json), [console](console.log), [network](network.log), [rendered text](body.txt). Additional named screenshots capture intermediate states.

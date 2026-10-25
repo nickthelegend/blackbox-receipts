@@ -1,0 +1,134 @@
+{
+  "id": "WEB-PAGE-LANDING",
+  "start": "2026-10-25T21:41:58.317Z",
+  "url": "http://127.0.0.1:3327/",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "h1",
+      "actual": "Every tool call your agent makes, on the record.",
+      "expected": "Every tool call your agent makes, on the record.",
+      "ok": true
+    },
+    {
+      "name": ".ld-kicker includes Flight recorder for AI agents",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".ld-lead includes An MCP proxy signs a hash-chained receipt for every call. Edit or cut one, and verification names the step.",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "step numbers",
+      "actual": [
+        "01",
+        "02",
+        "03"
+      ],
+      "expected": [
+        "01",
+        "02",
+        "03"
+      ],
+      "ok": true
+    },
+    {
+      "name": "step labels",
+      "actual": [
+        "Record",
+        "Seal",
+        "Verify"
+      ],
+      "expected": [
+        "Record",
+        "Seal",
+        "Verify"
+      ],
+      "ok": true
+    },
+    {
+      "name": "proof names",
+      "actual": [
+        "Receipts",
+        "Denied",
+        "Tests"
+      ],
+      "expected": [
+        "Receipts",
+        "Denied",
+        "Tests"
+      ],
+      "ok": true
+    },
+    {
+      "name": "proof counts",
+      "actual": [
+        "10",
+        "1",
+        "91"
+      ],
+      "expected": [
+        "10",
+        "1",
+        "91"
+      ],
+      "ok": true
+    },
+    {
+      "name": "#live includes Live",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "#live includes Setup required",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "recorder SVG",
+      "actual": 1,
+      "expected": 1,
+      "ok": true
+    },
+    {
+      "name": ".ld-unit-cap includes Drawn from recorded session 933f87da: 10 receipts, sealed.",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".ld-install-box includes pnpm --filter @blackbox/proxy start",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".ld-install-box includes node packages/proxy/dist/server.js",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "footer",
+      "actual": 1,
+      "expected": 1,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

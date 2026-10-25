@@ -1,0 +1,42 @@
+{
+  "id": "EDGE-WIDTH-375-VERIFY",
+  "start": "2026-10-25T21:43:16.372Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 375,
+    "height": 812
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "empty no horizontal overflow (375/375)",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "PASS",
+      "expected": "PASS",
+      "ok": true
+    },
+    {
+      "name": "loaded-with-custom-key no horizontal overflow (375/375)",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "error no horizontal overflow (375/375)",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

@@ -1,0 +1,158 @@
+{
+  "id": "WEB-PAGE-EVIDENCE",
+  "start": "2026-10-25T21:41:59.717Z",
+  "url": "http://127.0.0.1:3327/evidence",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /evidence",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "h1",
+      "actual": "The tape, the checks and the limits.",
+      "expected": "The tape, the checks and the limits.",
+      "ok": true
+    },
+    {
+      "name": ".ld-kicker includes Evidence · session 933f87da",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".ld-strip includes Agent flight recorder",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".ld-strip includes Session 933f87da",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".ld-strip includes 10 receipts",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".ld-strip includes Sealed 2026-10-21 04:34:03 UTC",
+      "actual": false,
+      "expected": true,
+      "ok": false
+    },
+    {
+      "name": ".ld-strip includes Denied at step 03",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".ld-parts includes Signing key",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".ld-parts includes Tape",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".ld-parts includes Seal",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".ld-parts includes Locator",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "body includes Fig. 1",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "body includes 01 · Tape playback",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "body includes 02 · Investigation",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "body includes 03 · Limitations placard",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "body includes 04 · Built in the window",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "limits count",
+      "actual": 7,
+      "expected": 7,
+      "ok": true
+    },
+    {
+      "name": "#limits includes Setup required",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "#limits includes Not run yet",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "window count",
+      "actual": 8,
+      "expected": 8,
+      "ok": true
+    },
+    {
+      "name": ".ld-window-lead includes A case variant of .env is a denied read, not a PASS",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".ld-window-lead includes Before",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".ld-window-lead includes After",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    }
+  ],
+  "failures": [
+    ".ld-strip includes Sealed 2026-10-21 04:34:03 UTC: got false; expected true"
+  ]
+}

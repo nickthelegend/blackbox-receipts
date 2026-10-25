@@ -1,0 +1,36 @@
+{
+  "id": "EDGE-VERIFY-OBJECT-STEP",
+  "start": "2026-10-25T21:43:08.667Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "headline",
+      "actual": "FAIL format at step 2: receipt step is not an integer",
+      "expected": "FAIL format at step 2: receipt step is not an integer",
+      "ok": true
+    },
+    {
+      "name": "steps rendered",
+      "actual": 14,
+      "expected": 14,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

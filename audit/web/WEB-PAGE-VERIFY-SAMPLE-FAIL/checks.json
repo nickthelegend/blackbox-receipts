@@ -1,0 +1,62 @@
+{
+  "id": "WEB-PAGE-VERIFY-SAMPLE-FAIL",
+  "start": "2026-10-25T21:42:03.995Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "headline",
+      "actual": "FAIL no-secrets-read/v1 at step 3: No proof: step 3 (read_file .env) is signed as a secret access",
+      "expected": "FAIL no-secrets-read at step 3: read_file touched secret path matching \".env*\"",
+      "ok": false
+    },
+    {
+      "name": "step count",
+      "actual": 10,
+      "expected": 10,
+      "ok": true
+    },
+    {
+      "name": ".vf-step-warn includes 03",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".vf-step-warn includes Secret access",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".vf-step-warn includes denied",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "requests after initial load",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    }
+  ],
+  "failures": [
+    "headline: got \"FAIL no-secrets-read/v1 at step 3: No proof: step 3 (read_file .env) is signed as a secret access\"; expected \"FAIL no-secrets-read at step 3: read_file touched secret path matching \\\".env*\\\"\""
+  ]
+}

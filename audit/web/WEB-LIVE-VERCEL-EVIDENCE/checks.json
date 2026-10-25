@@ -1,0 +1,48 @@
+{
+  "id": "WEB-LIVE-VERCEL-EVIDENCE",
+  "start": "2026-10-25T21:42:30.933Z",
+  "url": "https://blackbox-landing-olive.vercel.app/evidence/",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP https://blackbox-landing-olive.vercel.app/evidence/",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "h1",
+      "actual": "The tape, the checks and the limits.",
+      "expected": "The tape, the checks and the limits.",
+      "ok": true
+    },
+    {
+      "name": "tape",
+      "actual": 10,
+      "expected": 10,
+      "ok": true
+    },
+    {
+      "name": "exhibits",
+      "actual": 2,
+      "expected": 2,
+      "ok": true
+    },
+    {
+      "name": "limits",
+      "actual": 7,
+      "expected": 7,
+      "ok": true
+    },
+    {
+      "name": "window",
+      "actual": 8,
+      "expected": 8,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

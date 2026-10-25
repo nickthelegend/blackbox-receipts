@@ -1,0 +1,48 @@
+
+> blackbox-receipts@0.1.0 build:pages /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-web-pages-retr
+> pnpm --filter "@blackbox/web^..." build && node scripts/build-pages.mjs -- --base-path /blackbox-receipts
+
+Scope: 5 of 7 workspace projects
+packages/meterless build$ tsc -p tsconfig.json
+packages/zetaris build$ tsc -p tsconfig.json
+packages/verify build$ tsc -p tsconfig.json && tsc -p tsconfig.bin.json
+packages/meterless build: Done
+packages/zetaris build: Done
+packages/verify build: Done
+packages/receipts build$ tsc -p tsconfig.json
+packages/receipts build: Done
+packages/proxy build$ tsc -p tsconfig.json
+packages/proxy build: Done
+   ▲ Next.js 15.5.28
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 2.3s
+   Linting and checking validity of types ...
+
+ ⚠ The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/app/api-reference/config/eslint#migrating-existing-config
+   Collecting page data ...
+   Generating static pages (0/7) ...
+   Generating static pages (1/7) 
+   Generating static pages (3/7) 
+   Generating static pages (5/7) 
+ ✓ Generating static pages (7/7)
+   Finalizing page optimization ...
+   Collecting build traces ...
+   Exporting (0/2) ...
+ ✓ Exporting (2/2)
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                      168 B         103 kB
+├ ○ /_not-found                             1 kB         103 kB
+├ ○ /evidence                            4.57 kB         135 kB
+├ ○ /icon.svg                                0 B            0 B
+└ ○ /verify                              4.98 kB         135 kB
++ First Load JS shared by all             102 kB
+  ├ chunks/168-083376ca67024202.js       46.3 kB
+  ├ chunks/f219cc19-2923df62dc2c6f29.js  54.2 kB
+  └ other shared chunks (total)          1.94 kB
+
+
+○  (Static)  prerendered as static content
+
+build-pages: 33 files in public for base path "/blackbox-receipts" (landing + /verify; recorder and API left out)

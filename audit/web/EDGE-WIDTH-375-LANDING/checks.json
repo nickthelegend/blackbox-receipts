@@ -1,0 +1,24 @@
+{
+  "id": "EDGE-WIDTH-375-LANDING",
+  "start": "2026-10-25T21:43:12.896Z",
+  "url": "http://127.0.0.1:3327/",
+  "viewport": {
+    "width": 375,
+    "height": 812
+  },
+  "checks": [
+    {
+      "name": "HTTP /",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "all-sections no horizontal overflow (375/375)",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

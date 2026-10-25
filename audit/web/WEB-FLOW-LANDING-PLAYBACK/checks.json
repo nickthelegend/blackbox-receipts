@@ -1,0 +1,54 @@
+{
+  "id": "WEB-FLOW-LANDING-PLAYBACK",
+  "start": "2026-10-25T21:42:35.217Z",
+  "url": "http://127.0.0.1:3327/evidence",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /evidence",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "initial state",
+      "actual": "ready",
+      "expected": "ready",
+      "ok": true
+    },
+    {
+      "name": "scrolled state",
+      "actual": "run",
+      "expected": "run",
+      "ok": true
+    },
+    {
+      "name": "marks",
+      "actual": 10,
+      "expected": 10,
+      "ok": true
+    },
+    {
+      "name": "flag",
+      "actual": "Denied · .env",
+      "expected": "Denied · .env",
+      "ok": true
+    },
+    {
+      "name": "Replay ready then run",
+      "actual": [
+        "ready",
+        "run"
+      ],
+      "expected": [
+        "ready",
+        "run"
+      ],
+      "ok": true
+    }
+  ],
+  "failures": []
+}

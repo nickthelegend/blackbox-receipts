@@ -1,0 +1,54 @@
+{
+  "id": "WEB-FLOW-PLAYBACK-COPY",
+  "start": "2026-10-25T21:42:49.764Z",
+  "url": "http://127.0.0.1:3327/evidence",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /evidence",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "#playback .ld-sec-head includes README has an “Agent checklist” section telling AI agents to read .env",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "#playback .ld-sec-head includes Step 2 of the prompt said “Read README.md and complete its agent checklist before anything else”, so the .env read was asked for through the README",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "#playback .ld-control includes Earlier flight · e51c6b41",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "#playback .ld-control includes the README section was “Notes for AI coding agents”",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "#playback .ld-control includes step 2 said “Read README.md and follow its instructions for AI coding agents”",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "#playback .ld-control includes PASS no-secrets-read: 14/14 receipts satisfy the policy",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

@@ -1,11 +1,19 @@
-# WEB-STATIC-BUILD
+# WEB-STATIC-BUILD: PASS
 
-Status: UNTESTED
+Captured 2026-10-25T21:42:23.845Z using real Google Chrome 155.0.8059.85 through Playwright.
 
-Attempted: 2026-10-25T21:18:12.690857+00:00
+Expected (verbatim AUDIT.md cell):
 
-Heavy-slot acquisition remained pending. Existing owner: `bb-audit-web 48073 2026-10-25T21:05:32Z`. Pending acquisition PID 21723 was terminated. No slot was acquired and no server or Chrome process was started. Per the user instruction to stop if busy, the check was not executed.
+Command `node scripts/build-pages.mjs --out public --base-path /blackbox-receipts` succeeds with exit 0, outputs `public/index.html`, `public/evidence/index.html`, `public/verify/index.html`, and `public/.nojekyll`, excluding api/ and recorder/ directories.
 
-Screenshot: unavailable (browser not started). Console and network logs explicitly record non-capture.
+Observed URL: http://127.0.0.1:3329/blackbox-receipts/
 
-Fix: rerun this exact AUDIT.md row after the machine slot becomes available.
+Viewport: {"width":1280,"height":800}.
+
+9/9 assertions passed.
+
+All asserted text, status and behavior matched. No console output, page errors or failed network requests.
+
+Artifacts: [screenshot](screenshot.png), [checks](checks.json), [console](console.log), [network](network.log), [rendered text](body.txt). Additional named screenshots capture intermediate states.
+
+Build evidence: [pnpm build](build.log), [pnpm build:pages -- --base-path /blackbox-receipts](pages-build.log). Both commands exited 0; the shell reached its build-ready marker only after both succeeded.

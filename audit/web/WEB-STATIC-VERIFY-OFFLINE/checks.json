@@ -1,0 +1,42 @@
+{
+  "id": "WEB-STATIC-VERIFY-OFFLINE",
+  "start": "2026-10-25T21:42:27.791Z",
+  "url": "http://127.0.0.1:3329/blackbox-receipts/verify/",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP http://127.0.0.1:3329/blackbox-receipts/verify/",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "PASS",
+      "expected": "PASS",
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "requests after initial load",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

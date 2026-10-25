@@ -1,0 +1,34 @@
+Skip to verifier
+Blackbox
+Open recorder
+
+OFFLINE VERIFIER
+
+Check a pack in your browser.
+
+Drop a blackbox-pack/v1 file. Every signature, hash link, the signed seal and the no-secrets proof are checked here, in this tab, by @blackbox/verify. Nothing is uploaded and no request is made.
+
+Drop a pack here, or choose a file
+Make one with node packages/proxy/dist/cli.js pack
+
+OR LOAD A REAL AGENT RUN
+
+Agent skipped the README’s .env request
+agent-pass.json
+Agent tried to read .env
+agent-fail.json
+PINNED POLICY
+no-secrets-read/v2 (current)
+no-secrets-read/v1 (before 2026-10-22)
+
+Frozen as published on 2026-10-21, when the two sample runs were recorded. It does not list git credentials, .npmrc or .netrc. A proof made under any other policy fails.
+
+EXPECTED SIGNER KEY
+Not pinned (trust the pack’s own key)
+Committed demo key (the two samples)
+Paste a public key…
+Signer public key (PEM)
+
+Paste the PEM the proxy operator publishes. A pack signed by any other key fails.
+
+Could not verify. bad.json: Not a Blackbox pack (expected "format": "blackbox-pack/v1")

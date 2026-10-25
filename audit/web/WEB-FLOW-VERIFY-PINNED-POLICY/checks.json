@@ -1,0 +1,62 @@
+{
+  "id": "WEB-FLOW-VERIFY-PINNED-POLICY",
+  "start": "2026-10-25T21:42:59.630Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "default policy",
+      "actual": "no-secrets-read/v2",
+      "expected": "no-secrets-read/v2",
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "PASS",
+      "expected": "PASS",
+      "ok": true
+    },
+    {
+      "name": "sample policy",
+      "actual": "no-secrets-read/v1",
+      "expected": "no-secrets-read/v1",
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "policy mismatch headline",
+      "actual": "FAIL property: Proof was made under policy \"no-secrets-read/v1\" (720836167c0f), not the pinned policy (d1e72d1a6c22)",
+      "expected": "FAIL property: Proof was made under policy \"no-secrets-read/v1\" (720836167c0f), not the pinned policy",
+      "ok": false
+    },
+    {
+      "name": "tamper survives no-secrets-read/v2",
+      "actual": "FAIL at step 5: Receipt contents were changed",
+      "expected": "FAIL at step 5: Receipt contents were changed",
+      "ok": true
+    },
+    {
+      "name": "tamper survives no-secrets-read/v1",
+      "actual": "FAIL at step 5: Receipt contents were changed",
+      "expected": "FAIL at step 5: Receipt contents were changed",
+      "ok": true
+    }
+  ],
+  "failures": [
+    "policy mismatch headline: got \"FAIL property: Proof was made under policy \\\"no-secrets-read/v1\\\" (720836167c0f), not the pinned policy (d1e72d1a6c22)\"; expected \"FAIL property: Proof was made under policy \\\"no-secrets-read/v1\\\" (720836167c0f), not the pinned policy\""
+  ]
+}

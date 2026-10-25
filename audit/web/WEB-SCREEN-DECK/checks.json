@@ -1,0 +1,66 @@
+{
+  "id": "WEB-SCREEN-DECK",
+  "start": "2026-10-25T21:42:06.941Z",
+  "url": "http://127.0.0.1:3329/docs/deck/index.html",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP http://127.0.0.1:3329/docs/deck/index.html",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "title",
+      "actual": "Blackbox Receipts",
+      "expected": "Blackbox Receipts",
+      "ok": true
+    },
+    {
+      "name": "slide count",
+      "actual": 11,
+      "expected": 11,
+      "ok": true
+    },
+    {
+      "name": "all slides 16:9",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "first title",
+      "actual": "A flight recorder for AI agents.",
+      "expected": "A flight recorder for AI agents.",
+      "ok": true
+    },
+    {
+      "name": ".slide:first-child .kicker includes Blackbox Receipts · Open Agent (Wildcard) · GitLab Transcend",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "lead present",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "SVG unit",
+      "actual": 1,
+      "expected": 1,
+      "ok": true
+    },
+    {
+      "name": "source footers",
+      "actual": 11,
+      "expected": 11,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

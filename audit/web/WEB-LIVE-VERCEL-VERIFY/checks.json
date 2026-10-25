@@ -1,0 +1,48 @@
+{
+  "id": "WEB-LIVE-VERCEL-VERIFY",
+  "start": "2026-10-25T21:42:32.481Z",
+  "url": "https://blackbox-landing-olive.vercel.app/verify/",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP https://blackbox-landing-olive.vercel.app/verify/",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "h1",
+      "actual": "Check a pack in your browser.",
+      "expected": "Check a pack in your browser.",
+      "ok": true
+    },
+    {
+      "name": ".vf-drop includes Drop a pack here, or choose a file",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "samples",
+      "actual": 2,
+      "expected": 2,
+      "ok": true
+    },
+    {
+      "name": "policy selector",
+      "actual": 1,
+      "expected": 1,
+      "ok": true
+    },
+    {
+      "name": "key selector",
+      "actual": 1,
+      "expected": 1,
+      "ok": true
+    }
+  ],
+  "failures": []
+}
