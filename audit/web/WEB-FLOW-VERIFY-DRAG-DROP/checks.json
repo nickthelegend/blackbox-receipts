@@ -1,0 +1,42 @@
+{
+  "id": "WEB-FLOW-VERIFY-DRAG-DROP",
+  "start": "2026-10-25T21:42:58.127Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "dragover class",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "PASS (key not pinned)",
+      "expected": "PASS (key not pinned)",
+      "ok": true
+    },
+    {
+      "name": "drop clears class",
+      "actual": false,
+      "expected": false,
+      "ok": true
+    },
+    {
+      "name": ".vf-meta includes dropped-pack.json",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

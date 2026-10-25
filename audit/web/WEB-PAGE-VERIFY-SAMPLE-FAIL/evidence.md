@@ -1,11 +1,19 @@
-# WEB-PAGE-VERIFY-SAMPLE-FAIL
+# WEB-PAGE-VERIFY-SAMPLE-FAIL: FAIL
 
-Status: UNTESTED
+Captured 2026-10-25T21:42:03.995Z using real Google Chrome 155.0.8059.85 through Playwright.
 
-Attempted: 2026-10-25T21:18:12.690857+00:00
+Expected (verbatim AUDIT.md cell):
 
-Heavy-slot acquisition remained pending. Existing owner: `bb-audit-web 48073 2026-10-25T21:05:32Z`. Pending acquisition PID 21723 was terminated. No slot was acquired and no server or Chrome process was started. Per the user instruction to stop if busy, the check was not executed.
+Clicking "Agent tried to read .env" loads pack, badge displays "FAIL", headline displays 'FAIL no-secrets-read at step 3: read_file touched secret path matching ".env*"', 10 steps rendered with step 03 marked Secret access (outcome denied), 0 network requests after load. Zero console errors, page errors, or unexpected failed same-origin 4xx/5xx requests.
 
-Screenshot: unavailable (browser not started). Console and network logs explicitly record non-capture.
+Observed URL: http://127.0.0.1:3327/verify
 
-Fix: rerun this exact AUDIT.md row after the machine slot becomes available.
+Viewport: {"width":1280,"height":800}.
+
+7/8 assertions passed.
+
+- headline: got "FAIL no-secrets-read/v1 at step 3: No proof: step 3 (read_file .env) is signed as a secret access"; expected "FAIL no-secrets-read at step 3: read_file touched secret path matching \".env*\""
+
+Artifacts: [screenshot](screenshot.png), [checks](checks.json), [console](console.log), [network](network.log), [rendered text](body.txt). Additional named screenshots capture intermediate states.
+
+Disposition: packages/verify/src/pack.ts returns "FAIL no-secrets-read/v1 at step 3: No proof: step 3 (read_file .env) is signed as a secret access", rather than the expected headline. Package edits are prohibited; the UI displays the verifier result faithfully.

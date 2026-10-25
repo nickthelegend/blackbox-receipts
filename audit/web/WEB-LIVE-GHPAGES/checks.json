@@ -1,0 +1,48 @@
+{
+  "id": "WEB-LIVE-GHPAGES",
+  "start": "2026-10-25T21:42:33.876Z",
+  "url": "https://nickthelegend.github.io/blackbox-receipts/",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP https://nickthelegend.github.io/blackbox-receipts/",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "h1",
+      "actual": "Every tool call your agent makes, on the record.",
+      "expected": "Every tool call your agent makes, on the record.",
+      "ok": true
+    },
+    {
+      "name": "base path",
+      "actual": "/blackbox-receipts/",
+      "expected": "/blackbox-receipts/",
+      "ok": true
+    },
+    {
+      "name": "recorder href",
+      "actual": "https://github.com/nickthelegend/blackbox-receipts#setup",
+      "expected": "https://github.com/nickthelegend/blackbox-receipts#setup",
+      "ok": true
+    },
+    {
+      "name": "evidence href",
+      "actual": "/blackbox-receipts/evidence/",
+      "expected": "/blackbox-receipts/evidence/",
+      "ok": true
+    },
+    {
+      "name": "verify href",
+      "actual": "/blackbox-receipts/verify/",
+      "expected": "/blackbox-receipts/verify/",
+      "ok": true
+    }
+  ],
+  "failures": []
+}

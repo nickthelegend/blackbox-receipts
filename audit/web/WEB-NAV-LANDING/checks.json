@@ -1,0 +1,96 @@
+{
+  "id": "WEB-NAV-LANDING",
+  "start": "2026-10-25T21:42:08.387Z",
+  "url": "http://127.0.0.1:3327/",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "skip focused",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "skip target",
+      "actual": "#main",
+      "expected": "#main",
+      "ok": true
+    },
+    {
+      "name": "skip activates",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "How it works hash",
+      "actual": "#how",
+      "expected": "#how",
+      "ok": true
+    },
+    {
+      "name": "#how in viewport",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "Proof hash",
+      "actual": "#proof",
+      "expected": "#proof",
+      "ok": true
+    },
+    {
+      "name": "#proof in viewport",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "Evidence navigation",
+      "actual": "/evidence",
+      "expected": "/evidence",
+      "ok": true
+    },
+    {
+      "name": "HTTP /",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "Verify navigation",
+      "actual": "/verify",
+      "expected": "/verify",
+      "ok": true
+    },
+    {
+      "name": "HTTP /",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "recorder navigation",
+      "actual": "/recorder",
+      "expected": "/recorder",
+      "ok": true
+    },
+    {
+      "name": "logo navigation",
+      "actual": "/",
+      "expected": "/",
+      "ok": true
+    }
+  ],
+  "failures": []
+}

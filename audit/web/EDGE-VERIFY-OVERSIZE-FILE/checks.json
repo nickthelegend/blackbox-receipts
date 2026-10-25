@@ -1,0 +1,30 @@
+{
+  "id": "EDGE-VERIFY-OVERSIZE-FILE",
+  "start": "2026-10-25T21:43:10.189Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": ".vf-alert includes oversize.json: larger than 20 MB, which is not a pack this page will read",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "loaded cleared",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

@@ -1,0 +1,36 @@
+{
+  "id": "EDGE-VERIFY-NULL-RECEIPT",
+  "start": "2026-10-25T21:43:05.910Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "headline",
+      "actual": "FAIL format at step 15: receipt is not an object",
+      "expected": "FAIL format at step 15: receipt is not an object",
+      "ok": true
+    },
+    {
+      "name": "broken step",
+      "actual": "15",
+      "expected": "15",
+      "ok": true
+    }
+  ],
+  "failures": []
+}

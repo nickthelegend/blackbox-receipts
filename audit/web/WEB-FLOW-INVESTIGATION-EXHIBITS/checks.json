@@ -1,0 +1,90 @@
+{
+  "id": "WEB-FLOW-INVESTIGATION-EXHIBITS",
+  "start": "2026-10-25T21:42:54.312Z",
+  "url": "http://127.0.0.1:3327/evidence",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /evidence",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "A stamp",
+      "actual": "Fail",
+      "expected": "Fail",
+      "ok": true
+    },
+    {
+      "name": ".iv-headline includes step 3",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "A cells",
+      "actual": 10,
+      "expected": 10,
+      "ok": true
+    },
+    {
+      "name": ".iv-edit includes inside step 7's resultHash",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".iv-cell.is-broken includes 07",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "edit removed",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    },
+    {
+      "name": "broken removed",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    },
+    {
+      "name": "B stamp",
+      "actual": "Pass",
+      "expected": "Pass",
+      "ok": true
+    },
+    {
+      "name": "B checks",
+      "actual": 5,
+      "expected": 5,
+      "ok": true
+    },
+    {
+      "name": ".iv-meta includes policy no-secrets-read/v1, the one in force when this run was recorded",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "B tampered stamp",
+      "actual": "Fail",
+      "expected": "Fail",
+      "ok": true
+    },
+    {
+      "name": "B broken cell",
+      "actual": 1,
+      "expected": 1,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

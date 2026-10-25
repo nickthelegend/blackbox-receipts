@@ -1,0 +1,96 @@
+{
+  "id": "WEB-FLOW-VERIFY-KEY-PINNING",
+  "start": "2026-10-25T21:43:01.119Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "default signer",
+      "actual": "none",
+      "expected": "none",
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "PASS (key not pinned)",
+      "expected": "PASS (key not pinned)",
+      "ok": true
+    },
+    {
+      "name": "amber class",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "fingerprint",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "different key headline",
+      "actual": "FAIL: Pack public key does not match the pinned key",
+      "expected": "FAIL: Pack public key does not match the pinned key",
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "PASS",
+      "expected": "PASS",
+      "ok": true
+    },
+    {
+      "name": "green class",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "PASS",
+      "expected": "PASS",
+      "ok": true
+    },
+    {
+      "name": "sample repins demo",
+      "actual": "demo",
+      "expected": "demo",
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "PASS (key not pinned)",
+      "expected": "PASS (key not pinned)",
+      "ok": true
+    },
+    {
+      "name": "own pack resets none",
+      "actual": "none",
+      "expected": "none",
+      "ok": true
+    }
+  ],
+  "failures": []
+}

@@ -1,0 +1,38 @@
+{
+  "id": "EDGE-VERIFY-NON-PACK",
+  "start": "2026-10-25T21:43:04.641Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": ".vf-alert includes Could not verify.",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".vf-alert includes not-a-pack.json: expected a blackbox-pack/v1 object, got",
+      "actual": false,
+      "expected": true,
+      "ok": false
+    },
+    {
+      "name": "result hidden",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    }
+  ],
+  "failures": [
+    ".vf-alert includes not-a-pack.json: expected a blackbox-pack/v1 object, got: got false; expected true"
+  ]
+}

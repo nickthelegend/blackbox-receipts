@@ -1,11 +1,17 @@
-# EDGE-VERIFY-OVERSIZE-FILE
+# EDGE-VERIFY-OVERSIZE-FILE: PASS
 
-Status: UNTESTED
+Captured 2026-10-25T21:43:10.189Z using real Google Chrome 155.0.8059.85 through Playwright.
 
-Attempted: 2026-10-25T21:18:12.690857+00:00
+Expected (verbatim AUDIT.md cell):
 
-Heavy-slot acquisition remained pending. Existing owner: `bb-audit-web 48073 2026-10-25T21:05:32Z`. Pending acquisition PID 21723 was terminated. No slot was acquired and no server or Chrome process was started. Per the user instruction to stop if busy, the check was not executed.
+Selecting a file larger than 20,000,000 bytes in `/verify` sets error alert `<file.name>: larger than 20 MB, which is not a pack this page will read`, clears loaded pack state, and triggers zero unhandled page errors. Zero console errors, page errors, or unexpected failed same-origin 4xx/5xx requests.
 
-Screenshot: unavailable (browser not started). Console and network logs explicitly record non-capture.
+Observed URL: http://127.0.0.1:3327/verify
 
-Fix: rerun this exact AUDIT.md row after the machine slot becomes available.
+Viewport: {"width":1280,"height":800}.
+
+3/3 assertions passed.
+
+All asserted text, status and behavior matched. No console output, page errors or failed network requests.
+
+Artifacts: [screenshot](screenshot.png), [checks](checks.json), [console](console.log), [network](network.log), [rendered text](body.txt). Additional named screenshots capture intermediate states.

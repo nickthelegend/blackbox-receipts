@@ -1,0 +1,44 @@
+{
+  "id": "WEB-PAGE-VERIFY-ERROR",
+  "start": "2026-10-25T21:42:05.598Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "boundary heading",
+      "actual": "Could not verify",
+      "expected": "Could not verify",
+      "ok": true
+    },
+    {
+      "name": ".vf-lead includes This pack could not be displayed, so no verdict was reached. Nothing was uploaded; the file never left this tab.",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": ".vf-alert includes Could not verify: Audit render fault",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "reset renders verifier",
+      "actual": "Check a pack in your browser.",
+      "expected": "Check a pack in your browser.",
+      "ok": true
+    }
+  ],
+  "failures": [
+    "error: Error: Audit render fault\n    at String.padStart (eval at evaluate (:311:30), <anonymous>:1:196)\n    at http://127.0.0.1:3327/_next/static/chunks/app/verify/page-425545fcc731ceac.js:1:12523\n    at Array.map (<anonymous>)\n    at x (http://127.0.0.1:3327/_next/static/chunks/app/verify/page-425545fcc731ceac.js:1:12350)\n    at l9 (http://127.0.0.1:3327/_next/static/chunks/d6e00b03-13849fdf938b9eba.js:1:51124)\n    at o_ (http://127.0.0.1:3327/_next/static/chunks/d6e00b03-13849fdf938b9eba.js:1:70984)\n    at oq (http://127.0.0.1:3327/_next/static/chunks/d6e00b03-13849fdf938b9eba.js:1:82014)\n    at ik (http://127.0.0.1:3327/_next/static/chunks/d6e00b03-13849fdf938b9eba.js:1:114676)\n    at http://127.0.0.1:3327/_next/static/chunks/d6e00b03-13849fdf938b9eba.js:1:114521\n    at ib (http://127.0.0.1:3327/_next/static/chunks/d6e00b03-13849fdf938b9eba.js:1:114529)"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "id": "WEB-FLOW-REDUCED-MOTION",
+  "start": "2026-10-25T21:43:03.308Z",
+  "url": "http://127.0.0.1:3327/evidence",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /evidence",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "static state",
+      "actual": "static",
+      "expected": "static",
+      "ok": true
+    },
+    {
+      "name": "no Replay",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    },
+    {
+      "name": "10 visible marks",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

@@ -1,11 +1,17 @@
-# WEB-PAGE-VERIFY-SAMPLE-PASS
+# WEB-PAGE-VERIFY-SAMPLE-PASS: PASS
 
-Status: UNTESTED
+Captured 2026-10-25T21:42:02.398Z using real Google Chrome 155.0.8059.85 through Playwright.
 
-Attempted: 2026-10-25T21:18:12.690857+00:00
+Expected (verbatim AUDIT.md cell):
 
-Heavy-slot acquisition remained pending. Existing owner: `bb-audit-web 48073 2026-10-25T21:05:32Z`. Pending acquisition PID 21723 was terminated. No slot was acquired and no server or Chrome process was started. Per the user instruction to stop if busy, the check was not executed.
+Clicking "Agent skipped the README’s .env request" loads pack, badge displays "PASS", headline displays "PASS no-secrets-read/v1: 14 receipts, chain intact, seal matches, proof verified", 5 checks display is-ok ("Pack format", "Public key", "Signatures and hash links", "Signed seal (nothing cut off)", "No-secrets proof"), receipts list shows 14 signed steps, Merkle root displays, 0 network requests after load. Zero console errors, page errors, or unexpected failed same-origin 4xx/5xx requests.
 
-Screenshot: unavailable (browser not started). Console and network logs explicitly record non-capture.
+Observed URL: http://127.0.0.1:3327/verify
 
-Fix: rerun this exact AUDIT.md row after the machine slot becomes available.
+Viewport: {"width":1280,"height":800}.
+
+9/9 assertions passed.
+
+All asserted text, status and behavior matched. No console output, page errors or failed network requests.
+
+Artifacts: [screenshot](screenshot.png), [checks](checks.json), [console](console.log), [network](network.log), [rendered text](body.txt). Additional named screenshots capture intermediate states.

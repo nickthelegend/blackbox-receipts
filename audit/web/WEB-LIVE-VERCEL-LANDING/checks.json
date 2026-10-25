@@ -1,0 +1,44 @@
+{
+  "id": "WEB-LIVE-VERCEL-LANDING",
+  "start": "2026-10-25T21:42:29.564Z",
+  "url": "https://blackbox-landing-olive.vercel.app/",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP https://blackbox-landing-olive.vercel.app",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "h1",
+      "actual": "Every tool call your agent makes, on the record.",
+      "expected": "Every tool call your agent makes, on the record.",
+      "ok": true
+    },
+    {
+      "name": "proof counts",
+      "actual": [
+        "10",
+        "1",
+        "91"
+      ],
+      "expected": [
+        "10",
+        "1",
+        "91"
+      ],
+      "ok": true
+    },
+    {
+      "name": "navigation",
+      "actual": 4,
+      "expected": 4,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

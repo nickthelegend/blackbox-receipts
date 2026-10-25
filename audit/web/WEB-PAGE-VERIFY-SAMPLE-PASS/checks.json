@@ -1,0 +1,78 @@
+{
+  "id": "WEB-PAGE-VERIFY-SAMPLE-PASS",
+  "start": "2026-10-25T21:42:02.398Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "PASS",
+      "expected": "PASS",
+      "ok": true
+    },
+    {
+      "name": "headline",
+      "actual": "PASS no-secrets-read/v1: 14 receipts, chain intact, seal matches, proof verified",
+      "expected": "PASS no-secrets-read/v1: 14 receipts, chain intact, seal matches, proof verified",
+      "ok": true
+    },
+    {
+      "name": "five checks ok",
+      "actual": 5,
+      "expected": 5,
+      "ok": true
+    },
+    {
+      "name": "check labels",
+      "actual": [
+        "Pack format",
+        "Public key",
+        "Signatures and hash links",
+        "Signed seal (nothing cut off)",
+        "No-secrets proof"
+      ],
+      "expected": [
+        "Pack format",
+        "Public key",
+        "Signatures and hash links",
+        "Signed seal (nothing cut off)",
+        "No-secrets proof"
+      ],
+      "ok": true
+    },
+    {
+      "name": "steps",
+      "actual": 14,
+      "expected": 14,
+      "ok": true
+    },
+    {
+      "name": "signed steps",
+      "actual": 14,
+      "expected": 14,
+      "ok": true
+    },
+    {
+      "name": ".vf-root includes Merkle root",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "requests after initial load",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

@@ -1,0 +1,36 @@
+{
+  "id": "WEB-STATIC-LANDING-LINK",
+  "start": "2026-10-25T21:42:26.199Z",
+  "url": "http://127.0.0.1:3329/blackbox-receipts/evidence/#playback",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP http://127.0.0.1:3329/blackbox-receipts/",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "href",
+      "actual": "/blackbox-receipts/evidence/#playback",
+      "expected": "/blackbox-receipts/evidence/#playback",
+      "ok": true
+    },
+    {
+      "name": "destination",
+      "actual": "http://127.0.0.1:3329/blackbox-receipts/evidence/#playback",
+      "expected": "http://127.0.0.1:3329/blackbox-receipts/evidence/#playback",
+      "ok": true
+    },
+    {
+      "name": "playback in viewport",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    }
+  ],
+  "failures": []
+}

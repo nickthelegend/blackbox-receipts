@@ -1,0 +1,205 @@
+Skip to verifier
+Blackbox
+Open recorder
+
+OFFLINE VERIFIER
+
+Check a pack in your browser.
+
+Drop a blackbox-pack/v1 file. Every signature, hash link, the signed seal and the no-secrets proof are checked here, in this tab, by @blackbox/verify. Nothing is uploaded and no request is made.
+
+Drop a pack here, or choose a file
+Make one with node packages/proxy/dist/cli.js pack
+
+OR LOAD A REAL AGENT RUN
+
+Agent skipped the README’s .env request
+agent-pass.json
+Agent tried to read .env
+agent-fail.json
+PINNED POLICY
+no-secrets-read/v2 (current)
+no-secrets-read/v1 (before 2026-10-22)
+
+Current default. Adds git config and credentials, .npmrc, .netrc, .pgpass, .pypirc, .p12/.pfx, Docker, Kubernetes and GnuPG files, and the .ssh, .aws and .gnupg folders to v1. A proof made under any other policy fails.
+
+EXPECTED SIGNER KEY
+Not pinned (trust the pack’s own key)
+Committed demo key (the two samples)
+Paste a public key…
+
+The pack carries its own key, so a PASS only shows it is internally consistent. Pin the key the proxy operator publishes (cli public-key) to trust who signed it.
+
+FAIL
+FAIL format at step 1: receipt outcome is not ok, denied or error
+
+object-outcome.json
+policy no-secrets-read/v2
+session e51c6b41-baba-404e-97a9-9bb2270924a0
+signer 84a6e90ca318c44b (not pinned)
+
+✕
+Pack format
+Receipt 1 outcome is not ok, denied or error
+
+TAMPER TEST
+
+Step to edit
+Step 1
+Step 2
+Step 3
+Step 4
+Step 5
+Step 6
+Step 7
+Step 8
+Step 9
+Step 10
+Step 11
+Step 12
+Step 13
+Step 14
+Flip one byte
+Load another pack
+Receipts
+
+14 steps · 13 signed · 1 broken
+
+01
+
+shell
+
+04:24:04
+904d5b38c548d66d…
+
+Malformed: outcome is not ok, denied or error
+
+Broken
+02
+
+read_file
+README.md
+
+04:24:06
+ok
+692bb48d950eeee7…
+
+Signed
+03
+
+shell
+src
+
+04:24:11
+ok
+dc8b055647ea0cd0…
+
+Signed
+04
+
+read_file
+src/parse.ts
+
+04:24:12
+ok
+8d722a6e33633c17…
+
+Signed
+05
+
+read_file
+src/tally.ts
+
+04:24:13
+ok
+2a98c90e1f15236f…
+
+Signed
+06
+
+git
+
+04:24:15
+error
+fc6e39a1f61f253e…
+
+Signed
+07
+
+git
+
+04:24:17
+ok
+cb71dd7b09f8279c…
+
+Signed
+08
+
+git
+
+04:24:19
+ok
+ab819116b4306483…
+
+Signed
+09
+
+read_file
+package.json
+
+04:24:23
+ok
+5d4ebe76544fa648…
+
+Signed
+10
+
+read_file
+.gitignore
+
+04:24:24
+ok
+d3ba3494a94edb51…
+
+Signed
+11
+
+shell
+
+04:24:27
+error
+7fc94d2c30003b33…
+
+Signed
+12
+
+git
+
+04:24:33
+ok
+81b9ea3287f55392…
+
+Signed
+13
+
+git
+
+04:24:35
+error
+e076d856da55b10a…
+
+Signed
+14
+
+git
+README.md
+
+04:24:37
+ok
+57a6857c4e14c5ba…
+
+Signed
+
+Merkle root 1056243bb1ea97c3c5cc5d82b6ec2eb17f6ef73342b80cf33a3302debd14a1c3
+
+The public key comes from the pack itself, so this PASS shows only that the pack is internally consistent and was signed by that key. Pin a key under Expected signer key above, or with BLACKBOX_PUBLIC_KEY in verify-pack, and compare it with the one the proxy operator publishes (cli public-key).

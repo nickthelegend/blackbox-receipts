@@ -1,0 +1,36 @@
+{
+  "id": "EDGE-VERIFY-OBJECT-OUTCOME",
+  "start": "2026-10-25T21:43:07.171Z",
+  "url": "http://127.0.0.1:3327/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "headline",
+      "actual": "FAIL format at step 1: receipt outcome is not ok, denied or error",
+      "expected": "FAIL format at step 1: receipt outcome is not ok, denied or error",
+      "ok": true
+    },
+    {
+      "name": "broken step",
+      "actual": "01",
+      "expected": "01",
+      "ok": true
+    }
+  ],
+  "failures": []
+}

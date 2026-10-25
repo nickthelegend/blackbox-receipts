@@ -1,0 +1,48 @@
+{
+  "id": "WEB-NAV-VERIFY",
+  "start": "2026-10-25T21:42:21.926Z",
+  "url": "http://127.0.0.1:3327/",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /verify",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "skip focused",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "skip target",
+      "actual": "#vf-main",
+      "expected": "#vf-main",
+      "ok": true
+    },
+    {
+      "name": "skip activates",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "recorder navigation",
+      "actual": "/recorder",
+      "expected": "/recorder",
+      "ok": true
+    },
+    {
+      "name": "logo navigation",
+      "actual": "/",
+      "expected": "/",
+      "ok": true
+    }
+  ],
+  "failures": []
+}

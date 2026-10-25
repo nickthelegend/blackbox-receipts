@@ -1,0 +1,96 @@
+{
+  "id": "WEB-NAV-EVIDENCE",
+  "start": "2026-10-25T21:42:13.615Z",
+  "url": "http://127.0.0.1:3327/",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "checks": [
+    {
+      "name": "HTTP /evidence",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "skip focused",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "skip target",
+      "actual": "#main",
+      "expected": "#main",
+      "ok": true
+    },
+    {
+      "name": "skip activates",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "Playback hash",
+      "actual": "#playback",
+      "expected": "#playback",
+      "ok": true
+    },
+    {
+      "name": "#playback in viewport",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "Investigation hash",
+      "actual": "#investigation",
+      "expected": "#investigation",
+      "ok": true
+    },
+    {
+      "name": "#investigation in viewport",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "Limits hash",
+      "actual": "#limits",
+      "expected": "#limits",
+      "ok": true
+    },
+    {
+      "name": "#limits in viewport",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "Verify navigation",
+      "actual": "/verify",
+      "expected": "/verify",
+      "ok": true
+    },
+    {
+      "name": "HTTP /evidence",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "recorder navigation",
+      "actual": "/recorder",
+      "expected": "/recorder",
+      "ok": true
+    },
+    {
+      "name": "logo navigation",
+      "actual": "/",
+      "expected": "/",
+      "ok": true
+    }
+  ],
+  "failures": []
+}
