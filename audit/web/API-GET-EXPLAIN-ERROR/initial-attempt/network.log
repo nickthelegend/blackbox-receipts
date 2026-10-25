@@ -1,0 +1,52 @@
+{
+  "id": "API-GET-EXPLAIN-ERROR",
+  "timestamp": "2026-10-25T21:27:05.543Z",
+  "browser": "155.0.8059.85",
+  "page": "http://127.0.0.1:52118/",
+  "setup": "Replace throwaway witness path with a directory to cause a real EISDIR store read error.",
+  "requests": [
+    {
+      "url": "http://127.0.0.1:52118/api/explain",
+      "status": 500,
+      "headers": {
+        "connection": "keep-alive",
+        "content-type": "application/json",
+        "date": "Sun, 25 Oct 2026 21:27:05 GMT",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "text": "{\"error\":\"Could not explain the session: EISDIR: illegal operation on a directory, read\"}",
+      "body": {
+        "error": "Could not explain the session: EISDIR: illegal operation on a directory, read"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/api/explain"
+      },
+      "wire": [
+        {
+          "requestId": "53297.73",
+          "headers": {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Host": "127.0.0.1:52118",
+            "Pragma": "no-cache",
+            "Referer": "http://127.0.0.1:52118/",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\""
+          }
+        }
+      ]
+    }
+  ],
+  "assertion": "PASS"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "API-GET-INTEGRATIONS-UNCONFIGURED",
+  "timestamp": "2026-10-25T21:31:23.137Z",
+  "browser": "155.0.8059.85",
+  "page": "http://127.0.0.1:52500/recorder",
+  "setup": "All ZETARIS_* and METERLESS_* variables removed from server environment.",
+  "requests": [],
+  "browserResponses": [],
+  "assertion": "Expected values to be strictly equal:\n\n4 !== 3\n",
+  "consoleRule": "Only native Chrome resource diagnostics for this row’s required status and request URL are allowed."
+}

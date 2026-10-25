@@ -1,0 +1,179 @@
+{
+  "id": "API-POST-PROVE-PASS",
+  "timestamp": "2026-10-25T21:27:00.569Z",
+  "browser": "155.0.8059.85",
+  "page": "http://127.0.0.1:52118/recorder",
+  "setup": "",
+  "requests": [
+    {
+      "url": "http://127.0.0.1:52118/api/prove",
+      "status": 200,
+      "headers": {
+        "connection": "keep-alive",
+        "content-type": "application/json",
+        "date": "Sun, 25 Oct 2026 21:27:00 GMT",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "text": "{\"status\":\"PASS\",\"step\":null,\"reason\":null,\"policyId\":\"no-secrets-read/v2\",\"sessionRoot\":\"6831bf7a3588bc8070356c1a9381365d6e9c3005faaa8e1271a414f5538d2bba\",\"chainBrokenAt\":null,\"steps\":3,\"root\":\"6831bf7a3588bc8070356c1a9381365d6e9c3005faaa8e1271a414f5538d2bba\",\"proof\":{\"version\":1,\"property\":\"no-secrets-read\",\"policy\":{\"id\":\"no-secrets-read/v2\",\"secretPathGlobs\":[\".env*\",\"*.pem\",\"*.key\",\"id_rsa\",\"id_ed25519\",\"~/.ssh/**\",\".ssh/**\",\"~/.aws/**\",\".aws/**\",\"secrets/**\",\".blackbox/**\",\"credentials.json\",\".ssh\",\".aws\",\".gnupg\",\".gnupg/**\",\"secrets\",\".blackbox\",\".git/**\",\".git-credentials\",\".netrc\",\".npmrc\",\".pypirc\",\".pgpass\",\"*.p12\",\"*.pfx\",\".docker/config.json\",\".kube/config\"],\"secretArgPatterns\":[{\"name\":\"private-key-block\",\"pattern\":\"-----BEGIN [A-Z ]*PRIVATE KEY-----\"},{\"name\":\"aws-access-key-id\",\"pattern\":\"\\\\bAKIA[0-9A-Z]{16}\\\\b\"},{\"name\":\"github-token\",\"pattern\":\"\\\\bgh[pousr]_[A-Za-z0-9]{36,}\\\\b\"},{\"name\":\"gitlab-token\",\"pattern\":\"\\\\bglpat-[A-Za-z0-9_-]{20,}\\\\b\"},{\"name\":\"api-secret-key\",\"pattern\":\"\\\\bsk-(?:ant-)?[A-Za-z0-9_-]{20,}\\\\b\"},{\"name\":\"slack-token\",\"pattern\":\"\\\\bxox[abprs]-[A-Za-z0-9-]{10,}\\\\b\"}]},\"policyHash\":\"d1e72d1a6c224ff147f946791f04f0e4102e28f75649f3c8839222ff3925517f\",\"sessionId\":\"a0df1daf-3151-4a21-aa64-c7fdc3bf4196\",\"root\":\"6831bf7a3588bc8070356c1a9381365d6e9c3005faaa8e1271a414f5538d2bba\",\"receiptCount\":3,\"steps\":[{\"step\":1,\"leaf\":\"7707e7b0716358b25b39c6c30cf37379769642574587ef778efb9d6c0116c8df\",\"signature\":\"AS8DIu7YltlV56owooBd5Je+8Sf+QEQmHnVwMdbtD0oIW39r+dpi0Uj19i0ip5efVL+9s1JcZ7FLJGOQRSiZDg==\",\"inclusion\":[{\"hash\":\"1ff4a975d73eddcc6fbfb08c3368cfd32885cd723720d817471697182de7c5c0\",\"side\":\"right\"},{\"hash\":\"410cff0231c0130e757a8a97be5f31ed1c6fe460783fd0cc5896c1b88f64ca02\",\"side\":\"right\"}],\"commitment\":\"45f74d4181f4d35211eb5cb5e031de93bc2ddc2d6254060bbe5859168741bf50\"},{\"step\":2,\"leaf\":\"1ff4a975d73eddcc6fbfb08c3368cfd32885cd723720d817471697182de7c5c0\",\"signature\":\"/Fc1AVDb71mnmyndtYwBoBE9ag8Xzkp6fuNZB9TPiP4YOHPoC4ThBMS3XEhIi7S85RAOLoSuYqrfTDb0kd2eCw==\",\"inclusion\":[{\"hash\":\"7707e7b0716358b25b39c6c30cf37379769642574587ef778efb9d6c0116c8df\",\"side\":\"left\"},{\"hash\":\"410cff0231c0130e757a8a97be5f31ed1c6fe460783fd0cc5896c1b88f64ca02\",\"side\":\"right\"}],\"commitment\":\"e1af265b58eba40af04a8df422780fc4f6a35ff0463ac9f83304922fafc000c6\"},{\"step\":3,\"leaf\":\"565dfb4a72e4e1899f217ad040c2f0d9624fcbede06bbed0afca6e4ee96b81fd\",\"signature\":\"UKjorR46iOBmfEbD5WgSWcj5IT26iQ82m2CHijZ13kAUlEhaj7atCUQ2i/628BP9QHxSG0U+FaKKFVPMzbFqCA==\",\"inclusion\":[{\"hash\":\"565dfb4a72e4e1899f217ad040c2f0d9624fcbede06bbed0afca6e4ee96b81fd\",\"side\":\"right\"},{\"hash\":\"939225461d6b8bead11e8953c0b07de97f9df366a435bb63646a56bc456a02c0\",\"side\":\"left\"}],\"commitment\":\"a3e5163cb439aadcb74536b4f94e327ac980db829fd2fb5a4395f173aea32ee3\"}],\"attestation\":\"8cJA8Bc/t79ozI0COJI4IkL58QzZMs/wIQUCaB+iTWAZAXJkTBCSHfLk4NYyF12Jl5AY3PcofgrV7KGAtbN8DA==\"}}",
+      "body": {
+        "status": "PASS",
+        "step": null,
+        "reason": null,
+        "policyId": "no-secrets-read/v2",
+        "sessionRoot": "6831bf7a3588bc8070356c1a9381365d6e9c3005faaa8e1271a414f5538d2bba",
+        "chainBrokenAt": null,
+        "steps": 3,
+        "root": "6831bf7a3588bc8070356c1a9381365d6e9c3005faaa8e1271a414f5538d2bba",
+        "proof": {
+          "version": 1,
+          "property": "no-secrets-read",
+          "policy": {
+            "id": "no-secrets-read/v2",
+            "secretPathGlobs": [
+              ".env*",
+              "*.pem",
+              "*.key",
+              "id_rsa",
+              "id_ed25519",
+              "~/.ssh/**",
+              ".ssh/**",
+              "~/.aws/**",
+              ".aws/**",
+              "secrets/**",
+              ".blackbox/**",
+              "credentials.json",
+              ".ssh",
+              ".aws",
+              ".gnupg",
+              ".gnupg/**",
+              "secrets",
+              ".blackbox",
+              ".git/**",
+              ".git-credentials",
+              ".netrc",
+              ".npmrc",
+              ".pypirc",
+              ".pgpass",
+              "*.p12",
+              "*.pfx",
+              ".docker/config.json",
+              ".kube/config"
+            ],
+            "secretArgPatterns": [
+              {
+                "name": "private-key-block",
+                "pattern": "-----BEGIN [A-Z ]*PRIVATE KEY-----"
+              },
+              {
+                "name": "aws-access-key-id",
+                "pattern": "\\bAKIA[0-9A-Z]{16}\\b"
+              },
+              {
+                "name": "github-token",
+                "pattern": "\\bgh[pousr]_[A-Za-z0-9]{36,}\\b"
+              },
+              {
+                "name": "gitlab-token",
+                "pattern": "\\bglpat-[A-Za-z0-9_-]{20,}\\b"
+              },
+              {
+                "name": "api-secret-key",
+                "pattern": "\\bsk-(?:ant-)?[A-Za-z0-9_-]{20,}\\b"
+              },
+              {
+                "name": "slack-token",
+                "pattern": "\\bxox[abprs]-[A-Za-z0-9-]{10,}\\b"
+              }
+            ]
+          },
+          "policyHash": "d1e72d1a6c224ff147f946791f04f0e4102e28f75649f3c8839222ff3925517f",
+          "sessionId": "a0df1daf-3151-4a21-aa64-c7fdc3bf4196",
+          "root": "6831bf7a3588bc8070356c1a9381365d6e9c3005faaa8e1271a414f5538d2bba",
+          "receiptCount": 3,
+          "steps": [
+            {
+              "step": 1,
+              "leaf": "7707e7b0716358b25b39c6c30cf37379769642574587ef778efb9d6c0116c8df",
+              "signature": "AS8DIu7YltlV56owooBd5Je+8Sf+QEQmHnVwMdbtD0oIW39r+dpi0Uj19i0ip5efVL+9s1JcZ7FLJGOQRSiZDg==",
+              "inclusion": [
+                {
+                  "hash": "1ff4a975d73eddcc6fbfb08c3368cfd32885cd723720d817471697182de7c5c0",
+                  "side": "right"
+                },
+                {
+                  "hash": "410cff0231c0130e757a8a97be5f31ed1c6fe460783fd0cc5896c1b88f64ca02",
+                  "side": "right"
+                }
+              ],
+              "commitment": "45f74d4181f4d35211eb5cb5e031de93bc2ddc2d6254060bbe5859168741bf50"
+            },
+            {
+              "step": 2,
+              "leaf": "1ff4a975d73eddcc6fbfb08c3368cfd32885cd723720d817471697182de7c5c0",
+              "signature": "/Fc1AVDb71mnmyndtYwBoBE9ag8Xzkp6fuNZB9TPiP4YOHPoC4ThBMS3XEhIi7S85RAOLoSuYqrfTDb0kd2eCw==",
+              "inclusion": [
+                {
+                  "hash": "7707e7b0716358b25b39c6c30cf37379769642574587ef778efb9d6c0116c8df",
+                  "side": "left"
+                },
+                {
+                  "hash": "410cff0231c0130e757a8a97be5f31ed1c6fe460783fd0cc5896c1b88f64ca02",
+                  "side": "right"
+                }
+              ],
+              "commitment": "e1af265b58eba40af04a8df422780fc4f6a35ff0463ac9f83304922fafc000c6"
+            },
+            {
+              "step": 3,
+              "leaf": "565dfb4a72e4e1899f217ad040c2f0d9624fcbede06bbed0afca6e4ee96b81fd",
+              "signature": "UKjorR46iOBmfEbD5WgSWcj5IT26iQ82m2CHijZ13kAUlEhaj7atCUQ2i/628BP9QHxSG0U+FaKKFVPMzbFqCA==",
+              "inclusion": [
+                {
+                  "hash": "565dfb4a72e4e1899f217ad040c2f0d9624fcbede06bbed0afca6e4ee96b81fd",
+                  "side": "right"
+                },
+                {
+                  "hash": "939225461d6b8bead11e8953c0b07de97f9df366a435bb63646a56bc456a02c0",
+                  "side": "left"
+                }
+              ],
+              "commitment": "a3e5163cb439aadcb74536b4f94e327ac980db829fd2fb5a4395f173aea32ee3"
+            }
+          ],
+          "attestation": "8cJA8Bc/t79ozI0COJI4IkL58QzZMs/wIQUCaB+iTWAZAXJkTBCSHfLk4NYyF12Jl5AY3PcofgrV7KGAtbN8DA=="
+        }
+      },
+      "request": {
+        "method": "POST",
+        "path": "/api/prove"
+      },
+      "wire": [
+        {
+          "requestId": "50756.79",
+          "headers": {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Length": "0",
+            "Host": "127.0.0.1:52118",
+            "Origin": "http://127.0.0.1:52118",
+            "Pragma": "no-cache",
+            "Referer": "http://127.0.0.1:52118/recorder",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\""
+          }
+        }
+      ]
+    }
+  ],
+  "assertion": "Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- 'blackbox-property-proof/v1'\n"
+}

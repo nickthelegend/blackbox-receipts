@@ -1,0 +1,175 @@
+{
+  "id": "API-POST-TAMPER-INVALID-STEP",
+  "timestamp": "2026-10-25T21:31:24.039Z",
+  "browser": "155.0.8059.85",
+  "page": "http://127.0.0.1:52500/recorder",
+  "setup": "",
+  "requests": [
+    {
+      "url": "http://127.0.0.1:52500/api/tamper",
+      "status": 400,
+      "headers": {
+        "connection": "keep-alive",
+        "content-type": "application/json",
+        "date": "Sun, 25 Oct 2026 21:31:23 GMT",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "text": "{\"error\":\"Block step must be a positive integer, got \\\"0\\\".\"}",
+      "body": {
+        "error": "Block step must be a positive integer, got \"0\"."
+      },
+      "request": {
+        "method": "POST",
+        "path": "/api/tamper",
+        "body": {
+          "step": 0
+        }
+      },
+      "wire": [
+        {
+          "requestId": "58034.86",
+          "headers": {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Length": "10",
+            "Content-Type": "application/json",
+            "Host": "127.0.0.1:52500",
+            "Origin": "http://127.0.0.1:52500",
+            "Pragma": "no-cache",
+            "Referer": "http://127.0.0.1:52500/recorder",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\""
+          }
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:52500/api/tamper",
+      "status": 400,
+      "headers": {
+        "connection": "keep-alive",
+        "content-type": "application/json",
+        "date": "Sun, 25 Oct 2026 21:31:23 GMT",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "text": "{\"error\":\"Block step must be a positive integer, got \\\"-1\\\".\"}",
+      "body": {
+        "error": "Block step must be a positive integer, got \"-1\"."
+      },
+      "request": {
+        "method": "POST",
+        "path": "/api/tamper",
+        "body": {
+          "step": -1
+        }
+      },
+      "wire": [
+        {
+          "requestId": "58034.87",
+          "headers": {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Length": "11",
+            "Content-Type": "application/json",
+            "Host": "127.0.0.1:52500",
+            "Origin": "http://127.0.0.1:52500",
+            "Pragma": "no-cache",
+            "Referer": "http://127.0.0.1:52500/recorder",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\""
+          }
+        }
+      ]
+    },
+    {
+      "url": "http://127.0.0.1:52500/api/tamper",
+      "status": 400,
+      "headers": {
+        "connection": "keep-alive",
+        "content-type": "application/json",
+        "date": "Sun, 25 Oct 2026 21:31:23 GMT",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "text": "{\"error\":\"Block step must be a positive integer, got \\\"abc\\\".\"}",
+      "body": {
+        "error": "Block step must be a positive integer, got \"abc\"."
+      },
+      "request": {
+        "method": "POST",
+        "path": "/api/tamper",
+        "body": {
+          "step": "abc"
+        }
+      },
+      "wire": [
+        {
+          "requestId": "58034.88",
+          "headers": {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Length": "14",
+            "Content-Type": "application/json",
+            "Host": "127.0.0.1:52500",
+            "Origin": "http://127.0.0.1:52500",
+            "Pragma": "no-cache",
+            "Referer": "http://127.0.0.1:52500/recorder",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\""
+          }
+        }
+      ]
+    }
+  ],
+  "browserResponses": [
+    {
+      "id": "API-POST-TAMPER-INVALID-STEP",
+      "url": "http://127.0.0.1:52500/api/tamper",
+      "status": 400,
+      "method": "POST"
+    },
+    {
+      "id": "API-POST-TAMPER-INVALID-STEP",
+      "url": "http://127.0.0.1:52500/api/tamper",
+      "status": 400,
+      "method": "POST"
+    },
+    {
+      "id": "API-POST-TAMPER-INVALID-STEP",
+      "url": "http://127.0.0.1:52500/api/tamper",
+      "status": 400,
+      "method": "POST"
+    }
+  ],
+  "assertion": "PASS",
+  "consoleRule": "Only native Chrome resource diagnostics for this row’s required status and request URL are allowed."
+}

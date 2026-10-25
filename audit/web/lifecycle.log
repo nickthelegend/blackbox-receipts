@@ -1,0 +1,8 @@
+2026-10-25T21:31:20.012Z next start pid=57974 origin=http://127.0.0.1:52500 throwawayStore=/private/tmp/blackbox-api-audit-CqZs0y/session vars={}
+2026-10-25T21:31:27.647Z next start pid=59401 origin=http://127.0.0.1:52543 throwawayStore=/private/tmp/blackbox-api-audit-CqZs0y/session vars={"WALRUS_PUBLISHER_URL":"http://127.0.0.1:52542","BLACKBOX_DASHBOARD_ALLOW_REMOTE":"1"}
+2026-10-25T21:31:32.662Z Chrome PIDs=57975,58028,58029,58030,58031; Next PIDs=57974,59401; stillAlive=[]; temporary state removed.
+2026-10-25T21:31:32.680Z heavy slot bb-audit-web release exit=0
+2026-10-25T21:32:07.211Z next start pid=81446 origin=http://127.0.0.1:52691 throwawayStore=/private/tmp/blackbox-api-audit-gJ9217/session vars={}
+2026-10-25T21:32:11.494Z next start pid=81931 origin=http://127.0.0.1:52733 throwawayStore=/private/tmp/blackbox-api-audit-gJ9217/session vars={"WALRUS_PUBLISHER_URL":"http://127.0.0.1:52732","BLACKBOX_DASHBOARD_ALLOW_REMOTE":"1"}
+2026-10-25T21:32:15.689Z Chrome PIDs=81447,81461,81462,81463,81464; Next PIDs=81446,81931; stillAlive=[]; temporary state removed.
+2026-10-25T21:32:15.702Z heavy slot bb-audit-web release exit=0

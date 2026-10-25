@@ -1,0 +1,4 @@
+2026-10-25T21:26:57.615Z real MCP git {"action":"log"} exit=0
+2026-10-25T21:26:57.803Z real MCP read_file {"path":"README.md"} exit=0
+2026-10-25T21:26:57.993Z real MCP shell {"command":"pwd"} exit=0
+2026-10-25T21:27:02.415Z real MCP read_file {"path":"secrets/blackbox-audit-does-not-exist.txt"} exit=1 denied before disk read

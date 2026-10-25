@@ -1,0 +1,74 @@
+{
+  "id": "API-POST-PROVE-FAIL",
+  "timestamp": "2026-10-25T21:31:24.828Z",
+  "browser": "155.0.8059.85",
+  "page": "http://127.0.0.1:52500/recorder",
+  "setup": "Real MCP proxy denied a nonexistent secrets/ path before filesystem access at step 4.",
+  "requests": [
+    {
+      "url": "http://127.0.0.1:52500/api/prove",
+      "status": 200,
+      "headers": {
+        "connection": "keep-alive",
+        "content-type": "application/json",
+        "date": "Sun, 25 Oct 2026 21:31:24 GMT",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "text": "{\"status\":\"FAIL\",\"step\":4,\"reason\":\"read_file touched secret path matching \\\"secrets/**\\\"\",\"policyId\":\"no-secrets-read/v2\",\"sessionRoot\":\"3b92c79911a9dbc02e07cd65ba8c67fced785d41a9a14cf2d281d69096a4862b\",\"chainBrokenAt\":null}",
+      "body": {
+        "status": "FAIL",
+        "step": 4,
+        "reason": "read_file touched secret path matching \"secrets/**\"",
+        "policyId": "no-secrets-read/v2",
+        "sessionRoot": "3b92c79911a9dbc02e07cd65ba8c67fced785d41a9a14cf2d281d69096a4862b",
+        "chainBrokenAt": null
+      },
+      "request": {
+        "method": "POST",
+        "path": "/api/prove"
+      },
+      "wire": [
+        {
+          "requestId": "58034.92",
+          "headers": {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Length": "0",
+            "Host": "127.0.0.1:52500",
+            "Origin": "http://127.0.0.1:52500",
+            "Pragma": "no-cache",
+            "Referer": "http://127.0.0.1:52500/recorder",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\""
+          }
+        }
+      ]
+    }
+  ],
+  "browserResponses": [
+    {
+      "id": "API-POST-PROVE-FAIL",
+      "url": "http://127.0.0.1:52500/api/prove",
+      "status": 200,
+      "method": "POST"
+    },
+    {
+      "id": "API-POST-PROVE-FAIL",
+      "url": "http://127.0.0.1:52500/api/session",
+      "status": 200,
+      "method": "GET"
+    }
+  ],
+  "assertion": "PASS",
+  "consoleRule": "Only native Chrome resource diagnostics for this row’s required status and request URL are allowed."
+}
