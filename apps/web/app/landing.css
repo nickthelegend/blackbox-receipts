@@ -219,3 +219,33 @@
   .ld-window-row dt{flex-direction:row;align-items:center;gap:12px}
   .pb-caution{margin-left:0}
 }
+
+/* the short landing: three bands below the hero (how it works, proof, what's live) */
+.ld-hero-short{padding-block:88px 112px}
+.ld-unit-cap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line-2);font:500 12px/1.5 var(--mono);letter-spacing:.04em;color:var(--dim)}
+.ld-band-h{margin:0;font-size:clamp(30px,3.6vw,48px);line-height:1.04;max-width:22ch}
+.ld-steps{list-style:none;margin:56px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:48px}
+.ld-steps li{border-top:2px solid var(--accent);padding-top:18px}
+.ld-steps .stencil{margin:0;color:var(--accent)}
+.ld-steps h3{margin:12px 0 8px;font-size:26px;line-height:1.1}
+.ld-steps p:last-child{margin:0;color:var(--muted);font-size:16.5px;line-height:1.55}
+.ld-big{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:48px;margin:56px 0 0}
+.ld-big div{display:flex;flex-direction:column-reverse;justify-content:flex-end}
+.ld-big dd{margin:0;font-size:clamp(64px,8.4vw,120px);font-weight:800;line-height:.92;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.ld-big dt{margin-top:14px;font:600 12.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.ld-more{display:inline-flex;align-items:center;gap:8px;margin-top:52px;font-weight:700;color:var(--text);text-decoration:none;border-bottom:2px solid var(--accent);padding-bottom:3px}
+.ld-more svg{width:18px;height:18px}
+.ld-status{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px;margin-top:40px;padding-top:24px;border-top:1px solid var(--line-2)}
+.ld-status h3{display:flex;align-items:center;gap:10px;margin:0;font-size:20px}
+.ld-status h3 i{width:9px;height:9px;border-radius:50%;background:var(--caution)}
+.ld-status h3 i.is-ok{background:var(--ok)}
+.ld-status p{margin:10px 0 0;color:var(--muted);font-size:16.5px;line-height:1.55;max-width:44ch}
+@media (max-width:1000px){
+  .ld-steps,.ld-status{grid-template-columns:minmax(0,1fr);gap:32px}
+  .ld-hero-short{padding-block:48px 72px}
+}
+@media (max-width:760px){
+  .ld-big{gap:12px}
+  .ld-big dd{font-size:52px}
+  .ld-big dt{font-size:11px}
+}

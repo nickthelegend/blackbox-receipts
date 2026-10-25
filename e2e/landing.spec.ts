@@ -1,5 +1,7 @@
-// The landing at / as a visitor uses it: header links, the playback of the recorded run, the tape log and its
-// explain drawer, the investigation exhibits with their tamper test, the limits placard and the install CTAs.
+// The landing at / and /evidence as a visitor uses them. The landing: header links, the recorder drawing, how it
+// works, the proof numbers, what is live vs Setup required and the install CTAs. /evidence (everything that
+// moved off the landing): the playback of the recorded run, the tape log and its explain drawer, the
+// investigation exhibits with their tamper test, the limits placard and the hackathon window.
 import { expectNoHorizontalScroll, logControls, test, expect } from './fixtures.ts';
 
 test.describe('landing', () => {
@@ -9,6 +11,16 @@ test.describe('landing', () => {
   });
 
   test('loads the recorded session with no sideways scroll', async ({ page }) => {
+    await expect(page.locator('.ld-steps h3')).toHaveText(['Record', 'Seal', 'Verify']);
+    await expect(page.locator('.ld-big dd')).toHaveText(['10', '1', '91']);
+    await expect(page.locator('.ld-big dt')).toHaveText(['Receipts', 'Denied', 'Tests']);
+    await expect(page.locator('#live')).toContainText('Setup required');
+    await expect(page.locator('.ld-unit-cap')).toContainText('933f87da');
+    await expect(page.getByLabel('Recorded session summary')).toHaveCount(0); // moved to /evidence
+    await expectNoHorizontalScroll(page);
+    await page.screenshot({ path: test.info().outputPath('landing-hero-short.png'), animations: 'disabled' });
+    await page.goto('/evidence');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('The tape, the checks and the limits.');
     await expect(page.getByLabel('Recorded session summary')).toContainText('933f87da');
     await expect(page.getByLabel('Recorded session summary')).toContainText('Denied at step 03');
     await expect(page.getByRole('img', { name: /Drawing of an orange flight recorder/ })).toBeVisible();
@@ -17,6 +29,7 @@ test.describe('landing', () => {
   });
 
   test('the playback says the prompt asked for the README checklist, and the other flight names its earlier wordings', async ({ page }) => {
+    await page.goto('/evidence');
     const playback = page.locator('#playback');
     await expect(playback.locator('.ld-sec-head')).toContainText('README has an “Agent checklist” section telling AI agents to read .env');
     await expect(playback.locator('.ld-sec-head')).toContainText('Step 2 of the prompt said “Read README.md and complete its agent checklist before anything else”, so the .env read was asked for through the README');
@@ -29,19 +42,31 @@ test.describe('landing', () => {
   });
 
   test('header and hero links go where they say', async ({ page, isMobile }) => {
-    const nav = page.getByRole('navigation', { name: 'Sections' });
+    let nav = page.getByRole('navigation', { name: 'Sections' });
     if (isMobile) {
       // The section nav is hidden on phones; the hero CTA reaches the playback.
       await expect(nav).toBeHidden();
     } else {
+      for (const [name, hash] of [['How it works', '#how'], ['Proof', '#proof']] as const) {
+        await nav.getByRole('link', { name }).click();
+        await expect(page).toHaveURL(new RegExp(`${hash}$`));
+        await expect(page.locator(hash)).toBeInViewport();
+      }
+      await nav.getByRole('link', { name: 'Evidence' }).click();
+      await expect(page).toHaveURL(/\/evidence$/);
+      nav = page.getByRole('navigation', { name: 'Sections' });
       for (const [name, hash] of [['Playback', '#playback'], ['Investigation', '#investigation'], ['Limits', '#limits']] as const) {
         await nav.getByRole('link', { name }).click();
         await expect(page).toHaveURL(new RegExp(`${hash}$`));
         await expect(page.locator(hash)).toBeInViewport();
       }
+      await page.goto('/');
     }
+    await page.getByRole('link', { name: 'See the evidence' }).click();
+    await expect(page).toHaveURL(/\/evidence$/);
+    await page.goto('/');
     await page.getByRole('link', { name: 'Play back a real run' }).click();
-    await expect(page).toHaveURL(/#playback$/);
+    await expect(page).toHaveURL(/\/evidence#playback$/);
     await expect(page.locator('#playback')).toBeInViewport();
 
     await page.getByRole('link', { name: 'Open recorder' }).click();
@@ -65,6 +90,7 @@ test.describe('landing', () => {
   });
 
   test('playback sweeps the tape when it scrolls into view, and Replay replays it', async ({ page }) => {
+    await page.goto('/evidence');
     const playback = page.locator('.pb');
     await expect(playback).toHaveAttribute('data-play', 'ready');
     await page.locator('#playback .tape').scrollIntoViewIfNeeded();
@@ -82,6 +108,7 @@ test.describe('landing', () => {
   });
 
   test('tape log: every row opens its explanation, cited receipts navigate, and the drawer closes three ways', async ({ page }) => {
+    await page.goto('/evidence');
     const log = page.getByRole('list', { name: 'Tape log' });
     await log.scrollIntoViewIfNeeded();
     const rows = log.getByRole('listitem');
@@ -117,6 +144,7 @@ test.describe('landing', () => {
   });
 
   test('investigation: run the checks on both exhibits and tamper with one byte', async ({ page }) => {
+    await page.goto('/evidence');
     const inv = page.locator('#investigation');
     await inv.scrollIntoViewIfNeeded();
     const exhibitA = inv.getByRole('radio', { name: /Exhibit A/ });
@@ -155,12 +183,14 @@ test.describe('landing', () => {
   });
 
   test('limits placard and install section', async ({ page }) => {
+    await page.goto('/evidence');
     const limits = page.locator('#limits');
     await limits.scrollIntoViewIfNeeded();
     await expect(limits.locator('.ld-limits > div')).toHaveCount(7);
     await expect(limits).toContainText('Setup required');
     await expect(limits).toContainText('Not run yet');
     await page.screenshot({ path: test.info().outputPath('landing-limits.png'), animations: 'disabled' });
+    await page.goto('/');
     const install = page.getByRole('heading', { name: 'Put it between your agent and its tools.' });
     await install.scrollIntoViewIfNeeded();
     await page.getByRole('link', { name: 'Open the recorder' }).click();
@@ -168,6 +198,7 @@ test.describe('landing', () => {
   });
 
   test('built in the window: what was built Oct 22-27, and the sponsor work still marked Setup required', async ({ page }) => {
+    await page.goto('/evidence');
     const section = page.locator('#window');
     await section.scrollIntoViewIfNeeded();
     await expect(page.getByRole('heading', { name: 'Built Oct 22–27, and what is still blocked.' })).toBeVisible();
@@ -191,6 +222,7 @@ test.describe('landing', () => {
   });
 
   test('every "log" control works: each tape log control opens its explanation', async ({ page }) => {
+    await page.goto('/evidence');
     const controls = await logControls(page);
     expect(controls.length, 'controls in or labelled as a log').toBe(10);
     for (const control of controls) {
@@ -206,6 +238,7 @@ test.describe('landing', () => {
   test.describe('reduced motion', () => {
     test.use({ reducedMotion: 'reduce' });
     test('shows the whole tape at once without a Replay control', async ({ page }) => {
+      await page.goto('/evidence');
       const playback = page.locator('.pb');
       await page.locator('#playback .tape').scrollIntoViewIfNeeded();
       await expect(playback).toHaveAttribute('data-play', 'static');

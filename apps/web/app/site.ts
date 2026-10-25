@@ -6,8 +6,8 @@ export const STATIC_SITE = process.env.NEXT_PUBLIC_BLACKBOX_STATIC === '1';
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 const REPO_URL = process.env.NEXT_PUBLIC_REPO_URL || 'https://github.com/nickthelegend/blackbox-receipts';
 
-/** An in-app link. The static build exports `verify/index.html`, so its links carry the base path and a trailing slash. */
-export const route = (path: '/' | '/verify') => (STATIC_SITE ? `${BASE_PATH}${path === '/' ? '/' : `${path}/`}` : path);
+/** An in-app link. The static build exports `verify/index.html` and `evidence/index.html`, so its links carry the base path and a trailing slash. */
+export const route = (path: '/' | '/verify' | '/evidence') => (STATIC_SITE ? `${BASE_PATH}${path === '/' ? '/' : `${path}/`}` : path);
 
 /** The recorder needs the local proxy store, so the static site links to how to run it instead. */
 export const recorder = STATIC_SITE

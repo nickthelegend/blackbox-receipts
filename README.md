@@ -6,7 +6,7 @@ An MCP proxy sits between an agent and its tools. Every call is checked against 
 
 | | |
 |---|---|
-| Live site | https://blackbox-landing-olive.vercel.app (overview) and [`/verify`](https://blackbox-landing-olive.vercel.app/verify/) (offline verifier); the same build on GitHub Pages: https://nickthelegend.github.io/blackbox-receipts/. Static and read-only: the recorder and its API run locally ([Setup](#setup)) |
+| Live site | https://blackbox-landing-olive.vercel.app (overview), [`/evidence`](https://blackbox-landing-olive.vercel.app/evidence/) (the recorded run played back, both packs checked in the browser, limits, the hackathon window) and [`/verify`](https://blackbox-landing-olive.vercel.app/verify/) (offline verifier); the same build on GitHub Pages: https://nickthelegend.github.io/blackbox-receipts/. Static and read-only: the recorder and its API run locally ([Setup](#setup)) |
 | Slide deck | [`docs/deck/index.html`](docs/deck/index.html) · [PDF](docs/deck/blackbox-receipts-deck.pdf) |
 | Videos | Not recorded yet ([scripts](docs/demo-video-script.md): Open Agent Wildcard and GitLab Transcend cuts) |
 | Hackathon window | [What was built from Oct 22](#built-in-the-window-oct-2227), and what is still missing |

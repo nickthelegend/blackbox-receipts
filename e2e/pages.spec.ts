@@ -6,7 +6,7 @@ import { expectNoHorizontalScroll, test, expect } from './fixtures.ts';
 const site = `http://127.0.0.1:${PAGES.port}${PAGES.base}`;
 
 test.describe('static Pages build', () => {
-  test('landing: base-path links, tape log drawer and an exhibit check', async ({ page }) => {
+  test('landing and /evidence: base-path links, tape log drawer and an exhibit check', async ({ page }) => {
     await page.goto(`${site}/`);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Every tool call your agent makes/);
     await expectNoHorizontalScroll(page);
@@ -16,6 +16,10 @@ test.describe('static Pages build', () => {
     await expect(page.getByRole('link', { name: 'Open recorder' })).toHaveCount(0);
     await expect(page.getByRole('link', { name: 'Blackbox Receipts, home' })).toHaveAttribute('href', `${PAGES.base}/`);
 
+    await expect(page.getByRole('link', { name: 'See the evidence' })).toHaveAttribute('href', `${PAGES.base}/evidence/`);
+    await page.getByRole('link', { name: 'Play back a real run' }).click();
+    await expect(page).toHaveURL(`${site}/evidence/#playback`);
+    await expect(page.getByRole('link', { name: 'Blackbox Receipts, home' })).toHaveAttribute('href', `${PAGES.base}/`);
     const log = page.getByRole('list', { name: 'Tape log' });
     await log.scrollIntoViewIfNeeded();
     await log.getByRole('button', { name: /^Explain why step 3 / }).click();
