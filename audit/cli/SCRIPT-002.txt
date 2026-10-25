@@ -1,0 +1,41 @@
+ID: SCRIPT-002
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/call.js"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/bridge
+STDOUT:
+
+STDERR:
+Usage: blackbox-call [--new-session] <read_file|git|shell> '<json args>'
+  read_file '{"path":"README.md"}'
+  git '{"action":"status"}' | '{"action":"log"}' | '{"action":"show_stat","args":["HEAD"]}' | '{"action":"diff","args":["src/a.ts"]}' | '{"action":"show","args":["HEAD:src/a.ts"]}'
+  shell '{"command":"ls -la src"}'   (only pwd, ls and cat)
+
+EXIT CODE: 2
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/call.js","read_file","{"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/bridge
+STDOUT:
+
+STDERR:
+Arguments must be a JSON object, got: {
+
+EXIT CODE: 2
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/call.js","read_file","{\"path\":\".env\"}"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/bridge
+STDOUT:
+
+STDERR:
+DENIED or FAILED (receipt recorded): Policy denied (no-secrets-read/v2): read_file touched secret path matching ".env*"
+
+EXIT CODE: 1
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

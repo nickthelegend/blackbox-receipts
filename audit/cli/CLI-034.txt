@@ -1,0 +1,69 @@
+ID: CLI-034
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","explain","--step","1"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean
+STDOUT:
+# Step 1 of session 1d8cf500-64ef-4106-b0da-9c368e9e3232
+
+`read_file small.txt` → ok · allowed
+
+## Why
+
+- Allowed by no-secrets-read/v2: its path small.txt matches no secret glob, and no argument matches a secret-token pattern.
+- It ran; its arguments and result are committed in the receipt as salted hashes.
+- First receipt of the session: it has no previousHash.
+- The proxy's signed seal covers it (steps 1 to 8).
+
+## Cited receipts
+
+- step 1 (this call) `b00043dfcf2ca6910ed3f0a357e5a98febbc566145dd256cdf0f902accc21e3c`: signed record of read_file: paths, outcome "ok", salted argsHash and resultHash
+
+Verdict for the session: `PASS no-secrets-read [policy no-secrets-read/v2 d1e72d1a6c22]: 8/8 receipts satisfy the policy`
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","explain","--step","1","--json"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean
+STDOUT:
+{
+  "step": 1,
+  "timestamp": "2026-10-25T20:52:16.279Z",
+  "tool": "read_file",
+  "receipt": "b00043dfcf2ca6910ed3f0a357e5a98febbc566145dd256cdf0f902accc21e3c",
+  "previousHash": null,
+  "command": "read_file small.txt",
+  "args": "opened",
+  "outcome": "ok",
+  "detail": null,
+  "finding": "allowed",
+  "rule": null,
+  "why": [
+    "Allowed by no-secrets-read/v2: its path small.txt matches no secret glob, and no argument matches a secret-token pattern.",
+    "It ran; its arguments and result are committed in the receipt as salted hashes.",
+    "First receipt of the session: it has no previousHash.",
+    "The proxy's signed seal covers it (steps 1 to 8)."
+  ],
+  "cites": [
+    {
+      "step": 1,
+      "hash": "b00043dfcf2ca6910ed3f0a357e5a98febbc566145dd256cdf0f902accc21e3c",
+      "role": "this call",
+      "note": "signed record of read_file: paths, outcome \"ok\", salted argsHash and resultHash"
+    }
+  ],
+  "verdictStep": false
+}
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

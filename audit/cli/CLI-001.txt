@@ -1,0 +1,32 @@
+ID: CLI-001
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+Built CLI /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js; stdio proxy /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js; all stores/keys/output under /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi; RECEIPTS_SIGNING_KEY and sponsor variables removed, ambient overrides removed. pnpm install --frozen-lockfile and pnpm build exited 0; see build.txt.
+SHARED PROCESS COMMAND: node /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js []
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean
+STDIN: {"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"shell","arguments":{"command":"pwd"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"{\"stdout\":\"/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean\\n\",\"stderr\":\"\"}"}]},"jsonrpc":"2.0","id":4}
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"shell","arguments":{"command":"pwd"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"{\"stdout\":\"/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean\\n\",\"stderr\":\"\"}"}]},"jsonrpc":"2.0","id":5}
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"shell","arguments":{"command":"pwd"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"{\"stdout\":\"/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean\\n\",\"stderr\":\"\"}"}]},"jsonrpc":"2.0","id":6}
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"shell","arguments":{"command":"pwd"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"{\"stdout\":\"/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean\\n\",\"stderr\":\"\"}"}]},"jsonrpc":"2.0","id":7}
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":8,"method":"tools/call","params":{"name":"shell","arguments":{"command":"pwd"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"{\"stdout\":\"/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean\\n\",\"stderr\":\"\"}"}]},"jsonrpc":"2.0","id":8}
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":9,"method":"tools/call","params":{"name":"shell","arguments":{"command":"pwd"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"{\"stdout\":\"/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean\\n\",\"stderr\":\"\"}"}]},"jsonrpc":"2.0","id":9}
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":10,"method":"tools/call","params":{"name":"shell","arguments":{"command":"pwd"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"{\"stdout\":\"/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean\\n\",\"stderr\":\"\"}"}]},"jsonrpc":"2.0","id":10}
+ASSERTION: PASS
+SHARED STDIO PROCESS STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

@@ -1,0 +1,26 @@
+ID: SCRIPT-003
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: bash ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/scripts/ci/verify-live-session.sh"]
+CWD: /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli
+STDOUT:
+== clean session: 4 real tool calls through the proxy
+PASS no-secrets-read [policy no-secrets-read/v2 d1e72d1a6c22]: 4/4 receipts satisfy the policy
+root d108c8d105dca6175a71f87b2fa439683ac69aec7a260dbb89431b44e59876e4
+proof written to /var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/tmp.hKbQL4tqlD/session/proof-no-secrets.json (inclusion paths and commitments only; no raw arguments)
+PASS no-secrets-read [policy no-secrets-read/v2 d1e72d1a6c22]: 4 receipts proven under root d108c8d105dca6175a71f87b2fa439683ac69aec7a260dbb89431b44e59876e4
+== secret path: the agent tries to read .env.example
+DENIED or FAILED (receipt recorded): Policy denied (no-secrets-read/v2): read_file touched secret path matching ".env*"
+FAIL no-secrets-read at step 5 [policy no-secrets-read/v2 d1e72d1a6c22]: read_file touched secret path matching ".env*"
+== tampered chain: edit stored receipt 1
+Edited block 1 in /var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/tmp.hKbQL4tqlD/session/session.jsonl. Undo with: restore
+FAIL no-secrets-read at step 1 [policy no-secrets-read/v2 d1e72d1a6c22]: Chain verification failed: Receipt contents were changed
+== empty session
+FAIL no-secrets-read [policy no-secrets-read/v2 d1e72d1a6c22]: No receipts exist for this session, so there is nothing to prove
+verify-live-session: all expectations met
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

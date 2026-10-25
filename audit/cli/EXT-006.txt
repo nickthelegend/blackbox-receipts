@@ -1,0 +1,6 @@
+ID: EXT-006
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+STDOUT: MeterlessConfigError: Meterless not configured: set METERLESS_TOKEN, or METERLESS_STATE_DIR (the runtime writes its token to <stateDir>/proxy-token). Meterless runs locally; there is no hosted API key.
+STDERR:
+EXIT CODE: 0 (caught expected exception; no request made)
+ASSERTION: PASS

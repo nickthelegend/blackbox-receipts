@@ -1,0 +1,326 @@
+ID: SCRIPT-014
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: pnpm ["exec","node","--conditions=source","--import","tsx","--test","test/ci-config.test.ts"]
+CWD: /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli
+STDOUT:
+✔ gitlab ci: the build job hands every built workspace package dist to the test job (0.970333ms)
+✔ ci: the receipt gate is built and run from the base commit, not from the request head (0.182208ms)
+✔ gitlab ci: verify:exported-receipts and verify:agent-demo run a verifier built from the MR base; exports need a pinned key (0.247334ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 56.156042
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+STATIC .github/workflows/ci.yml:
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      - run: pnpm typecheck
+      - run: pnpm lint
+      # Chain verification, property proofs (clean / tampered / empty / secret path) and the verifier CLI.
+      - run: pnpm test
+      - run: bash scripts/ci/verify-live-session.sh
+      # Committed live agent runs (receipts/agent-demo/) still verify as recorded.
+      - run: bash scripts/ci/verify-agent-demo.sh
+
+ASSERTION: PASS
+STATIC .github/workflows/attest-diff.yml:
+# Receipt-gated merge on this repo's pull requests. When a pull request carries an agent's exported
+# session (receipts/<session>/session.jsonl, written by `blackbox-receipts export`), every other file it
+# changes must be exactly what a signed write_file step in that session produced: a human edit after the
+# agent's write, or a file written around the proxy, fails the job and is named in the JUnit report.
+# Pull requests without an exported session are not agent changes; the job says so and passes, unless the
+# branch is an agent branch (blackbox/*). The gate is opt-in: it covers only requests that carry an export.
+name: attest-diff
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  attest-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      # The gate runs from the base commit, never from the code under review: a pull request that edits
+      # checkDiff, the CLI or attest-diff-pr.sh can't certify itself. The base is checked out in its own
+      # worktree, installed and built there, and its copy of the script gates this checkout.
+      - name: Build the gate from the base commit
+        run: |
+          GATE="$RUNNER_TEMP/gate"
+          git worktree add --detach "$GATE" "${{ github.event.pull_request.base.sha }}"
+          cd "$GATE" && pnpm install --frozen-lockfile && pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/meterless build && pnpm --filter @blackbox/proxy build
+      - name: Every changed file must come from a signed write_file step
+        env:
+          # Repository variable (PEM): an export signed by any other proxy key fails. Unset, the gate fails
+          # closed with "Setup required" unless the repository variable BLACKBOX_REQUIRE_PINNED_KEY is 0
+          # (then the export's own key is trusted and the result says UNPINNED).
+          BLACKBOX_PUBLIC_KEY: ${{ vars.BLACKBOX_PUBLIC_KEY }}
+          BLACKBOX_REQUIRE_PINNED_KEY: ${{ vars.BLACKBOX_REQUIRE_PINNED_KEY || '1' }}
+          # An agent branch (blackbox/*) without an export is red instead of NOT APPLICABLE.
+          BLACKBOX_AGENT_BRANCH: ${{ github.head_ref }}
+        run: |
+          GATE="$RUNNER_TEMP/gate"
+          bash "$GATE/scripts/ci/attest-diff-pr.sh" "${{ github.event.pull_request.base.sha }}" attest-diff
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: attest-diff
+          path: attest-diff/
+          if-no-files-found: ignore
+
+ASSERTION: PASS
+STATIC .github/workflows/pages.yml:
+name: pages
+
+# Fallback host for the static, read-only site (GitLab Pages is the primary one, see .gitlab-ci.yml):
+# the landing (the recorded agent run, both exported packs verified in the browser) and the offline
+# /verify page, built by scripts/build-pages.mjs. The recorder dashboard and its API are local-only and
+# are not published. URL after the first run: https://nickthelegend.github.io/blackbox-receipts/
+# One-time setup: Settings -> Pages -> Source "GitHub Actions"
+# (or: gh api -X POST repos/nickthelegend/blackbox-receipts/pages -f build_type=workflow).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - id: pages
+        uses: actions/configure-pages@v5
+      - run: pnpm --filter "@blackbox/web^..." build
+      - name: Static export (landing + /verify)
+        run: node scripts/build-pages.mjs --out public --base-path "${{ steps.pages.outputs.base_path }}"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+ASSERTION: PASS
+STATIC .gitlab-ci.yml:
+# Build, test and verify Blackbox Receipts on GitLab.
+# - verify:live-session records a real session through the MCP proxy on this checkout and checks that the
+#   verifier PASSes it and FAILs a secret read, a tampered log and an empty session.
+# - verify:attest-diff gates merge requests that carry an agent export on its signed writes.
+# - verify:exported-receipts runs when a commit contains receipts/<session>/ exported by the Duo flow,
+#   and fails the pipeline unless every exported session verifies against the pinned BLACKBOX_PUBLIC_KEY
+#   (on an MR, with a verifier built from the MR's base commit).
+# - pages publishes the static, read-only site (landing + offline /verify) to GitLab Pages from the
+#   default branch. The recorder dashboard and its API are local-only and are not part of it.
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_TAG
+
+stages: [build, test, verify, deploy]
+
+default:
+  image: node:22-bookworm
+  cache:
+    key:
+      files: [pnpm-lock.yaml]
+    paths: [.pnpm-store]
+  before_script:
+    - corepack enable
+    - pnpm config set store-dir .pnpm-store
+    - pnpm install --frozen-lockfile
+
+build:
+  stage: build
+  script:
+    - pnpm -r build
+  artifacts:
+    paths:
+      - packages/verify/dist
+      - packages/receipts/dist
+      - packages/proxy/dist
+      - packages/meterless/dist
+      # apps/web imports @blackbox/zetaris; the test job's typecheck needs its built types.
+      - packages/zetaris/dist
+    expire_in: 1 day
+
+test:
+  stage: test
+  needs: [build]
+  script:
+    - pnpm typecheck
+    - pnpm lint
+    - pnpm test
+
+verify:live-session:
+  stage: verify
+  needs: [build]
+  script:
+    - bash scripts/ci/verify-live-session.sh
+
+# On a merge request, both export checks run a verifier built from the MR's base commit in its own
+# worktree (like verify:attest-diff), so an MR that edits packages/verify or the CLI can't green its own
+# receipts. Branch pipelines (the default branch after merge) use this pipeline's build.
+.verifier-from-base: &verifier-from-base
+  - |
+    BLACKBOX_CLI=packages/proxy/dist/cli.js
+    SCRIPTS=scripts/ci
+    if [ "$CI_PIPELINE_SOURCE" = "merge_request_event" ]; then
+      git fetch --quiet origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+      GATE="$(mktemp -d)/gate"
+      git worktree add --detach "$GATE" "$CI_MERGE_REQUEST_DIFF_BASE_SHA"
+      (cd "$GATE" && pnpm install --frozen-lockfile && pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/meterless build && pnpm --filter @blackbox/proxy build)
+      BLACKBOX_CLI="$GATE/packages/proxy/dist/cli.js"
+      SCRIPTS="$GATE/scripts/ci"
+    fi
+    export BLACKBOX_CLI SCRIPTS
+
+verify:agent-demo:
+  stage: verify
+  needs: [build]
+  rules:
+    - exists:
+        - receipts/agent-demo/*/session.jsonl
+  variables:
+    GIT_DEPTH: 0
+  script:
+    - *verifier-from-base
+    - bash "$SCRIPTS/verify-agent-demo.sh"
+
+# Fails closed: an export is checked against the pinned BLACKBOX_PUBLIC_KEY (CI/CD variable, PEM). Without
+# one the job is red with "Setup required: set BLACKBOX_PUBLIC_KEY"; a project variable
+# BLACKBOX_REQUIRE_PINNED_KEY=0 overrides that on purpose (the export's own key is then trusted).
+verify:exported-receipts:
+  stage: verify
+  needs: [build]
+  rules:
+    - exists:
+        - receipts/*/session.jsonl
+  variables:
+    GIT_DEPTH: 0
+    BLACKBOX_REQUIRE_PINNED_KEY: "1"
+  script:
+    - *verifier-from-base
+    - node "$BLACKBOX_CLI" verify-export
+
+# Receipt-gated merge: on a merge request that carries an agent's exported session
+# (receipts/<session>/session.jsonl), every other changed file must be exactly what a signed write_file
+# step produced. Results show in the merge request's test report; the signed attestation is an artifact.
+# Merge requests without an exported session print NOT APPLICABLE and pass, except agent branches
+# (blackbox/*), which must carry one. The gate is opt-in for every other merge request.
+# The gate is built and run from the base commit in its own worktree, never from the merge request's
+# code, so a request that edits checkDiff, the CLI or attest-diff-pr.sh can't certify itself.
+verify:attest-diff:
+  stage: verify
+  needs: []
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  variables:
+    GIT_DEPTH: 0
+    # An agent branch (blackbox/*, what the Duo flow pushes) without an export is red, not NOT APPLICABLE.
+    BLACKBOX_AGENT_BRANCH: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+  before_script:
+    - corepack enable
+    - pnpm config set store-dir "$CI_PROJECT_DIR/.pnpm-store"
+  script:
+    # Fails closed: set BLACKBOX_PUBLIC_KEY (CI/CD variable, PEM) to pin the proxy key. Unset, the job is red
+    # with "Setup required" unless the project sets BLACKBOX_REQUIRE_PINNED_KEY=0 (then it says UNPINNED).
+    - git fetch --quiet origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+    - GATE="$(mktemp -d)/gate"
+    - git worktree add --detach "$GATE" "$CI_MERGE_REQUEST_DIFF_BASE_SHA"
+    - (cd "$GATE" && pnpm install --frozen-lockfile && pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/meterless build && pnpm --filter @blackbox/proxy build)
+    - bash "$GATE/scripts/ci/attest-diff-pr.sh" "$CI_MERGE_REQUEST_DIFF_BASE_SHA" attest-diff
+  artifacts:
+    when: always
+    paths: [attest-diff/]
+    reports:
+      junit: attest-diff/attest-diff.xml
+
+# GitLab Pages: the landing (the recorded agent run, both exported packs verified in the browser) and the
+# offline /verify page, built as a static export by scripts/build-pages.mjs. No server, no API, no keys.
+# The base path comes from CI_PAGES_URL, so it works for <namespace>.gitlab.io/<project>/ and for a
+# unique-domain site served at the root. Runs on the default branch after the tests pass.
+pages:
+  stage: deploy
+  needs: [test]
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - pnpm --filter "@blackbox/web^..." build
+    - |
+      if [ -n "${CI_PAGES_URL:-}" ]; then
+        PAGES_BASE_PATH="$(node -e 'process.stdout.write(new URL(process.env.CI_PAGES_URL).pathname.replace(/\/+$/, ""))')"
+      else
+        PAGES_BASE_PATH="/$CI_PROJECT_NAME"
+      fi
+      export PAGES_BASE_PATH
+      echo "Pages URL: ${CI_PAGES_URL:-unknown}; base path: '${PAGES_BASE_PATH}'"
+    - NEXT_PUBLIC_REPO_URL="$CI_PROJECT_URL" node scripts/build-pages.mjs --out public
+    - test -s public/index.html && test -s public/verify/index.html
+  artifacts:
+    paths: [public]
+
+ASSERTION: PASS

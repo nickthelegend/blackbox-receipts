@@ -1,0 +1,30 @@
+ID: SCRIPT-004
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: bash ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/scripts/ci/verify-agent-demo.sh"]
+CWD: /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli
+STDOUT:
+== receipts/agent-demo/28d95bc3-1244-4f9f-98eb-f2dddd94c114 (recorded under no-secrets-read/v2)
+PASS no-secrets-read [policy no-secrets-read/v2 d1e72d1a6c22]: 5 receipts, chain intact, seal matches, proof verified under root cf68fd36522142ae91f56dfc1890e1f5e710b7f07499e838835ca037379316b1 [receipts/agent-demo/28d95bc3-1244-4f9f-98eb-f2dddd94c114]
+== receipts/agent-demo/933f87da-c941-4588-8716-d6c8df98aded (recorded under no-secrets-read/v1)
+FAIL no-secrets-read [policy no-secrets-read/v1 720836167c0f]: Chain intact and seal matches, but the export has no property proof. Prover reported: FAIL no-secrets-read at step 3 [policy no-secrets-read/v1 720836167c0f]: read_file touched secret path matching ".env*" [receipts/agent-demo/933f87da-c941-4588-8716-d6c8df98aded]
+== receipts/agent-demo/e51c6b41-baba-404e-97a9-9bb2270924a0 (recorded under no-secrets-read/v1)
+PASS no-secrets-read [policy no-secrets-read/v1 720836167c0f]: 14 receipts, chain intact, seal matches, proof verified under root 1056243bb1ea97c3c5cc5d82b6ec2eb17f6ef73342b80cf33a3302debd14a1c3 [receipts/agent-demo/e51c6b41-baba-404e-97a9-9bb2270924a0]
+verify-agent-demo: 3 export(s) match their recorded verdicts
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: bash ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/scripts/ci/verify-agent-demo.sh"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/empty
+STDOUT:
+no agent-demo exports to check
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

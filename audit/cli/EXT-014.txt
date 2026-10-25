@@ -1,0 +1,43 @@
+ID: EXT-014
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: pnpm ["exec","node","--conditions=source","--import","tsx","--test","test/zetaris.test.ts","test/meterless.test.ts"]
+CWD: /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli
+STDOUT:
+
+⚠️  SKIPPING LIVE METERLESS TESTS: METERLESS_TOKEN or METERLESS_STATE_DIR is not set. Nothing was called against a Meterless Runtime.
+
+✔ meterless: missing token throws a clear config error (0.530416ms)
+✔ meterless: token is read from <stateDir>/proxy-token (0.609791ms)
+✔ meterless: pasted URLs normalise to <host>/v1 (0.126542ms)
+✔ explain --model meterless: no token is "Setup required" (exit 2), not a narrative (115.05475ms)
+✔ explain --model meterless: a runtime that is not running is "Setup required" (exit 2), naming the URL (237.793167ms)
+✔ narrative citations: steps the model names are checked against the session (0.282ms)
+﹣ meterless live: runtime is online and answers meterless/auto (0.055ms) # METERLESS_TOKEN / METERLESS_STATE_DIR not set
+﹣ meterless live: a wrong token reads as unauthorized, not offline (0.040125ms) # METERLESS_TOKEN / METERLESS_STATE_DIR not set
+﹣ meterless live: explain --model meterless appends a narrative and checks its citations (0.05925ms) # METERLESS_TOKEN / METERLESS_STATE_DIR not set
+
+⚠️  SKIPPING LIVE ZETARIS TESTS: ZETARIS_API_KEY and ZETARIS_ORG_ID are not set. Nothing was called against Zetaris.
+
+✔ zetaris: missing keys throw a clear config error (0.502458ms)
+✔ zetaris: base URL defaults to the SaaS host and drops trailing slashes (0.116042ms)
+﹣ zetaris live: lists data marts from the real API (0.05325ms) # ZETARIS_API_KEY / ZETARIS_ORG_ID not set
+﹣ zetaris live: runs a SQL query and closes it (0.033292ms) # needs Zetaris keys and ZETARIS_TEST_SQL
+ℹ tests 13
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 5
+ℹ todo 0
+ℹ duration_ms 433.881583
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS

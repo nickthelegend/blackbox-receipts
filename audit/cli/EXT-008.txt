@@ -1,0 +1,20 @@
+ID: EXT-008
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+127.0.0.1:8088 => http://127.0.0.1:8088/v1
+ASSERTION: PASS
+http://127.0.0.1:8088/v1 => http://127.0.0.1:8088/v1
+ASSERTION: PASS
+http://127.0.0.1:8088/v1/ => http://127.0.0.1:8088/v1
+ASSERTION: PASS
+http://127.0.0.1:8088/v1/chat/completions => http://127.0.0.1:8088/v1
+ASSERTION: PASS
+http://127.0.0.1:8088/v1/models => http://127.0.0.1:8088/v1
+ASSERTION: PASS
+http://127.0.0.1:8088/healthz => http://127.0.0.1:8088/v1
+ASSERTION: PASS
+http://127.0.0.1:8088/v1/v1 => http://127.0.0.1:8088/v1
+ASSERTION: PASS
+STDOUT: Meterless not configured: could not read /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/does-not-exist/proxy-token (ENOENT: no such file or directory, open '/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/does-not-exist/proxy-token'). Is the Meterless Runtime installed and has it run once?
+STDERR:
+EXIT CODE: 0 (expected exception caught)
+ASSERTION: PASS

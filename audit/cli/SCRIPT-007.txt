@@ -1,0 +1,35 @@
+ID: SCRIPT-007
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: bash ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/scripts/ci/attest-diff-pr.sh"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/attest
+STDOUT:
+
+STDERR:
+Usage: attest-diff-pr.sh <base-sha> [out-dir]
+
+EXIT CODE: 2
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: bash ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/scripts/ci/attest-diff-pr.sh","9fe3a118d816e3506d59b603113ca86be533a49c"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/attest
+STDOUT:
+
+STDERR:
+Setup required: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/no-cli.js not found (run pnpm install && pnpm build)
+
+EXIT CODE: 2
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: bash ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/scripts/ci/attest-diff-pr.sh","ffffffffffffffffffffffffffffffffffffffff"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/attest
+STDOUT:
+
+STDERR:
+FAIL attest-diff: base ffffffffffffffffffffffffffffffffffffffff is not a commit in this clone (fetch with full history)
+
+EXIT CODE: 1
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

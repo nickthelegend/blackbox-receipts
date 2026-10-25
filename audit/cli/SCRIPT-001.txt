@@ -1,0 +1,70 @@
+ID: SCRIPT-001
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/call.js","--new-session","read_file","{\"path\":\"small.txt\"}"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/bridge
+STDOUT:
+small
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/call.js","shell","{\"command\":\"cat small.txt\"}"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/bridge
+STDOUT:
+small
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+SIGNED RECEIPTS:
+[
+  {
+    "sessionId": "8f5265ca-8f79-4fc5-8e1b-e2223c8e3303",
+    "step": 1,
+    "timestamp": "2026-10-25T20:52:24.673Z",
+    "tool": "read_file",
+    "argsHash": "3f68bf095bad07a31d47e4cf866ed58ccb37af35df6032a0eea960d89dee450f",
+    "paths": [
+      "small.txt"
+    ],
+    "secretsAccessed": false,
+    "permissions": [
+      "workspace:file:read"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "ok",
+    "resultHash": "8f3b21d9e69f89bf0a804f7efd68e6726f50006a709592a207ab0a86e899c5a8",
+    "previousHash": null,
+    "hash": "22cede102d787fc946c84ce3daba748707b4572984b52901b42f4e9266a6c19f",
+    "signature": "+NuE8Lr//ZK1JNEkKcVRIz1KkTmfMKGVYKyAAKfh0aEpf83bzktFfNEL8CUtjc6w+9+522em8YwyCL+aBdFLBw=="
+  },
+  {
+    "sessionId": "8f5265ca-8f79-4fc5-8e1b-e2223c8e3303",
+    "step": 2,
+    "timestamp": "2026-10-25T20:52:24.850Z",
+    "tool": "shell",
+    "argsHash": "7b6ce4a0d4731d44823707e70e2385a3384065df6777cec4ac2afb7df710c8b4",
+    "paths": [
+      "small.txt"
+    ],
+    "secretsAccessed": false,
+    "permissions": [
+      "workspace:shell:execute"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "ok",
+    "resultHash": "8614939d1a86f52e78b3360fb5b00065633d0d822ee630589b0666dc51e1f6ed",
+    "previousHash": "22cede102d787fc946c84ce3daba748707b4572984b52901b42f4e9266a6c19f",
+    "hash": "17ffb5189f6b7fc438405e829bf7bba747cde425d4e582770dca84f53abcc001",
+    "signature": "/cYzL9e0ECOd27uDcBvvzKpaxWHiIO6/8iSmXeiEA8ejTO2kTv1lwrNpmEELvnku6MSM0kBv8pFjSKV27hbLBA=="
+  }
+]
+ASSERTION: PASS

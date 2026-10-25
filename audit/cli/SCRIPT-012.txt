@@ -1,0 +1,121 @@
+ID: SCRIPT-012
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: pnpm ["exec","node","--conditions=source","--import","tsx","--test","test/gitlab-flow.test.ts"]
+CWD: /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli
+STDOUT:
+✔ Duo flow only reaches the workspace through the receipts bridge (0.500917ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 53.844083
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+STATIC FLOW:
+# GitLab Duo Agent Platform custom flow: "Blackbox Receipts reviewer".
+# Paste this file into AI > Flows > New flow (see docs/gitlab-setup.md). Schema: flow registry v1.
+#
+# Every workspace action goes through the Blackbox MCP proxy via the one-shot MCP bridge
+# (packages/proxy/dist/call.js), so each step gets an Ed25519-signed, hash-chained receipt. Remote flows
+# run on CI runners and cannot attach MCP servers directly, which is why the agent uses run_command to
+# start the bridge rather than having MCP tools in its toolset. .gitlab/duo/agent-config.yml builds the
+# bridge before the flow starts.
+version: "v1"
+environment: ambient
+
+components:
+  - name: "blackbox_reviewer"
+    type: AgentComponent
+    prompt_id: "blackbox_reviewer_prompt"
+    inputs:
+      - "context:goal"
+      - from: "context:project_id"
+        as: "project_id"
+    toolset: ["run_command", "create_merge_request_note", "create_issue_note"]
+    ui_log_events: ["on_agent_reasoning", "on_tool_execution_success", "on_tool_execution_failed", "on_agent_final_answer"]
+
+prompts:
+  - prompt_id: "blackbox_reviewer_prompt"
+    name: "Blackbox Receipts reviewer"
+    unit_primitives: []
+    prompt_template:
+      system: |
+        You are a code reviewer that can explain why, and whose every workspace action is recorded
+        as a signed receipt by the Blackbox Receipts proxy. Follow these rules exactly.
+
+        RULE 1. Read the repository ONLY through the receipts bridge, using run_command:
+          node packages/proxy/dist/call.js <tool> '<json arguments>'
+        The available tools and arguments are:
+          read_file  '{"path":"<file>"}'
+          git        '{"action":"status"}'
+          git        '{"action":"log"}'
+          git        '{"action":"show_stat","args":["<revision>"]}'   (files changed by a revision; default HEAD)
+          git        '{"action":"diff","args":["<file>", "..."]}'     (working tree diff of literal paths)
+          git        '{"action":"show","args":["<revision>:<file>"]}'
+          shell      '{"command":"ls -la <dir>"}'                     (only pwd, ls and cat are allowed)
+        Your FIRST command must start a new session:
+          node packages/proxy/dist/call.js --new-session git '{"action":"status"}'
+        Every later bridge call continues that session. Each call prints the tool output. Step numbers
+        start at 1 and increase by one per bridge call, so keep a count of which step produced which output.
+        Never use run_command to read, list, search or print files in any other way (no cat, grep, find,
+        sed, head or less directly, and no env or printenv). Never try to read secrets such as .env files,
+        keys, credentials or the .blackbox directory. If the proxy denies a call, it prints
+        "DENIED or FAILED (receipt recorded)". Do not retry it another way.
+
+        RULE 2. When your investigation is complete, run exactly:
+          node packages/proxy/dist/cli.js export
+        It prints a verdict line that starts with PASS or FAIL, and the directory it exported to
+        (receipts/<session id>). Copy that verdict line verbatim. Never edit files under receipts/.
+
+        RULE 3. Publish the receipts so the merge request pipeline can verify them:
+          git checkout -b blackbox/receipts-<first 8 characters of the session id>
+          git add receipts/<session id>
+          git commit -m "chore(receipts): Blackbox receipts for Duo session <session id>"
+          git push -u origin HEAD
+        These git commands and the export are not part of the receipt chain. Say so in your note.
+        If the push fails, report the exact error in your note and do not try any workaround.
+
+        RULE 4. Post exactly one note on the issue or merge request that triggered you
+        (create_merge_request_note for a merge request, create_issue_note for an issue) containing:
+          - your answer to the request;
+          - "Why": the evidence behind each claim, citing receipt step numbers, for example
+            "step 3 (read_file src/index.ts) shows ...";
+          - the verdict line from RULE 2, verbatim, in a code block;
+          - the receipts directory and branch name, and the push result.
+        Never claim a PASS that the export did not print.
+      user: |
+        Project ID: {{project_id}}
+        {{goal}}
+      placeholder: history
+    params:
+      timeout: 600
+
+routers:
+  - from: "blackbox_reviewer"
+    to: "end"
+
+flow:
+  entry_point: "blackbox_reviewer"
+
+MCP REGISTRATION:
+{
+  "mcpServers": {
+    "blackbox-receipts": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["packages/proxy/dist/server.js"],
+      "approvedTools": ["read_file", "git", "shell"]
+    }
+  }
+}
+
+ASSERTION: PASS

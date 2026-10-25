@@ -1,0 +1,35 @@
+ID: SCRIPT-008
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: bash ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/scripts/ci/attest-diff-pr.sh","32e8e3c457a32edde6aa743600ce5a10b89348f8","/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/attest-output/none"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/no-export
+STDOUT:
+NOT APPLICABLE attest-diff: this request adds no exported agent session (receipts/<session>/session.jsonl), so there are no receipts to gate it on.
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: bash ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/scripts/ci/attest-diff-pr.sh","32e8e3c457a32edde6aa743600ce5a10b89348f8","/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/attest-output/none"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/no-export
+STDOUT:
+FAIL attest-diff: blackbox/audit is an agent branch (blackbox/*) but adds no exported session (receipts/<session>/session.jsonl), so nothing vouches for its changes.
+
+STDERR:
+
+EXIT CODE: 1
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: bash ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/scripts/ci/attest-diff-pr.sh","32e8e3c457a32edde6aa743600ce5a10b89348f8","/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/attest-output/none"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/no-export
+STDOUT:
+FAIL attest-diff: this request adds 2 exported sessions (receipts/one receipts/two); the gate checks one session per request.
+
+STDERR:
+
+EXIT CODE: 1
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

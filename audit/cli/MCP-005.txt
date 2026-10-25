@@ -1,0 +1,128 @@
+ID: MCP-005
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+SHARED PROCESS COMMAND: node /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js []
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/mcp
+STDIN: {"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"write_file","arguments":{"path":"too-big.txt","content":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx [large fixture request truncated]
+STDOUT: {"result":{"content":[{"type":"text","text":"write_file accepts at most 1000000 bytes"}],"isError":true},"jsonrpc":"2.0","id":5}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"write_file","arguments":{"path":".env","content":"AUDIT-CANARY"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"Policy denied (no-secrets-read/v2): write_file touched secret path matching \".env*\""}],"isError":true},"jsonrpc":"2.0","id":6}
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+SIGNED RECEIPTS:
+[
+  {
+    "sessionId": "710f6f24-c93e-4b50-9b00-3a33d3572be8",
+    "step": 1,
+    "timestamp": "2026-10-25T20:52:21.255Z",
+    "tool": "read_file",
+    "argsHash": "3edae0a48de9f8970f03b56f1914a0a65a1576651af153b637ef33175ad3056e",
+    "paths": [
+      "big.bin"
+    ],
+    "secretsAccessed": false,
+    "permissions": [
+      "workspace:file:read"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "error",
+    "resultHash": "98d7ae9044bfdfd9c7056f7852cda7bcb7dec9a07ab567a438e5bc2ad14b998a",
+    "previousHash": null,
+    "hash": "3e2e2bf572d4667bf0960a26f2c49e5f2129b793d3f8c570a7a390b108737e9c",
+    "signature": "O4uSnzso3Ei6lL2ww9VjGauoeuUW680ToJyFk47Ide5vmlKlJXFncxY0+zVXbEZyKl0nPzsVhdFeJdc+Os3nCQ=="
+  },
+  {
+    "sessionId": "710f6f24-c93e-4b50-9b00-3a33d3572be8",
+    "step": 2,
+    "timestamp": "2026-10-25T20:52:21.257Z",
+    "tool": "read_file",
+    "argsHash": "0584f888ad7716bf3c98f02b3d117445a0c29d72655a1db708d8502998f22878",
+    "paths": [
+      "pipe"
+    ],
+    "secretsAccessed": false,
+    "permissions": [
+      "workspace:file:read"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "error",
+    "resultHash": "a6a09eed164548741c5823a6b126ca01b5fcbaf0ed3c41295ec6109eb05c14ad",
+    "previousHash": "3e2e2bf572d4667bf0960a26f2c49e5f2129b793d3f8c570a7a390b108737e9c",
+    "hash": "4617decf80ae0a80df193fe5c46ff3f19c28d5ef82c6a5198c63813a25ad0435",
+    "signature": "EZKQ/R7wPNUGm3AWHAt9XqmCz9yYCk9VThUBYG3tAOxPWDyyLH07NAqPsA2ucZIQmFvRullVJkccP54Q5iG8Dg=="
+  },
+  {
+    "sessionId": "710f6f24-c93e-4b50-9b00-3a33d3572be8",
+    "step": 3,
+    "timestamp": "2026-10-25T20:52:21.259Z",
+    "tool": "write_file",
+    "argsHash": "6a1dade2366e6874b9238e7aa8225b23e85eadf90b80eecd0c26a4f9977abe5e",
+    "paths": [
+      "folder/new.txt"
+    ],
+    "secretsAccessed": false,
+    "permissions": [
+      "workspace:file:write"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "ok",
+    "artifacts": [
+      {
+        "path": "folder/new.txt",
+        "blob": "3e757656cf36eca53338e520d134963a44f793f8"
+      }
+    ],
+    "resultHash": "a95bb1e1ce56580d99538ca80d963d91210738b590d445fa89dc5336296e650c",
+    "previousHash": "4617decf80ae0a80df193fe5c46ff3f19c28d5ef82c6a5198c63813a25ad0435",
+    "hash": "e162674511af7344acb4c35eedf3d459fb447e840fe80b1683f69c4af9ea22c7",
+    "signature": "DE2vK3GQ9NYXCgXj6Nc/hrfN6mDYRbPtSnhdYgyPPSHtAdD4mzuaR4/zmHswlUNE2xLXfodf/gKGWtwVIrtVCg=="
+  },
+  {
+    "sessionId": "710f6f24-c93e-4b50-9b00-3a33d3572be8",
+    "step": 4,
+    "timestamp": "2026-10-25T20:52:21.263Z",
+    "tool": "write_file",
+    "argsHash": "83c31697412a14cc768c639b51fc5f3d970473a3870ec597bcb846834d89709c",
+    "paths": [],
+    "secretsAccessed": false,
+    "permissions": [],
+    "cost": null,
+    "approver": null,
+    "outcome": "error",
+    "resultHash": "7619c42d9a33eeeaaf293acafc9a62b86cbfcc2533d266619fab42f0b77fda1f",
+    "previousHash": "e162674511af7344acb4c35eedf3d459fb447e840fe80b1683f69c4af9ea22c7",
+    "hash": "db7844cc495ba5a2fa04a0b906a5857da8f0b2e4e7e54e913cf5276a1df87950",
+    "signature": "KV7yHcrB9O936o3s9RTJ7Us9S7sJWKefc2wglWXO3lB21v7S7+fz7vmMwDZN0JGQ4wzzJAsbkdIbbqLb0LQiDA=="
+  },
+  {
+    "sessionId": "710f6f24-c93e-4b50-9b00-3a33d3572be8",
+    "step": 5,
+    "timestamp": "2026-10-25T20:52:21.266Z",
+    "tool": "write_file",
+    "argsHash": "3b79f577e5e57ccb003bc05965d4aea6b22939c0a4a7f9045327dd1e374f1946",
+    "paths": [
+      ".env"
+    ],
+    "secretsAccessed": true,
+    "permissions": [
+      "workspace:file:write"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "denied",
+    "resultHash": "38d1bf0b01ded0b6ac6039868d10074f3d68c6f6e31221270b8fcc0a1630ce32",
+    "previousHash": "db7844cc495ba5a2fa04a0b906a5857da8f0b2e4e7e54e913cf5276a1df87950",
+    "hash": "e5576eb0f941a2e5c4436f0f4d84dbc1205b98e68c55fa8dd166641edce45d5b",
+    "signature": "mW2ikVAGcxy6uBXJYwN9pGtWScO3J1k4zwvqfpXelHevXPX7NMEx8qTdt4D7uowaIbbHt3zRs9zNk1+2aYGkDg=="
+  }
+]
+ASSERTION: PASS
+SHARED STDIO PROCESS STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
