@@ -8,6 +8,16 @@ CLI, MCP, EXT, and SCRIPT rows were executed on this run. The recorder rows were
 
 Public-page and API rows are recorded; four expected cells were corrected to the signed seal and the verifier's own messages; WEB-PAGE-VERIFY-ERROR allows React's log of the injected fault.
 
+## Hand-back
+
+No mocks or stubs were added. Live Zetaris, Meterless, Walrus upload, the live demo-agent model call, and the GitLab Duo run were not called.
+
+Setup required for Zetaris, Meterless, and Walrus passed with those variables unset.
+
+No application console error remains on the tested surface. Two browser diagnostics were accepted and are not product failures: Chrome's "Failed to load resource" line when the row requires that HTTP status, and React's console.error of the injected "Audit render fault" on WEB-PAGE-VERIFY-ERROR, which is the exception the error boundary is there to catch.
+
+Totals: 173 PASS, 0 FAIL, 12 UNTESTED.
+
 | ID | component/flow | exact expected result | status | evidence | fix |
 |---|---|---|---|---|---|
 | WEB-PAGE-LANDING | `/` landing page overview | Renders hero headline "Every tool call your agent makes, on the record.", kicker "Flight recorder for AI agents", lead "An MCP proxy signs a hash-chained receipt for every call. Edit or cut one, and verification names the step.", 3 steps (01 Record, 02 Seal, 03 Verify), proof metrics dl (Receipts 10, Denied 1, Tests 91), live section with "Live" and "Setup required", SVG recorder unit with caption "Drawn from recorded session 933f87da: 10 receipts, sealed.", install block with pnpm and node commands, and footer. Zero console errors, page errors, or unexpected failed same-origin 4xx/5xx requests. | PASS | audit/web/WEB-PAGE-LANDING/evidence.md | — |

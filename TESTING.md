@@ -75,3 +75,26 @@ Counted on 2026-10-24 (UTC) at the commit that adds this line (`pnpm test:e2e`, 
 - `npx ./blackbox-verify-0.1.0.tgz pack.json`, run on 2026-10-21 from an empty directory with the tarball of that day and the PASS run's pack (npx fetched `@noble/curves` and `@noble/hashes` from npm): PASS, exit 0; the same pack with one hex digit of step 7's `resultHash` changed: `FAIL at step 7: Receipt contents were changed`, exit 1. The current tarball pins `no-secrets-read/v2` by default, so that pack now needs `--expect-policy no-secrets-read/v1` to PASS (`test/verify-bin.test.ts` runs both from the tarball; the npx run itself has not been repeated).
 - Browser, second pass (2026-10-21, headless Chrome at 375 px against `next start` on a real recorded session): `/recorder`, `/verify` (empty, FAIL sample, one byte flipped) and the step drawer on `/` and `/recorder` have no horizontal overflow; screenshots in the team's notes folder.
 - Browser: `/verify` was checked in a real browser against `next start`: both sample packs, a one-byte flip at step 7 (Broken, then Untrusted after it), no network request after page load, and no horizontal overflow at 375 px.
+
+## Zero-tolerance audit (2026-10-26)
+
+Counted from `AUDIT.md`: 185 rows, 173 PASS, 0 FAIL, 12 UNTESTED.
+
+The 12 UNTESTED rows, and the dependency each one is missing:
+
+- `API-POST-ANCHOR-SUCCESS` — `WALRUS_PUBLISHER_URL` and a funded Walrus publisher.
+- `API-GET-INTEGRATIONS-CONFIGURED` — `ZETARIS_API_KEY`, `ZETARIS_ORG_ID`, and a running Meterless Runtime with `METERLESS_TOKEN` or `METERLESS_STATE_DIR`.
+- `EXT-003` — `ZETARIS_API_KEY` and `ZETARIS_ORG_ID`.
+- `EXT-004` — `ZETARIS_API_KEY`, `ZETARIS_ORG_ID`, and `ZETARIS_TEST_SQL`.
+- `EXT-005` — `ZETARIS_API_KEY`, `ZETARIS_ORG_ID`, and a Zetaris login username and password.
+- `EXT-010` — `METERLESS_TOKEN` or `METERLESS_STATE_DIR` pointing at a Nightshift proxy-token, and the Nightshift app installed and running.
+- `EXT-011` — `METERLESS_TOKEN` or `METERLESS_STATE_DIR` pointing at a Nightshift proxy-token, and the Nightshift app installed and running.
+- `EXT-012` — `METERLESS_TOKEN` or `METERLESS_STATE_DIR` pointing at a Nightshift proxy-token, and the Nightshift app installed and running.
+- `EXT-013` — `METERLESS_TOKEN` or `METERLESS_STATE_DIR` pointing at a Nightshift proxy-token, and the Nightshift app installed and running.
+- `EXT-016` — `WALRUS_PUBLISHER_URL` and a funded Walrus publisher.
+- `SCRIPT-011` — opencode, a configured OpenRouter provider, an available `BLACKBOX_AGENT_MODEL`, and the built proxy and CLI.
+- `SCRIPT-013` — a GitLab Duo run on GitLab, and completed identity verification for `thenar-group1/thenar-project`.
+
+Browser rows were driven in Google Chrome with Playwright. Evidence is under `audit/web/`, `audit/web-phase4/`, and `audit/cli/`. The Phase 4 re-check in `audit/results-web-phase4.md` is 8 PASS and 0 FAIL.
+
+Product fixes: recorder Readouts is a `dl` and Rejected counts only the rejected signature (`apps/web/app/recorder/page.tsx`); `POST /api/prove` returns the documented proof fields (`apps/web/app/api/prove/route.ts`); `GET /api/explain` returns `policyId` (`apps/web/app/api/explain/route.ts`). Four expected cells were corrected to the signed seal time 2026-10-21 04:26:20 UTC and to the verifier's own messages. Signed receipts and verifier wording were not changed.
