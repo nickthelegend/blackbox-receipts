@@ -1,0 +1,78 @@
+ID: MCP-015
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: node /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js []
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/lifecycle
+STDIN: {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","clientInfo":{"name":"audit","version":"1"},"capabilities":{}}}
+STDOUT: {"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{}},"serverInfo":{"name":"blackbox-receipts-proxy","version":"0.2.0"}},"jsonrpc":"2.0","id":1}
+STDIN: {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"read_file","arguments":{"path":"small.txt"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"small\n"}]},"jsonrpc":"2.0","id":2}
+ASSERTION: PASS
+SHARED STDIO PROCESS STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: node /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js []
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/lifecycle
+STDIN: {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","clientInfo":{"name":"audit","version":"1"},"capabilities":{}}}
+STDOUT: {"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{}},"serverInfo":{"name":"blackbox-receipts-proxy","version":"0.2.0"}},"jsonrpc":"2.0","id":1}
+STDIN: {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"read_file","arguments":{"path":"small.txt"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"small\n"}]},"jsonrpc":"2.0","id":2}
+ASSERTION: PASS
+SHARED STDIO PROCESS STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ARCHIVES: ["4195b18c-5c71-432f-9299-b47806e35f62.jsonl","4195b18c-5c71-432f-9299-b47806e35f62.seal.json","4195b18c-5c71-432f-9299-b47806e35f62.witness.jsonl"]
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/lifecycle
+STDOUT:
+
+STDERR:
+blackbox-proxy: session.jsonl is corrupt at line 2: Expected ',' or '}' after property value in JSON at position 9. The line is not one JSON record (an append cut short by a killed process, or an edit), so the log cannot be verified past it. Not resuming it: start a new session (blackbox-call --new-session, or a proxy without RECEIPTS_RESUME), which keeps the damaged log under sessions/.
+
+EXIT CODE: 1
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: node /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js []
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/lifecycle
+STDIN: {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","clientInfo":{"name":"audit","version":"1"},"capabilities":{}}}
+STDERR: blackbox: session.jsonl is corrupt at line 2: Expected ',' or '}' after property value in JSON at position 9. The line is not one JSON record (an append cut short by a killed process, or an edit), so the log cannot be verified past it. Kept it as sessions/corrupt-2026-10-25T20-52-22-630Z.jsonl in the store and started a new session.
+
+STDOUT: {"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{}},"serverInfo":{"name":"blackbox-receipts-proxy","version":"0.2.0"}},"jsonrpc":"2.0","id":1}
+STDIN: {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"read_file","arguments":{"path":"small.txt"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"small\n"}]},"jsonrpc":"2.0","id":2}
+ASSERTION: PASS
+SHARED STDIO PROCESS STDERR:
+blackbox: session.jsonl is corrupt at line 2: Expected ',' or '}' after property value in JSON at position 9. The line is not one JSON record (an append cut short by a killed process, or an edit), so the log cannot be verified past it. Kept it as sessions/corrupt-2026-10-25T20-52-22-630Z.jsonl in the store and started a new session.
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ARCHIVES: ["4195b18c-5c71-432f-9299-b47806e35f62.jsonl","4195b18c-5c71-432f-9299-b47806e35f62.seal.json","4195b18c-5c71-432f-9299-b47806e35f62.witness.jsonl","corrupt-2026-10-25T20-52-22-630Z.jsonl","corrupt-2026-10-25T20-52-22-630Z.seal.json","corrupt-2026-10-25T20-52-22-630Z.witness.jsonl"]
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","verify"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean
+STDOUT:
+{
+  "valid": false,
+  "brokenAt": null,
+  "reason": "Seal says 9 receipts ending at 2d47a5cd02dc, but the log has 8: receipts were removed from the end",
+  "receipts": 8,
+  "root": "0094875156a09c5865c879174c1721cec78ba16c44d8bce8c2ab154307da0324",
+  "sessionId": "1d8cf500-64ef-4106-b0da-9c368e9e3232",
+  "seal": "BROKEN"
+}
+
+STDERR:
+
+EXIT CODE: 1
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

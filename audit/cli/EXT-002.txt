@@ -1,0 +1,15 @@
+ID: EXT-002
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+STDOUT: ZetarisConfigError: ZETARIS_ORG_ID must be an integer org id, got "acme".
+STDERR:
+EXIT CODE: 0 (caught expected exception; no request made)
+ASSERTION: PASS
+ASSERTION: PASS
+STDOUT: RangeError: Zetaris pageLimit must be between 1 and 100
+STDERR:
+EXIT CODE: 0 (caught expected exception; no request made)
+ASSERTION: PASS
+STDOUT: RangeError: Zetaris pageLimit must be between 1 and 100
+STDERR:
+EXIT CODE: 0 (caught expected exception; no request made)
+ASSERTION: PASS

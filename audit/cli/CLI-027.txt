@@ -1,0 +1,40 @@
+ID: CLI-027
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","disclose","1"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/empty
+STDOUT:
+
+STDERR:
+file:///Volumes/Extreme%20SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/receipts/dist/property.js:143
+        throw new RangeError(`No receipt and arguments exist for step ${step}`);
+              ^
+
+RangeError: No receipt and arguments exist for step 1
+    at discloseStep (file:///Volumes/Extreme%20SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/receipts/dist/property.js:143:15)
+    at file:///Volumes/Extreme%20SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js:222:36
+
+Node.js v26.5.0
+
+EXIT CODE: 1
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","disclose","0"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean
+STDOUT:
+
+STDERR:
+file:///Volumes/Extreme%20SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js:220
+            throw new Error('Usage: blackbox-receipts disclose <step>');
+                  ^
+
+Error: Usage: blackbox-receipts disclose <step>
+    at file:///Volumes/Extreme%20SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js:220:19
+
+Node.js v26.5.0
+
+EXIT CODE: 1
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

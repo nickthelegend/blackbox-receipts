@@ -1,0 +1,67 @@
+ID: CLI-057
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: tar ["-xzf","/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/release/blackbox-verify-0.1.0.tgz","-C","/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/tarball/node_modules/@blackbox/verify","--strip-components=1"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+STDOUT:
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/tarball/node_modules/@blackbox/verify/dist/bin.js"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+STDOUT:
+
+STDERR:
+Usage: blackbox-verify <pack.json> [--public-key key.pem] [--expect-policy id|file] [--json]
+
+Verifies a Blackbox Receipts pack offline: every receipt's Ed25519 signature and hash link, the signed
+seal (nothing cut off the end) and the no-secrets-read property proof under the pinned policy.
+  --public-key <file>     require the pack to be signed by this PEM key (or set BLACKBOX_PUBLIC_KEY)
+  --expect-policy <id>    pin a published policy (no-secrets-read/v2, no-secrets-read/v1) or a
+                          policy JSON file; the default is no-secrets-read/v2. Runs recorded under
+                          no-secrets-read/v1 verify only when it is pinned.
+  --json                  print the full result as JSON
+Exit codes: 0 PASS, 1 FAIL, 2 usage error or unreadable file.
+
+EXIT CODE: 2
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/tarball/node_modules/@blackbox/verify/dist/bin.js","--help"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+STDOUT:
+Usage: blackbox-verify <pack.json> [--public-key key.pem] [--expect-policy id|file] [--json]
+
+Verifies a Blackbox Receipts pack offline: every receipt's Ed25519 signature and hash link, the signed
+seal (nothing cut off the end) and the no-secrets-read property proof under the pinned policy.
+  --public-key <file>     require the pack to be signed by this PEM key (or set BLACKBOX_PUBLIC_KEY)
+  --expect-policy <id>    pin a published policy (no-secrets-read/v2, no-secrets-read/v1) or a
+                          policy JSON file; the default is no-secrets-read/v2. Runs recorded under
+                          no-secrets-read/v1 verify only when it is pinned.
+  --json                  print the full result as JSON
+Exit codes: 0 PASS, 1 FAIL, 2 usage error or unreadable file.
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/tarball/node_modules/@blackbox/verify/dist/bin.js","--version"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+STDOUT:
+0.1.0
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

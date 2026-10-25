@@ -1,0 +1,27 @@
+ID: CLI-050
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","public-key"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean
+STDOUT:
+
+STDERR:
+node:internal/fs/promises:1605
+  return await PromisePrototypeThen(
+         ^
+
+Error: EEXIST: file already exists, mkdir '/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/not-directory'
+    at async mkdir (node:internal/fs/promises:1605:10)
+    at async loadOrCreateKeys (file:///Volumes/Extreme%20SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/store.js:61:5)
+    at async file:///Volumes/Extreme%20SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js:421:31 {
+  errno: -17,
+  code: 'EEXIST',
+  syscall: 'mkdir',
+  path: '/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/not-directory'
+}
+
+Node.js v26.5.0
+
+EXIT CODE: 1
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

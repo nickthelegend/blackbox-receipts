@@ -1,0 +1,170 @@
+ID: MCP-013
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: node /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js ["--upstream","/opt/homebrew/Cellar/node/26.5.0/bin/node \"/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/test/fixtures/upstream-server.mjs\""]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/upstream
+STDIN: {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","clientInfo":{"name":"audit","version":"1"},"capabilities":{}}}
+STDOUT: {"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{}},"serverInfo":{"name":"blackbox-receipts-proxy","version":"0.2.0"}},"jsonrpc":"2.0","id":1}
+STDIN: {"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}
+STDOUT: {"result":{"tools":[{"name":"echo","description":"Returns the text it was given.","inputSchema":{"type":"object","properties":{"text":{"type":"string"}},"required":["text"]}},{"name":"add","description":"Adds two numbers.","inputSchema":{"type":"object","properties":{"a":{"type":"number"},"b":{"type":"number"}},"required":["a","b"]}},{"name":"read_note","description":"Reads a text file relative to the working directory.","inputSchema":{"type":"object","properties":{"path":{"type":"string"}},"required":["path"]}},{"name":"fail","description":"Always returns a tool error.","inputSchema":{"type":"object","properties":{}}},{"name":"env","description":"Says whether an environment variable is set in this server, and its value.","inputSchema":{"type":"object","properties":{"name":{"type":"string"}},"required":["name"]}},{"name":"blackbox_explain","description":"Explain this session from its signed receipts: the prover's no-secrets-read verdict and, for each recorded call, why it was allowed, refused or failed, citing the receipts it rests on. Pass step to explain one call. Covers the calls recorded before this one; this call is recorded too.","inputSchema":{"type":"object","properties":{"step":{"type":"integer","minimum":1,"description":"Explain only this step"}}}}]},"jsonrpc":"2.0","id":2}
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":3,"method":"tools/list","params":{"cursor":"audit-page"}}
+STDOUT: {"result":{"tools":[{"name":"echo","description":"Returns the text it was given.","inputSchema":{"type":"object","properties":{"text":{"type":"string"}},"required":["text"]}},{"name":"add","description":"Adds two numbers.","inputSchema":{"type":"object","properties":{"a":{"type":"number"},"b":{"type":"number"}},"required":["a","b"]}},{"name":"read_note","description":"Reads a text file relative to the working directory.","inputSchema":{"type":"object","properties":{"path":{"type":"string"}},"required":["path"]}},{"name":"fail","description":"Always returns a tool error.","inputSchema":{"type":"object","properties":{}}},{"name":"env","description":"Says whether an environment variable is set in this server, and its value.","inputSchema":{"type":"object","properties":{"name":{"type":"string"}},"required":["name"]}}]},"jsonrpc":"2.0","id":3}
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"echo","arguments":{"text":"hi"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"hi"}]},"jsonrpc":"2.0","id":4}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"add","arguments":{"a":2,"b":3}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"5"}],"structuredContent":{"sum":5}},"jsonrpc":"2.0","id":5}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"read_note","arguments":{"path":"small.txt"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"small\n"}]},"jsonrpc":"2.0","id":6}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"read_note","arguments":{"path":".env"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"Policy denied (no-secrets-read/v2): read_note touched secret path matching \".env*\""}],"isError":true},"jsonrpc":"2.0","id":7}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":8,"method":"tools/call","params":{"name":"fail","arguments":{}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"upstream refused: this tool always fails"}],"isError":true},"jsonrpc":"2.0","id":8}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":9,"method":"tools/call","params":{"name":"blackbox_explain","arguments":{}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"# Session 1cf84851-60af-49ce-b666-fa58e34b5e49\n\n**Verdict:** `FAIL no-secrets-read at step 4 [policy no-secrets-read/v2 d1e72d1a6c22]: read_note touched secret path matching \".env*\"`\n\n- Chain: 5 receipts, every signature and link verifies\n- Merkle root: `06560117fe309ab6940d7356cd59c5b0d8eba00e2bc2fc38d52357662af76382`\n- Seal: none yet (the proxy writes it when it shuts down)\n- Policy: `no-secrets-read/v2`\n\n## Steps\n\n- **step 1** 20:52:21 `echo {\"text\":\"hi\"}` → ok · receipt `8abee9a63a93`\n- **step 2** 20:52:21 `add {\"a\":2,\"b\":3}` → ok · receipt `3c238425c733`\n- **step 3** 20:52:21 `read_note {\"path\":\"small.txt\"}` → ok · receipt `eb54a42a7716`\n- **step 4** 20:52:21 `read_note {\"path\":\".env\"}` → **DENIED** — Policy denied (no-secrets-read/v2): read_note touched secret path matching \".env*\" · receipt `0c8d0c11ff55`\n- **step 5** 20:52:21 `fail {}` → error — upstream refused: this tool always fails · receipt `27809e95d9e9`\n\n## Why\n\n- **step 4** `read_note {\"path\":\".env\"}` violates `no-secrets-read/v2`: read_note touched secret path matching \".env*\". The proxy refused it before it ran, so the agent never received the contents; the attempt itself is what the proof reports. It came right after step 2 `add {\"a\":2,\"b\":3}` and step 3 `read_note {\"path\":\"small.txt\"}`.\n\n_Generated by `blackbox-receipts explain` from the signed receipts and the private witness. Each argument shown was checked against its receipt's argsHash._\n"}]},"jsonrpc":"2.0","id":9}
+ASSERTION: PASS
+ASSERTION: PASS
+SHARED STDIO PROCESS STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+UPSTREAM CALL LOG:
+{"name":"echo","args":{"text":"hi"}}
+{"name":"add","args":{"a":2,"b":3}}
+{"name":"read_note","args":{"path":"small.txt"}}
+{"name":"fail","args":{}}
+
+ASSERTION: PASS
+SIGNED RECEIPTS:
+[
+  {
+    "sessionId": "1cf84851-60af-49ce-b666-fa58e34b5e49",
+    "step": 1,
+    "timestamp": "2026-10-25T20:52:21.750Z",
+    "tool": "echo",
+    "argsHash": "f46849901057bb07b74c1bb47a6f40ae78bd42dbf56446e71aca83a698bef45c",
+    "paths": [],
+    "secretsAccessed": false,
+    "permissions": [
+      "upstream:echo"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "ok",
+    "resultHash": "b11d970f7692a5b9974a44c764c79c020d9e9121a6e2f9c33d208c57aac3bf7d",
+    "previousHash": null,
+    "hash": "8abee9a63a930d888a0fcc962a4d686282daea07129f4556aa560f91092bff90",
+    "signature": "nI89Q0xOSOtfHQ2Qlq7GmbDDEJ4BhjYVh63R8rOq5lQ+MXPg1PHWsnGFBt3CvSC8wqe1Jec3OXxvmmr1aasJDQ=="
+  },
+  {
+    "sessionId": "1cf84851-60af-49ce-b666-fa58e34b5e49",
+    "step": 2,
+    "timestamp": "2026-10-25T20:52:21.754Z",
+    "tool": "add",
+    "argsHash": "10c46bed4e7dfd5eb5f9aa929683b2f224213c97c411a9aa16bb327c204dff93",
+    "paths": [],
+    "secretsAccessed": false,
+    "permissions": [
+      "upstream:add"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "ok",
+    "resultHash": "62cd84a15dcd29b6b91d15a2bb85562f952286d2c9e4cb7d39caa84711d4f36f",
+    "previousHash": "8abee9a63a930d888a0fcc962a4d686282daea07129f4556aa560f91092bff90",
+    "hash": "3c238425c733a7e7fc91c4b20e3b4a1904400d0ae347ac9ea8c94b6276c04416",
+    "signature": "NJjs6XUeClWOVsZ5ti1JdF6FaRfhH8VAbN05cnPVg7GJ7Yu2n1ysqd76IkcADKMPF7XI0se/GQ9LET3ruzIzCA=="
+  },
+  {
+    "sessionId": "1cf84851-60af-49ce-b666-fa58e34b5e49",
+    "step": 3,
+    "timestamp": "2026-10-25T20:52:21.761Z",
+    "tool": "read_note",
+    "argsHash": "98e2a0dea73ed526504cb8a6d791b0ea931eab62bf1d6c92b771601def4799fb",
+    "paths": [
+      "small.txt"
+    ],
+    "secretsAccessed": false,
+    "permissions": [
+      "upstream:read_note"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "ok",
+    "resultHash": "b769831f6c899e05ed6859f62b4dc108d18d33b79d5b7d294ac7d13f088bf77c",
+    "previousHash": "3c238425c733a7e7fc91c4b20e3b4a1904400d0ae347ac9ea8c94b6276c04416",
+    "hash": "eb54a42a7716fc79a1e74f1e21ff0aca542fce178c84ecc8cb4a1d314287a146",
+    "signature": "qotg0DG+BqanxvZcZfHapiBBaTBP+V8leNycIQPbgMugvd6Al8cB0pX25FAvoVlzDx/l6l91MPEERTpJXw/oCg=="
+  },
+  {
+    "sessionId": "1cf84851-60af-49ce-b666-fa58e34b5e49",
+    "step": 4,
+    "timestamp": "2026-10-25T20:52:21.762Z",
+    "tool": "read_note",
+    "argsHash": "55481ab672048d33060c24ec540e26fe64df7a88414dd97144516a0400c4426e",
+    "paths": [
+      ".env"
+    ],
+    "secretsAccessed": true,
+    "permissions": [
+      "upstream:read_note"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "denied",
+    "resultHash": "3727affae56475a3e6be960667fa9bcfa298013c5bd0323946b9cf883adc11c0",
+    "previousHash": "eb54a42a7716fc79a1e74f1e21ff0aca542fce178c84ecc8cb4a1d314287a146",
+    "hash": "0c8d0c11ff55679a86d8010f650837378d4f7631c8e4aa3145fced1b54f93f37",
+    "signature": "F3k248B+Y6J+eur6f1BC5u/M1jSPVKC0AGEwyyK5svgkc5+jUO7ZD5qgMF/WoLigJUVeOZIcN+1Rhe4mMLGKCA=="
+  },
+  {
+    "sessionId": "1cf84851-60af-49ce-b666-fa58e34b5e49",
+    "step": 5,
+    "timestamp": "2026-10-25T20:52:21.764Z",
+    "tool": "fail",
+    "argsHash": "622db5f2e9eebe82d9e88ac3c4049ff3abcd8979d581960b3fe407b5ef2095a8",
+    "paths": [],
+    "secretsAccessed": false,
+    "permissions": [
+      "upstream:fail"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "error",
+    "resultHash": "4db89653375f85b24ffb140ba6dd411175ca6c42e80a11e98e28645585aad420",
+    "previousHash": "0c8d0c11ff55679a86d8010f650837378d4f7631c8e4aa3145fced1b54f93f37",
+    "hash": "27809e95d9e991c4f3b7ff11628ec455fab570697e2b8d39f09657d843dbc8ce",
+    "signature": "pGfPvSxmjxcIVdGO08p8gSQ7QebWbnC85/v7L2s0yRWAS7oiX/yBbF80f3ANxXGpjiK1R5d/MHFL2DUjB6yNBA=="
+  },
+  {
+    "sessionId": "1cf84851-60af-49ce-b666-fa58e34b5e49",
+    "step": 6,
+    "timestamp": "2026-10-25T20:52:21.784Z",
+    "tool": "blackbox_explain",
+    "argsHash": "63cbbec71d08bf2cda7dad759b91d096673b3b4bb8db6d1b518e14466d00ac72",
+    "paths": [],
+    "secretsAccessed": false,
+    "permissions": [
+      "blackbox:explain"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "ok",
+    "resultHash": "94c112ad322bb6edd6401baacb9d12af0b396e4477f51cd4276950e12dda3094",
+    "previousHash": "27809e95d9e991c4f3b7ff11628ec455fab570697e2b8d39f09657d843dbc8ce",
+    "hash": "b461bba39c79689f8043d6d60e586f2683ebbbaaeeb18aa4d006bf6945a20f3e",
+    "signature": "1im7Adk0Wy7hTAxNah8uw2/XEAYhXcJ7T2forrKOk/m9vsOoiiHj+UXazIofMkWM18UUSbmMaFp5FhpBlYEjCQ=="
+  }
+]
+ASSERTION: PASS

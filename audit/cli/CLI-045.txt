@@ -1,0 +1,20 @@
+ID: CLI-045
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","attest-diff","--base","9fe3a118d816e3506d59b603113ca86be533a49c"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/attest
+STDOUT:
+FAIL unrecorded change: bypass.txt
+FAIL unrecorded change: delete.txt was deleted, and no signed step deletes files
+ok   new.txt: matches the write signed at step 2
+FAIL small.txt changed after its recorded write (step 1 wrote 5ea2ed416f, the file is now 727ea763ee)
+FAIL attest-diff: 3 of 4 changed file(s) since 9fe3a118d816 were not produced by a signed write_file step
+
+STDERR:
+
+EXIT CODE: 1
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS

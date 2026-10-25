@@ -1,0 +1,24 @@
+ID: SCRIPT-010
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: /bin/bash ["/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/setup-fixture/scripts/demo-agent.sh"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/setup-fixture
+STDOUT:
+Setup required: install opencode (https://opencode.ai) and configure its OpenRouter provider
+
+STDERR:
+
+EXIT CODE: 2
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: /bin/bash ["/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/setup-fixture/scripts/demo-agent.sh"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/setup-fixture
+STDOUT:
+Setup required: run pnpm install && pnpm build first
+
+STDERR:
+
+EXIT CODE: 2
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

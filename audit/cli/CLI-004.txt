@@ -1,0 +1,23 @@
+ID: CLI-004
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","verify"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean
+STDOUT:
+{
+  "valid": false,
+  "brokenAt": 1,
+  "reason": "Receipt contents were changed",
+  "receipts": 8,
+  "root": "0094875156a09c5865c879174c1721cec78ba16c44d8bce8c2ab154307da0324",
+  "sessionId": "1d8cf500-64ef-4106-b0da-9c368e9e3232",
+  "seal": "covers 8 of 8 receipts"
+}
+
+STDERR:
+
+EXIT CODE: 1
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS

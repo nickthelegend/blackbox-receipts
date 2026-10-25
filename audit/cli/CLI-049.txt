@@ -1,0 +1,15 @@
+ID: CLI-049
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","public-key"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean
+STDOUT:
+-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEAW5lG516FyJHj5ddJ1xMY/VMT8scTkrPZ5oMTkWLQgFw=
+-----END PUBLIC KEY-----
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

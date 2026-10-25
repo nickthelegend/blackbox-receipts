@@ -1,0 +1,6 @@
+ID: EXT-001
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+STDOUT: ZetarisConfigError: Zetaris not configured: missing ZETARIS_API_KEY, ZETARIS_ORG_ID. Create an API key in the Zetaris Console and get your Org ID from Zetaris Support/Admin, then set them in .env.local.
+STDERR:
+EXIT CODE: 0 (caught expected exception; no request made)
+ASSERTION: PASS

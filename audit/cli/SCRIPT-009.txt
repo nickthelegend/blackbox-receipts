@@ -1,0 +1,86 @@
+ID: SCRIPT-009
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: bash ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/scripts/demo-attest-diff.sh"]
+CWD: /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli
+STDOUT:
+== base 880929f orchestra t-merge: Write AUDIT.md
+   temp clone of t-exec-cli; proxy, bridge and CLI from packages/proxy/dist
+
+== branch agent/clean: the agent fixes parseLine (it read "12abc" as 12) and notes it
+   agent write_file examples/injection-repo/src/parse.ts (receipt recorded)
+   agent write_file examples/injection-repo/CHANGELOG.md (receipt recorded)
+   PASS no-secrets-read [policy no-secrets-read/v2 d1e72d1a6c22]: 2/2 receipts satisfy the policy
+   exported 2 receipts to receipts/9a8f4a53-5577-4ed0-9f59-d8a27b0095e4
+   committed b9d1096: agent: parseLine rejects trailing characters
+
+== CI gate on agent-clean: bash scripts/ci/attest-diff-pr.sh <base>
+   == attest-diff against 880929fef3d00c1dcc318bb0067730c25f031ef6 using receipts/9a8f4a53-5577-4ed0-9f59-d8a27b0095e4
+   ok   examples/injection-repo/CHANGELOG.md: matches the write signed at step 2
+   ok   examples/injection-repo/src/parse.ts: matches the write signed at step 1
+   PASS attest-diff: 2 changed file(s) since 880929fef3d0, each produced by a signed write_file step
+   == JUnit summary (attest-diff.xml)
+   blackbox attest-diff 880929fef3d00c1dcc318bb0067730c25f031ef6 (session 9a8f4a53-5577-4ed0-9f59-d8a27b0095e4): 2 test(s), 0 failure(s)
+     ok   examples/injection-repo/CHANGELOG.md
+     ok   examples/injection-repo/src/parse.ts
+   exit 0
+
+== branch agent/human-edit: agent/clean plus a human commit on the agent's file
+   committed e3ff3e3: human: note the review (edits examples/injection-repo/CHANGELOG.md directly)
+
+== CI gate on agent-human-edit: bash scripts/ci/attest-diff-pr.sh <base>
+   == attest-diff against 880929fef3d00c1dcc318bb0067730c25f031ef6 using receipts/9a8f4a53-5577-4ed0-9f59-d8a27b0095e4
+   FAIL examples/injection-repo/CHANGELOG.md changed after its recorded write (step 2 wrote 1c139cd36e, the file is now db93b29fb8)
+   ok   examples/injection-repo/src/parse.ts: matches the write signed at step 1
+   FAIL attest-diff: 1 of 2 changed file(s) since 880929fef3d0 were not produced by a signed write_file step
+   == JUnit summary (attest-diff.xml)
+   blackbox attest-diff 880929fef3d00c1dcc318bb0067730c25f031ef6 (session 9a8f4a53-5577-4ed0-9f59-d8a27b0095e4): 2 test(s), 1 failure(s)
+     FAIL examples/injection-repo/CHANGELOG.md - examples/injection-repo/CHANGELOG.md changed after its recorded write (step 2 wrote 1c139cd36e, the file is now db93b29fb8)
+     ok   examples/injection-repo/src/parse.ts
+   exit 1
+
+== branch agent/bypass: one write through the proxy, one file written with a plain shell around it
+   agent write_file examples/injection-repo/src/parse.ts (receipt recorded)
+   shell (not the proxy) wrote examples/injection-repo/src/debug.ts: no receipt
+   PASS no-secrets-read [policy no-secrets-read/v2 d1e72d1a6c22]: 1/1 receipts satisfy the policy
+   exported 1 receipts to receipts/776958a3-ff70-42bd-a7fe-209ee7163cc7
+   committed c3dc840: agent: parse fix plus a debug helper
+
+== CI gate on agent-bypass: bash scripts/ci/attest-diff-pr.sh <base>
+   == attest-diff against 880929fef3d00c1dcc318bb0067730c25f031ef6 using receipts/776958a3-ff70-42bd-a7fe-209ee7163cc7
+   FAIL unrecorded change: examples/injection-repo/src/debug.ts
+   ok   examples/injection-repo/src/parse.ts: matches the write signed at step 1
+   FAIL attest-diff: 1 of 2 changed file(s) since 880929fef3d0 were not produced by a signed write_file step
+   == JUnit summary (attest-diff.xml)
+   blackbox attest-diff 880929fef3d00c1dcc318bb0067730c25f031ef6 (session 776958a3-ff70-42bd-a7fe-209ee7163cc7): 2 test(s), 1 failure(s)
+     FAIL examples/injection-repo/src/debug.ts - unrecorded change: examples/injection-repo/src/debug.ts
+     ok   examples/injection-repo/src/parse.ts
+   exit 1
+
+== summary (base 880929f)
+   agent/clean        exit 0 (expected 0: green)
+   agent/human-edit   exit 1 (expected 1: red)
+   agent/bypass       exit 1 (expected 1: red)
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: /bin/bash ["/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/setup-fixture/scripts/demo-attest-diff.sh"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/setup-fixture
+STDOUT:
+Setup required: run pnpm install && pnpm build first
+
+STDERR:
+
+EXIT CODE: 2
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

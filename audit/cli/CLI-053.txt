@@ -1,0 +1,111 @@
+ID: CLI-053
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","restore"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean
+STDOUT:
+Restored block(s) 1 to their signed originals.
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","verify"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean
+STDOUT:
+{
+  "valid": true,
+  "brokenAt": null,
+  "reason": null,
+  "receipts": 8,
+  "root": "0094875156a09c5865c879174c1721cec78ba16c44d8bce8c2ab154307da0324",
+  "sessionId": "1d8cf500-64ef-4106-b0da-9c368e9e3232",
+  "seal": "covers 8 of 8 receipts"
+}
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: node /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js []
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/restore-appended
+STDIN: {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","clientInfo":{"name":"audit","version":"1"},"capabilities":{}}}
+STDOUT: {"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{}},"serverInfo":{"name":"blackbox-receipts-proxy","version":"0.2.0"}},"jsonrpc":"2.0","id":1}
+STDIN: {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"read_file","arguments":{"path":"small.txt"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"small\n"}]},"jsonrpc":"2.0","id":2}
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"shell","arguments":{"command":"pwd"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"{\"stdout\":\"/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/restore-appended\\n\",\"stderr\":\"\"}"}]},"jsonrpc":"2.0","id":3}
+ASSERTION: PASS
+SHARED STDIO PROCESS STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","tamper","2"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/restore-appended
+STDOUT:
+Edited block 2 in /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/restore-appended-store/session.jsonl. Undo with: restore
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","tamper","1"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/restore-appended
+STDOUT:
+Edited block 1 in /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/restore-appended-store/session.jsonl. Undo with: restore
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+COMMAND: node /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js []
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/restore-appended
+STDIN: {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","clientInfo":{"name":"audit","version":"1"},"capabilities":{}}}
+STDOUT: {"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{}},"serverInfo":{"name":"blackbox-receipts-proxy","version":"0.2.0"}},"jsonrpc":"2.0","id":1}
+STDIN: {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"read_file","arguments":{"path":"small.txt"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"small\n"}]},"jsonrpc":"2.0","id":2}
+ASSERTION: PASS
+SHARED STDIO PROCESS STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","restore"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/restore-appended
+STDOUT:
+Restored block(s) 1, 2 to their signed originals.
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","verify"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/restore-appended
+STDOUT:
+{
+  "valid": true,
+  "brokenAt": null,
+  "reason": null,
+  "receipts": 3,
+  "root": "946b076349ad517e1307c8269f3f30772522c576e3ad30672dfe28a521fd4cb8",
+  "sessionId": "66352b23-374d-469a-89db-95e4a9cff52b",
+  "seal": "covers 3 of 3 receipts"
+}
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS

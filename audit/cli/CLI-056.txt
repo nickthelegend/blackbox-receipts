@@ -1,0 +1,26 @@
+ID: CLI-056
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","not-a-command"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean
+STDOUT:
+
+STDERR:
+Usage: blackbox-receipts [verify | prove [--policy file] [--out file] | verify-proof [file] [--root hex] [--public-key file] | export [dir] | verify-export [dir...] | explain [--json] [--step N] [--out file] [--model meterless] | pack [out.json] [--from exportDir] | verify-pack <file> | attest-diff --base <sha> [--from dir] [--junit file] [--out file] | disclose <step> | public-key | tamper [step] | restore]
+Verdicts are judged against no-secrets-read/v2 unless you pin another policy with --expect-policy <id or file> (no-secrets-read/v1 for runs recorded under it) or BLACKBOX_POLICY_HASH.
+
+EXIT CODE: 2
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","verify","--expect-policy","no-secrets-read/v0"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean
+STDOUT:
+
+STDERR:
+--expect-policy no-secrets-read/v0 is neither a published policy (no-secrets-read/v2, no-secrets-read/v1) nor a readable policy file
+
+EXIT CODE: 2
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

@@ -1,0 +1,146 @@
+ID: MCP-016
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: node /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js []
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/boundary
+STDIN: {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","clientInfo":{"name":"audit","version":"1"},"capabilities":{}}}
+STDOUT: {"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{}},"serverInfo":{"name":"blackbox-receipts-proxy","version":"0.2.0"}},"jsonrpc":"2.0","id":1}
+STDIN: {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"read_file","arguments":{"path":"small.txt"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"small\n"}]},"jsonrpc":"2.0","id":2}
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"read_file","arguments":{"path":"ledger/session.jsonl"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"Policy denied (no-secrets-read/v2): read_file touched the receipt store"}],"isError":true},"jsonrpc":"2.0","id":3}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"read_file","arguments":{"path":"ledger-alias/session.jsonl"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"Policy denied (no-secrets-read/v2): read_file touched the receipt store"}],"isError":true},"jsonrpc":"2.0","id":4}
+ASSERTION: PASS
+ASSERTION: PASS
+SHARED STDIO PROCESS STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+SIGNED RECEIPTS:
+[
+  {
+    "sessionId": "b63777a0-e2d4-4bd5-9ecd-6c8004360b61",
+    "step": 1,
+    "timestamp": "2026-10-25T20:52:22.086Z",
+    "tool": "read_file",
+    "argsHash": "1061c9270565bc41338735ad5fba4dec4d7f76f6411cf3e79e6352b77277e4f1",
+    "paths": [
+      "small.txt"
+    ],
+    "secretsAccessed": false,
+    "permissions": [
+      "workspace:file:read"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "ok",
+    "resultHash": "b3eea437463cf52ff64fbe1edd520c14fca006da55ad5f992d5095317553e6bc",
+    "previousHash": null,
+    "hash": "633dfd476616cebbd7664f6d8e30e8f5feed576ee6c91bb4ac0ce7efc4e6bd22",
+    "signature": "Il5fEDd1lIB3irgTyTgeLtraGimH/o9pL0yrU/0AG8Vr+XryDa7rF8zxxc1w37e4Olw4RELhpOkvXBJ7UaesBw=="
+  },
+  {
+    "sessionId": "b63777a0-e2d4-4bd5-9ecd-6c8004360b61",
+    "step": 2,
+    "timestamp": "2026-10-25T20:52:22.089Z",
+    "tool": "read_file",
+    "argsHash": "06aa800ac3f7a810bcfcc768e0c993bf438426199596370197fbbc504cddb152",
+    "paths": [
+      "ledger/session.jsonl"
+    ],
+    "secretsAccessed": true,
+    "permissions": [
+      "workspace:file:read"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "denied",
+    "resultHash": "b4fda5a8f6910c6f108368c522c2be00ecc7427ac7938920eb22038f871ad0a8",
+    "previousHash": "633dfd476616cebbd7664f6d8e30e8f5feed576ee6c91bb4ac0ce7efc4e6bd22",
+    "hash": "97d8fe2a2b8833aa218b85bd638c4a9f8ad5da0ad4d0da6f41101803647b942c",
+    "signature": "8rbRcHhXRlRg18R+FTfNU4F/dxZDVHS2Er35JkDKXZBu+LUdnfuR6aRFerO5EgifAWnzXN8d41uhQWONgW43Bw=="
+  },
+  {
+    "sessionId": "b63777a0-e2d4-4bd5-9ecd-6c8004360b61",
+    "step": 3,
+    "timestamp": "2026-10-25T20:52:22.090Z",
+    "tool": "read_file",
+    "argsHash": "5e59c0d1d24154146c935a9541306a33d9029729549df3d25d70c20649781a37",
+    "paths": [
+      "ledger/session.jsonl"
+    ],
+    "secretsAccessed": true,
+    "permissions": [
+      "workspace:file:read"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "denied",
+    "resultHash": "2aead01cbf52161b08c3d73115137f1244bddc72ab434d36ea1f8276b23d41e9",
+    "previousHash": "97d8fe2a2b8833aa218b85bd638c4a9f8ad5da0ad4d0da6f41101803647b942c",
+    "hash": "ae66fac69ebdde48c8ed873d867f2afca17feac4c8a430f61b824ac60b377d22",
+    "signature": "DxUnjQ1DjIzeBzt/kcmkGor/VCgxDzOAf9Nrx46l8TN09om8tHD1aoFjN8aN+4j/LhwBeB5Jgs99V5PvAq/0Cg=="
+  }
+]
+ASSERTION: PASS
+COMMAND: node /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js ["--upstream","/opt/homebrew/Cellar/node/26.5.0/bin/node \"/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/test/fixtures/upstream-server.mjs\""]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/upstream
+STDIN: {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","clientInfo":{"name":"audit","version":"1"},"capabilities":{}}}
+STDOUT: {"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{}},"serverInfo":{"name":"blackbox-receipts-proxy","version":"0.2.0"}},"jsonrpc":"2.0","id":1}
+STDIN: {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"env","arguments":{"name":"RECEIPTS_SIGNING_KEY"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"undefined"}]},"jsonrpc":"2.0","id":2}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"env","arguments":{"name":"BLACKBOX_KEY_DIR"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"undefined"}]},"jsonrpc":"2.0","id":3}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"env","arguments":{"name":"RECEIPTS_DIR"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"undefined"}]},"jsonrpc":"2.0","id":4}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"env","arguments":{"name":"ZETARIS_API_KEY"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"undefined"}]},"jsonrpc":"2.0","id":5}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"env","arguments":{"name":"METERLESS_TOKEN"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"undefined"}]},"jsonrpc":"2.0","id":6}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"env","arguments":{"name":"METERLESS_STATE_DIR"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"undefined"}]},"jsonrpc":"2.0","id":7}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":8,"method":"tools/call","params":{"name":"env","arguments":{"name":"GITLAB_TOKEN"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"undefined"}]},"jsonrpc":"2.0","id":8}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":9,"method":"tools/call","params":{"name":"env","arguments":{"name":"CI_JOB_TOKEN"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"undefined"}]},"jsonrpc":"2.0","id":9}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":10,"method":"tools/call","params":{"name":"env","arguments":{"name":"OPENROUTER_API_KEY"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"undefined"}]},"jsonrpc":"2.0","id":10}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":11,"method":"tools/call","params":{"name":"env","arguments":{"name":"SOME_SERVICE_SECRET"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"undefined"}]},"jsonrpc":"2.0","id":11}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":12,"method":"tools/call","params":{"name":"env","arguments":{"name":"GITHUB_TOKEN"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"set:AUDIT-FIXTURE"}]},"jsonrpc":"2.0","id":12}
+ASSERTION: PASS
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":13,"method":"tools/call","params":{"name":"env","arguments":{"name":"HARMLESS_SETTING"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"set:kept"}]},"jsonrpc":"2.0","id":13}
+ASSERTION: PASS
+ASSERTION: PASS
+SHARED STDIO PROCESS STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS

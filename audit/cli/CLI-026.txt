@@ -1,0 +1,41 @@
+ID: CLI-026
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","disclose","1"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/clean
+STDOUT:
+{
+  "step": 1,
+  "receipt": {
+    "sessionId": "1d8cf500-64ef-4106-b0da-9c368e9e3232",
+    "step": 1,
+    "timestamp": "2026-10-25T20:52:16.279Z",
+    "tool": "read_file",
+    "argsHash": "90a643e8f6bc9706b8216ac820573d0b9faa695276de4ca2ceaac994107f3aaf",
+    "paths": [
+      "small.txt"
+    ],
+    "secretsAccessed": false,
+    "permissions": [
+      "workspace:file:read"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "ok",
+    "resultHash": "142111f2ed1ce5197e39614e4f3a356fbb4589e07e5dc004144bd79bda84b648",
+    "previousHash": null,
+    "hash": "b00043dfcf2ca6910ed3f0a357e5a98febbc566145dd256cdf0f902accc21e3c",
+    "signature": "0+9WFnmcP3dK/lLBQ7tHmR2NEBPrlaCdoldr4YLNmRRWYDkfHd03N2U+jGlO+ttWSYIJjeltI4qjYtSE3W/ZBQ=="
+  },
+  "args": {
+    "path": "small.txt"
+  },
+  "argsSalt": "3fb6f66b64396f77728bbc823b59fa5f",
+  "salt": "e49594baf9a8214b7dd7f49b90742cb790aa79c3cb4ae834845b4bacc62aa5e4"
+}
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

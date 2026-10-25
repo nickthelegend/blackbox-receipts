@@ -1,0 +1,33 @@
+ID: CLI-044
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: node /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js []
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/attest
+STDIN: {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","clientInfo":{"name":"audit","version":"1"},"capabilities":{}}}
+STDOUT: {"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{}},"serverInfo":{"name":"blackbox-receipts-proxy","version":"0.2.0"}},"jsonrpc":"2.0","id":1}
+STDIN: {"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"write_file","arguments":{"path":"small.txt","content":"changed\n"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"{\"written\":\"small.txt\",\"bytes\":8,\"blob\":\"5ea2ed416fbd4a4cbe227b75fe255dd7fa6bd4d6\"}"}]},"jsonrpc":"2.0","id":2}
+ASSERTION: PASS
+STDIN: {"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"write_file","arguments":{"path":"new.txt","content":"new\n"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"{\"written\":\"new.txt\",\"bytes\":4,\"blob\":\"3e757656cf36eca53338e520d134963a44f793f8\"}"}]},"jsonrpc":"2.0","id":3}
+ASSERTION: PASS
+SHARED STDIO PROCESS STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/cli.js","attest-diff","--base","9fe3a118d816e3506d59b603113ca86be533a49c","--junit","/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/attest-output/attest.xml","--out","/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/attest-output/attest.json"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/attest
+STDOUT:
+ok   new.txt: matches the write signed at step 2
+ok   small.txt: matches the write signed at step 1
+PASS attest-diff: 2 changed file(s) since 9fe3a118d816, each produced by a signed write_file step
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS
+ASSERTION: PASS

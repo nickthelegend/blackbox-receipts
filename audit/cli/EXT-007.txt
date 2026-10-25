@@ -1,0 +1,6 @@
+ID: EXT-007
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+STDOUT: MeterlessConfigError: Meterless token "rt-local" is a placeholder the runtime rejects; use the real token from <stateDir>/proxy-token.
+STDERR:
+EXIT CODE: 0 (caught expected exception; no request made)
+ASSERTION: PASS

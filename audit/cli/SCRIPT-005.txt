@@ -1,0 +1,17 @@
+ID: SCRIPT-005
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: bash ["/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/scripts/ci/attest-diff-pr.sh","9fe3a118d816e3506d59b603113ca86be533a49c","/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/attest-output/unpin"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/attest
+STDOUT:
+== attest-diff against 9fe3a118d816e3506d59b603113ca86be533a49c using receipts/run
+FAIL attest-diff: Setup required: set BLACKBOX_PUBLIC_KEY (PEM of the proxy key). BLACKBOX_REQUIRE_PINNED_KEY is set but no BLACKBOX_PUBLIC_KEY is pinned, so the export's own key would be trusted
+== JUnit summary (attest-diff.xml)
+blackbox attest-diff 9fe3a118d816e3506d59b603113ca86be533a49c (session 38b7330f-d4f9-415e-a4ee-bb124c17b532) UNPINNED: 1 test(s), 1 failure(s)
+  FAIL (receipts) - Setup required: set BLACKBOX_PUBLIC_KEY (PEM of the proxy key). BLACKBOX_REQUIRE_PINNED_KEY is set but no BLACKBOX_PUBLIC_KEY is pinned, so the export's own key would be trusted
+
+STDERR:
+
+EXIT CODE: 1
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS

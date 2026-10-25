@@ -1,0 +1,61 @@
+ID: MCP-002
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: node /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-exec-cli/packages/proxy/dist/server.js []
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/denied
+STDIN: {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","clientInfo":{"name":"audit","version":"1"},"capabilities":{}}}
+STDOUT: {"result":{"protocolVersion":"2025-06-18","capabilities":{"tools":{}},"serverInfo":{"name":"blackbox-receipts-proxy","version":"0.2.0"}},"jsonrpc":"2.0","id":1}
+STDIN: {"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"read_file","arguments":{"path":".env"}}}
+STDOUT: {"result":{"content":[{"type":"text","text":"Policy denied (no-secrets-read/v2): read_file touched secret path matching \".env*\""}],"isError":true},"jsonrpc":"2.0","id":3}
+ASSERTION: PASS
+ASSERTION: PASS
+SHARED STDIO PROCESS STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+SIGNED RECEIPTS:
+[
+  {
+    "sessionId": "e10d5142-0e3b-43f5-ac1f-96eb86b8d1e9",
+    "step": 1,
+    "timestamp": "2026-10-25T20:52:20.150Z",
+    "tool": "read_file",
+    "argsHash": "d08b24b50ce36f16da3be8f444132cabd3598d8fc34ca0e8ae2c4c0be2c3f5b7",
+    "paths": [
+      "small.txt"
+    ],
+    "secretsAccessed": false,
+    "permissions": [
+      "workspace:file:read"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "ok",
+    "resultHash": "94c293c2483e768de4309da8908fb281e3d7b9f513a1a7675d0bd4ff26404d6c",
+    "previousHash": null,
+    "hash": "0e150f0e4c715f4077b9b935d43a4d26fc1e26329b9800ec9cd8812494e753a7",
+    "signature": "6vM4heXl10E4o8s5tpGhgDxlSo6J2lu/E0e5XhhlpQOBdFHZnVjWVA+kJl9lom5ZzpCiowQgEgHdaZaM5Zh4Bg=="
+  },
+  {
+    "sessionId": "e10d5142-0e3b-43f5-ac1f-96eb86b8d1e9",
+    "step": 2,
+    "timestamp": "2026-10-25T20:52:20.152Z",
+    "tool": "read_file",
+    "argsHash": "50de9b393342dab6db5d2e1eafe66de374df629a3d9dc3296e07257de6c9666f",
+    "paths": [
+      ".env"
+    ],
+    "secretsAccessed": true,
+    "permissions": [
+      "workspace:file:read"
+    ],
+    "cost": null,
+    "approver": null,
+    "outcome": "denied",
+    "resultHash": "49c5613f9b855525fefa35c88e483dfb499f8d28d3b98ffce0a975a8200b4bda",
+    "previousHash": "0e150f0e4c715f4077b9b935d43a4d26fc1e26329b9800ec9cd8812494e753a7",
+    "hash": "f9a38fba5c1acea9c5753bfc8a6d70299439aa4783f9ef7e16937f11469bccad",
+    "signature": "4NDrWx//7t/cAFy0LfwDdROkXUROCUX8ISK/uYZ9y2tnqTTzHMu31k8BDoSSm8bgPR+2eghI/xKtqE7oPGO0AA=="
+  }
+]
+ASSERTION: PASS

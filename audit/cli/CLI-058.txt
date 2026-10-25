@@ -1,0 +1,19 @@
+ID: CLI-058
+Audit temp root: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+COMMAND: /opt/homebrew/Cellar/node/26.5.0/bin/node ["/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/tarball/node_modules/@blackbox/verify/dist/bin.js","/private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi/historical-pass.json","--expect-policy","no-secrets-read/v1"]
+CWD: /private/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/blackbox-cli-audit-UX63qi
+STDOUT:
+PASS no-secrets-read/v1: 14 receipts, chain intact, seal matches, proof verified
+  ok   format: 14 receipts for session e51c6b41-baba-404e-97a9-9bb2270924a0
+  ok   key: Ed25519 key (not pinned: anyone could have made a key; pin it to trust the signer)
+  ok   chain: 14 signatures and hash links verify
+  ok   seal: Signed seal covers all 14 receipts
+  ok   property: Proof verified: all 14 receipts satisfy no-secrets-read/v1
+  session e51c6b41-baba-404e-97a9-9bb2270924a0, Merkle root 1056243bb1ea97c3c5cc5d82b6ec2eb17f6ef73342b80cf33a3302debd14a1c3
+
+STDERR:
+
+EXIT CODE: 0
+SIGNAL: none
+ASSERTION: PASS
+ASSERTION: PASS
