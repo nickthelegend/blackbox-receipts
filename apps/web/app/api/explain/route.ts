@@ -10,7 +10,8 @@ export const dynamic = 'force-dynamic';
 // exactly as the CLI shows them; the witness file itself is never served. Local-only (see middleware.ts).
 export async function GET() {
   try {
-    return NextResponse.json(await explainCurrent());
+    const explanation = await explainCurrent();
+    return NextResponse.json({ ...explanation, policyId: explanation.policy });
   } catch (error) {
     const corrupt = corruptResponse(error);
     if (corrupt) return corrupt;
