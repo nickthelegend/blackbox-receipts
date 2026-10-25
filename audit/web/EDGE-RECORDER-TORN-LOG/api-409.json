@@ -1,0 +1,4 @@
+{
+  "error": "session.jsonl is corrupt at line 2: Unterminated string in JSON at position 331. The line is not one JSON record (an append cut short by a killed process, or an edit), so the log cannot be verified past it",
+  "corruptLine": 2
+}

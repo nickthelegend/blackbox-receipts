@@ -1,0 +1,55 @@
+{
+  "id": "EDGE-RECORDER-CROSS-SITE-POST",
+  "status": "PASS",
+  "problems": [],
+  "detail": {
+    "statuses": [
+      {
+        "origin": "http://127.0.0.1:33219",
+        "path": "/api/restore",
+        "status": 403,
+        "type": "opaque",
+        "tampered": [
+          2
+        ]
+      },
+      {
+        "origin": "http://127.0.0.1:33219",
+        "path": "/api/prove",
+        "status": 403,
+        "type": "opaque",
+        "tampered": [
+          2
+        ]
+      },
+      {
+        "origin": "http://localhost:33219",
+        "path": "/api/restore",
+        "status": 403,
+        "type": "opaque",
+        "tampered": [
+          2
+        ]
+      },
+      {
+        "origin": "http://localhost:33219",
+        "path": "/api/prove",
+        "status": 403,
+        "type": "opaque",
+        "tampered": [
+          2
+        ]
+      }
+    ]
+  },
+  "viewport": "1280x800",
+  "unset": [
+    "ZETARIS_API_KEY",
+    "ZETARIS_ORG_ID",
+    "METERLESS_TOKEN",
+    "METERLESS_STATE_DIR",
+    "WALRUS_PUBLISHER_URL"
+  ],
+  "capturedAt": "2026-10-25T21:21:32.365Z",
+  "fix": ""
+}

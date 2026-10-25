@@ -1,0 +1,203 @@
+Skip to the recorder
+Blackbox
+RECORDER
+Overview
+Verify a pack
+RECORDING
+ANNUNCIATOR PANEL
+MASTER WARNING
+CHAIN
+VERIFIED
+6 signatures and links
+SECRET PATHS
+TOUCHED · 04
+1 call(s) denied before running
+NO-SECRETS PROOF
+NOT RUN
+Run it from the controls
+TAMPER TEST
+OFF
+No block edited on disk
+WALRUS
+SETUP REQUIRED
+Set WALRUS_PUBLISHER_URL
+ZETARIS
+SETUP REQUIRED
+Set ZETARIS_API_KEY, ZETARIS_ORG_ID
+METERLESS
+SETUP REQUIRED
+Set METERLESS_TOKEN or METERLESS_STATE_DIR
+BLOCKS
+06
+REJECTED
+00
+DENIED CALLS
+01
+RECORDED SPAN
+12s
+MERKLE ROOT
+fc1a093b9789c2f30fb4ff26feba27af078f617ef879fbc601d25228914c8eb0
+Show public key
+LIVE TAPE
+Session 933f87da…da31
+Reads /var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/bb-recorder-audit-6slYkn/live/session/session.jsonl every 3 s
+DENIED · .ENV
+GIT
+READ_FILE
+SHELL
+01
+02
+03
+04
+05
+06
+T+0
++2s
++4s
++6s
++8s
++10s
+Signed call
+Tool error
+Secret access or failure
+Untrusted (after a break)
+Hash link
+TAPE LOG
+01
+02:52:54
+git
+workspace:git:read
+SIGNED
+02
+02:52:54
+read_file
+README.md
+SIGNED
+03
+02:52:54
+shell
+packages
+SIGNED
+04
+02:52:54
+read_file
+.env
+SECRET ACCESS
+EXPLAIN WHY · STEP 04
+RECEIPT HASH
+e1afa5d0096d3370e3b971a67106752d67bb1767250aff46d0e572a69f38ab4c
+PREVIOUS
+beedcb437da136eade867fda866daab448efae400d2bb0833c11ffac9bbab512
+ARGS HASH · RESULT HASH
+7759bf637546e80aadbb1d12… · 653467b222477c3739719849…
+SIGNATURE
+weYDFNpYWnyWFd8lFeZz/TLlu/tcppWDXUm5X5fSrhg5…
+PERMISSIONS
+workspace:file:read
+POLICY
+Signed as a secret access; the proxy denied it before it ran.
+05
+02:52:55
+git
+workspace:git:read
+SIGNED
+06
+02:53:06
+read_file
+package.json
+SIGNED
+TAMPER TEST
+Break a block, watch it fail.
+
+Edits a stored receipt on disk with the same store function as the CLI. Restore puts the signed original back.
+
+Block to tamper
+Block 01
+Block 02
+Block 03
+Block 04
+Block 05
+Block 06
+Tamper
+Restore
+Re-verify
+POLICY PROOF · NO-SECRETS-READ/V2
+Did the agent read secrets?
+
+Checks every step against secret path globs (.env*, *.pem, ~/.ssh, .git/**, .npmrc, .netrc and more) and secret patterns in tool args. Reveals inclusion paths and commitments, never the args.
+
+Prove: no secrets read
+WALRUS STORAGE
+Setup required
+
+Set WALRUS_PUBLISHER_URL to a funded publisher endpoint. None is bundled, and the root is not anchored on-chain.
+
+Upload to Walrus
+
+Zetaris and Meterless lamps come from a live request on load; nothing is cached or simulated. Neither client is used in the agent loop yet.
+
+MCP PROXY
+Any MCP client
+6 RECORDED
+START
+pnpm --filter @blackbox/proxy start
+TRANSPORT
+stdio · packages/proxy/dist/server.js
+TOOLS
+read_file · write_file · git · shell · blackbox_explain
+OR PROXY
+server.js --upstream "<any stdio MCP server>"
+STORE
+/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/bb-recorder-audit-6slYkn/live/session/session.jsonl
+GITLAB DUO
+Custom flow
+NOT YET RUN ON GITLAB
+FLOW
+.gitlab/duo/flows/blackbox-receipts.yaml
+BRIDGE
+node packages/proxy/dist/call.js <tool> '<json>'
+CI
+.gitlab-ci.yml
+IDE
+.gitlab/duo/mcp.json
+
+Setup: docs/gitlab-setup.md. No Duo run or pipeline history exists yet.
+
+EXPLAIN WHY · STEP 04
+
+read_file .env
+
+POLICY VIOLATION
+outcome denied
+21:22:54 UTC
+
+Policy denied (no-secrets-read/v2): read_file touched secret path matching ".env*"
+
+WHY
+read_file .env violates no-secrets-read/v2: read_file touched secret path matching ".env*".
+The proxy refused it before it ran, so the agent never received the contents; the attempt itself is what the proof reports.
+It came right after step 2 (read_file README.md) and step 3 (shell ls packages).
+Hash-linked to step 3: this receipt's previousHash is beedcb437da1, the hash of step 3.
+The proxy's signed seal covers it (steps 1 to 6).
+This is the step the verdict names: FAIL no-secrets-read at step 4 [policy no-secrets-read/v2 d1e72d1a6c22]: read_file touched secret path matching ".env*"
+CITED RECEIPTS
+04
+THIS CALL
+e1afa5d0096d3370e3b971a67106752d67bb1767250aff46d0e572a69f38ab4c
+signed record of read_file: paths, outcome "denied", salted argsHash and resultHash
+02
+CAME BEFORE
+dbd3f5b23047cae9798d1fac88c599e356743e178bd923607cbb2c05458512d7
+read_file README.md
+03
+HASH LINK
+beedcb437da136eade867fda866daab448efae400d2bb0833c11ffac9bbab512
+shell ls packages
+
+Session verdict: FAIL no-secrets-read at step 4 [policy no-secrets-read/v2 d1e72d1a6c22]: read_file touched secret path matching ".env*"
+
+Live: /api/explain runs the same explainer as blackbox-receipts explain --json over the local store.
+
+Signatures prove what the proxy observed. They do not prove the proxy machine was uncompromised. TEE attestation is future work.
+
+BLACKBOX RECEIPTS · ED25519 · SHA-256 · MERKLE · MIT

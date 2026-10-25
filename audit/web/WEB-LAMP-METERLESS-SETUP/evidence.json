@@ -1,0 +1,21 @@
+{
+  "id": "WEB-LAMP-METERLESS-SETUP",
+  "status": "PASS",
+  "problems": [],
+  "detail": {
+    "label": "Meterless",
+    "state": "SETUP REQUIRED",
+    "tone": "rc-lamp is-caution",
+    "detail": "Set METERLESS_TOKEN or METERLESS_STATE_DIR"
+  },
+  "viewport": "1280x800",
+  "unset": [
+    "ZETARIS_API_KEY",
+    "ZETARIS_ORG_ID",
+    "METERLESS_TOKEN",
+    "METERLESS_STATE_DIR",
+    "WALRUS_PUBLISHER_URL"
+  ],
+  "capturedAt": "2026-10-25T21:23:00.302Z",
+  "fix": ""
+}

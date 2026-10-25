@@ -1,0 +1,29 @@
+{
+  "id": "EDGE-RECORDER-TORN-LOG",
+  "status": "FAIL",
+  "error": "expect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 3\n\n- Array []\n+ Array [\n+   \"console error: Failed to load resource: the server responded with a status of 409 (Conflict)\",\n+ ]\n\nCall Log:\n- Timeout 5000ms exceeded while waiting on the predicate",
+  "problems": [
+    "console error: Failed to load resource: the server responded with a status of 409 (Conflict)"
+  ],
+  "detail": {
+    "responseStatus": 409,
+    "body": {
+      "error": "session.jsonl is corrupt at line 2: Unterminated string in JSON at position 331. The line is not one JSON record (an append cut short by a killed process, or an edit), so the log cannot be verified past it",
+      "corruptLine": 2
+    },
+    "dimensions": {
+      "scroll": 1280,
+      "client": 1280
+    }
+  },
+  "viewport": "1280x800",
+  "unset": [
+    "ZETARIS_API_KEY",
+    "ZETARIS_ORG_ID",
+    "METERLESS_TOKEN",
+    "METERLESS_STATE_DIR",
+    "WALRUS_PUBLISHER_URL"
+  ],
+  "capturedAt": "2026-10-25T21:23:15.151Z",
+  "fix": "Required error status is correct, but Chrome emits a resource console error. Cause: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome; session 409 comes from apps/web/app/api/corrupt.ts, CSRF 403 from apps/web/middleware.ts. Kept the required API refusal contract; global zero-console-error rule fails."
+}

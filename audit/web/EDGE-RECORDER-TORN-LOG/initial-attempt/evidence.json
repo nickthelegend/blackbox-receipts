@@ -1,0 +1,26 @@
+{
+  "id": "EDGE-RECORDER-TORN-LOG",
+  "status": "PASS",
+  "problems": [],
+  "detail": {
+    "responseStatus": 409,
+    "body": {
+      "error": "session.jsonl is corrupt at line 2: Unterminated string in JSON at position 331. The line is not one JSON record (an append cut short by a killed process, or an edit), so the log cannot be verified past it",
+      "corruptLine": 2
+    },
+    "dimensions": {
+      "scroll": 1280,
+      "client": 1280
+    }
+  },
+  "viewport": "1280x800",
+  "unset": [
+    "ZETARIS_API_KEY",
+    "ZETARIS_ORG_ID",
+    "METERLESS_TOKEN",
+    "METERLESS_STATE_DIR",
+    "WALRUS_PUBLISHER_URL"
+  ],
+  "capturedAt": "2026-10-25T21:21:31.772Z",
+  "fix": ""
+}

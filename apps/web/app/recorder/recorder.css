@@ -47,13 +47,15 @@
 .rc-alert{margin:12px 0 0;padding:12px 14px;border-radius:4px;background:var(--bad-bg);border:1px solid var(--bad-line);color:var(--text);font-size:14px}
 
 /* readouts */
-.rc-readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) minmax(0,2.2fr);margin-top:20px;border:1px solid var(--line-2);border-radius:6px;background:var(--panel)}
+.rc-readouts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) minmax(0,2.2fr);margin:20px 0 0;border:1px solid var(--line-2);border-radius:6px;background:var(--panel)}
+.rc-readouts dd{margin:0}
 .rc-readouts > div{padding:16px 18px;border-left:1px solid var(--line);min-width:0}
 .rc-readouts > div:first-child{border-left:0}
 .rc-readouts b{display:block;margin-top:6px;font:500 30px/1 var(--mono);letter-spacing:-.02em;color:var(--text)}
 .rc-readouts .is-bad b{color:var(--bad)}
 .rc-root code{display:block;margin-top:8px;font-size:12.5px;color:var(--muted);line-height:1.45}
-.rc-key{grid-column:1/-1;margin:0;padding:14px 18px;border-top:1px solid var(--line);font:400 12px/1.5 var(--mono);color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
+.rc-readouts > .rc-key{grid-column:1/-1;padding:14px 18px;border-left:0;border-top:1px solid var(--line)}
+.rc-key pre{margin:0;font:400 12px/1.5 var(--mono);color:var(--muted);white-space:pre-wrap;overflow-wrap:anywhere}
 .rc-link{margin-top:8px;padding:0;border:0;background:none;color:var(--accent);font:600 13px var(--font);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .rc-link:disabled{color:var(--dim);cursor:not-allowed}
 

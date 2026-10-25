@@ -132,7 +132,8 @@ export default function Recorder() {
   const failedStep = proofResult?.status === 'FAIL' && !stale ? proofResult.step : null;
   const secretSteps = receipts.filter((receipt) => receipt.secretsAccessed).map((receipt) => receipt.step);
   const deniedCount = receipts.filter((receipt) => receipt.outcome === 'denied').length;
-  const rejected = state === 'bad' ? receipts.filter((receipt) => brokenAt !== null && receipt.step >= brokenAt).length : 0;
+  // Verification rejects the first broken block; later blocks are untrusted, not rejected signatures.
+  const rejected = state === 'bad' && brokenAt !== null ? 1 : 0;
   const blob = data?.walrus?.blob as Record<string, unknown> | null | undefined;
   const blobId = blob && ('newlyCreated' in blob ? (blob.newlyCreated as Record<string, unknown>)?.blobObject : blob);
 
@@ -206,18 +207,18 @@ export default function Recorder() {
         {loadError && <p className="rc-alert" role="alert">{loadError}</p>}
       </section>
 
-      <section className="rc-readouts" aria-label="Readouts">
-        <div><span className="stencil">Blocks</span><b>{pad(receipts.length)}</b></div>
-        <div className={rejected ? 'is-bad' : undefined}><span className="stencil">Rejected</span><b>{pad(rejected)}</b></div>
-        <div className={deniedCount ? 'is-bad' : undefined}><span className="stencil">Denied calls</span><b>{pad(deniedCount)}</b></div>
-        <div><span className="stencil">Recorded span</span><b>{duration(receipts)}</b></div>
+      <dl className="rc-readouts" aria-label="Readouts">
+        <div><dt className="stencil">Blocks</dt><dd><b>{pad(receipts.length)}</b></dd></div>
+        <div className={rejected ? 'is-bad' : undefined}><dt className="stencil">Rejected</dt><dd><b>{pad(rejected)}</b></dd></div>
+        <div className={deniedCount ? 'is-bad' : undefined}><dt className="stencil">Denied calls</dt><dd><b>{pad(deniedCount)}</b></dd></div>
+        <div><dt className="stencil">Recorded span</dt><dd><b>{duration(receipts)}</b></dd></div>
         <div className="rc-root">
-          <span className="stencil">Merkle root</span>
-          <code title={receipts.length ? data?.root : undefined}>{receipts.length && data ? data.root : '—'}</code>
-          <button type="button" className="rc-link" aria-expanded={showKey} disabled={!data} onClick={() => setShowKey(!showKey)}>{showKey ? 'Hide public key' : 'Show public key'}</button>
+          <dt className="stencil">Merkle root</dt>
+          <dd><code title={receipts.length ? data?.root : undefined}>{receipts.length && data ? data.root : '—'}</code>
+          <button type="button" className="rc-link" aria-expanded={showKey} disabled={!data} onClick={() => setShowKey(!showKey)}>{showKey ? 'Hide public key' : 'Show public key'}</button></dd>
         </div>
-        {showKey && data && <pre className="rc-key" aria-label="Proxy public key">{data.publicKey}</pre>}
-      </section>
+        {showKey && data && <div className="rc-key"><dt className="sr">Proxy public key</dt><dd><pre aria-label="Proxy public key">{data.publicKey}</pre></dd></div>}
+      </dl>
 
       <div className="rc-grid">
         <section id="tape" className="rc-panel" aria-labelledby="rc-tape-title">

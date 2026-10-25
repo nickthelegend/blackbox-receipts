@@ -1,0 +1,206 @@
+Skip to the recorder
+Blackbox
+RECORDER
+Overview
+Verify a pack
+RECORDING
+933f87da
+ANNUNCIATOR PANEL
+MASTER WARNING
+CHAIN
+VERIFIED
+6 signatures and links
+SECRET PATHS
+TOUCHED · 04
+1 call(s) denied before running
+NO-SECRETS PROOF
+STALE
+Session changed since it ran
+TAMPER TEST
+OFF
+No block edited on disk
+WALRUS
+SETUP REQUIRED
+Set WALRUS_PUBLISHER_URL
+ZETARIS
+SETUP REQUIRED
+Set ZETARIS_API_KEY, ZETARIS_ORG_ID
+METERLESS
+SETUP REQUIRED
+Set METERLESS_TOKEN or METERLESS_STATE_DIR
+BLOCKS
+06
+REJECTED
+00
+DENIED CALLS
+01
+RECORDED SPAN
+12s
+MERKLE ROOT
+fc1a093b9789c2f30fb4ff26feba27af078f617ef879fbc601d25228914c8eb0
+Show public key
+LIVE TAPE
+Session 933f87da…da31
+Reads /var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/bb-recorder-audit-6slYkn/live/session/session.jsonl every 3 s
+DENIED · .ENV
+GIT
+READ_FILE
+SHELL
+01
+02
+03
+04
+05
+06
+T+0
++2s
++4s
++6s
++8s
++10s
+Signed call
+Tool error
+Secret access or failure
+Untrusted (after a break)
+Hash link
+TAPE LOG
+01
+02:52:54
+git
+workspace:git:read
+ok
+GENESIS → 36323a…b3f0
+SIGNED
+02
+02:52:54
+read_file
+README.md
+ok
+36323a…b3f0 → dbd3f5…12d7
+SIGNED
+03
+02:52:54
+shell
+packages
+ok
+dbd3f5…12d7 → beedcb…b512
+SIGNED
+04
+02:52:54
+read_file
+.env
+denied
+beedcb…b512 → e1afa5…ab4c
+SECRET ACCESS
+05
+02:52:55
+git
+workspace:git:read
+ok
+e1afa5…ab4c → b1c19e…df9e
+SIGNED
+06
+02:53:06
+read_file
+package.json
+ok
+b1c19e…df9e → 05460a…096e
+SIGNED
+EXPLAIN WHY · STEP 06
+RECEIPT HASH
+05460a92042d03ab35b152e89a0d86acd0ad213671386e487ad1d4c2c0ea096e
+PREVIOUS
+b1c19e61c804ea2f829ed888ee36a869dcb06d36280098b8a7878b62b53edf9e
+ARGS HASH · RESULT HASH
+f43d2da0783eb0fe7a2ac04a… · 1790923e3a41015172c0edd4…
+SIGNATURE
+S7Gbpel7ivrC1OD7XYHyVfgXZ6DvusvVCgUH+2sXMR24…
+PERMISSIONS
+workspace:file:read
+TAMPER TEST
+Break a block, watch it fail.
+
+Edits a stored receipt on disk with the same store function as the CLI. Restore puts the signed original back.
+
+Block to tamper
+Block 01
+Block 02
+Block 03
+Block 04
+Block 05
+Block 06
+Tamper
+Restore
+Re-verify
+POLICY PROOF · NO-SECRETS-READ/V2
+Proof is stale
+
+The log changed after this proof ran. Run it again to cover the current chain.
+
+Prove: no secrets read
+WALRUS STORAGE
+Setup required
+
+Set WALRUS_PUBLISHER_URL to a funded publisher endpoint. None is bundled, and the root is not anchored on-chain.
+
+Upload to Walrus
+
+Zetaris and Meterless lamps come from a live request on load; nothing is cached or simulated. Neither client is used in the agent loop yet.
+
+MCP PROXY
+Any MCP client
+6 RECORDED
+START
+pnpm --filter @blackbox/proxy start
+TRANSPORT
+stdio · packages/proxy/dist/server.js
+TOOLS
+read_file · write_file · git · shell · blackbox_explain
+OR PROXY
+server.js --upstream "<any stdio MCP server>"
+STORE
+/var/folders/tp/gcpvr1451r350sq27v4csrq40000gn/T/bb-recorder-audit-6slYkn/live/session/session.jsonl
+GITLAB DUO
+Custom flow
+NOT YET RUN ON GITLAB
+FLOW
+.gitlab/duo/flows/blackbox-receipts.yaml
+BRIDGE
+node packages/proxy/dist/call.js <tool> '<json>'
+CI
+.gitlab-ci.yml
+IDE
+.gitlab/duo/mcp.json
+
+Setup: docs/gitlab-setup.md. No Duo run or pipeline history exists yet.
+
+EXPLAIN WHY · STEP 06
+
+read_file package.json
+
+ALLOWED
+outcome ok
+21:23:06 UTC
+
+WHY
+Allowed by no-secrets-read/v2: its path package.json matches no secret glob, and no argument matches a secret-token pattern.
+It ran; its arguments and result are committed in the receipt as salted hashes.
+Hash-linked to step 5: this receipt's previousHash is b1c19e61c804, the hash of step 5.
+The proxy's signed seal covers it (steps 1 to 6).
+CITED RECEIPTS
+06
+THIS CALL
+05460a92042d03ab35b152e89a0d86acd0ad213671386e487ad1d4c2c0ea096e
+signed record of read_file: paths, outcome "ok", salted argsHash and resultHash
+05
+HASH LINK
+b1c19e61c804ea2f829ed888ee36a869dcb06d36280098b8a7878b62b53edf9e
+git show_stat HEAD
+
+Session verdict: FAIL no-secrets-read at step 4 [policy no-secrets-read/v2 d1e72d1a6c22]: read_file touched secret path matching ".env*"
+
+Live: /api/explain runs the same explainer as blackbox-receipts explain --json over the local store.
+
+Signatures prove what the proxy observed. They do not prove the proxy machine was uncompromised. TEE attestation is future work.
+
+BLACKBOX RECEIPTS · ED25519 · SHA-256 · MERKLE · MIT
