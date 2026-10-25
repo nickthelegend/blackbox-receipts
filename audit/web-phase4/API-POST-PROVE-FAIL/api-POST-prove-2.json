@@ -1,0 +1,12 @@
+{
+  "status": 200,
+  "url": "http://127.0.0.1:55121/api/prove",
+  "body": {
+    "status": "FAIL",
+    "step": 4,
+    "reason": "read_file touched secret path matching \"secrets/**\"",
+    "policyId": "no-secrets-read/v2",
+    "sessionRoot": "d49701e5f165caae1202a79971d67cbc176e0d1d55d4b78cc915b52dd7094828",
+    "chainBrokenAt": null
+  }
+}

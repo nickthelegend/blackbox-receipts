@@ -1,0 +1,35 @@
+Scope: all 7 workspace projects
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +212
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 212, reused 211, downloaded 0, added 211
+Progress: resolved 212, reused 212, downloaded 0, added 211
+Progress: resolved 212, reused 212, downloaded 0, added 212, done
+ WARN  Failed to create bin at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/packages/receipts/node_modules/.bin/blackbox-verify. ENOENT: no such file or directory, open '/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/packages/verify/dist/bin.js'
+ WARN  Failed to create bin at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/apps/web/node_modules/.bin/blackbox-proxy. ENOENT: no such file or directory, open '/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/packages/proxy/dist/server.js'
+ WARN  Failed to create bin at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/apps/web/node_modules/.bin/blackbox-receipts. ENOENT: no such file or directory, open '/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/packages/proxy/dist/cli.js'
+ WARN  Failed to create bin at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/apps/web/node_modules/.bin/blackbox-call. ENOENT: no such file or directory, open '/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/packages/proxy/dist/call.js'
+ WARN  Failed to create bin at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/apps/web/node_modules/.bin/blackbox-verify. ENOENT: no such file or directory, open '/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/packages/verify/dist/bin.js'
+
+devDependencies:
++ @playwright/test 1.63.0
++ @types/node 22.20.5
++ eslint 10.11.0
++ tsx 4.23.15
++ typescript 5.9.3
++ typescript-eslint 8.71.1
+
+ WARN  Failed to create bin at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/packages/receipts/node_modules/.bin/blackbox-verify. ENOENT: no such file or directory, open '/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/packages/receipts/node_modules/@blackbox/verify/dist/bin.js'
+ WARN  Failed to create bin at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/apps/web/node_modules/.bin/blackbox-proxy. ENOENT: no such file or directory, open '/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/apps/web/node_modules/@blackbox/proxy/dist/server.js'
+ WARN  Failed to create bin at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/apps/web/node_modules/.bin/blackbox-receipts. ENOENT: no such file or directory, open '/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/apps/web/node_modules/@blackbox/proxy/dist/cli.js'
+ WARN  Failed to create bin at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/apps/web/node_modules/.bin/blackbox-call. ENOENT: no such file or directory, open '/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/apps/web/node_modules/@blackbox/proxy/dist/call.js'
+ WARN  Failed to create bin at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/apps/web/node_modules/.bin/blackbox-verify. ENOENT: no such file or directory, open '/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/apps/web/node_modules/@blackbox/verify/dist/bin.js'
+╭ Warning ─────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│   Ignored build scripts: esbuild@0.28.2.                                     │
+│   Run "pnpm approve-builds" to pick which dependencies should be allowed     │
+│   to run scripts.                                                            │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Done in 2.8s using pnpm v10.29.2

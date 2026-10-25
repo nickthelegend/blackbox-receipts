@@ -1,0 +1,44 @@
+{
+  "id": "EDGE-VERIFY-NON-PACK",
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "navigation status",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "alert",
+      "actual": "Could not verify. not-a-pack.json: Not a Blackbox pack (expected \"format\": \"blackbox-pack/v1\")",
+      "expected": "Could not verify. not-a-pack.json: Not a Blackbox pack (expected \"format\": \"blackbox-pack/v1\")",
+      "ok": true
+    },
+    {
+      "name": "no verdict section",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    },
+    {
+      "name": "no badge",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    },
+    {
+      "name": "requests after load",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    }
+  ],
+  "failures": [],
+  "artifacts": {},
+  "chrome": "155.0.8059.85",
+  "url": "http://127.0.0.1:54806/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  }
+}

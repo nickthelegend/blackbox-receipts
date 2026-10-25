@@ -1,0 +1,62 @@
+{
+  "id": "WEB-PAGE-VERIFY-ERROR",
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "navigation status",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "heading",
+      "actual": "Could not verify",
+      "expected": "Could not verify",
+      "ok": true
+    },
+    {
+      "name": "lead",
+      "actual": "This pack could not be displayed, so no verdict was reached. Nothing was uploaded; the file never left this tab.",
+      "expected": "This pack could not be displayed, so no verdict was reached. Nothing was uploaded; the file never left this tab.",
+      "ok": true
+    },
+    {
+      "name": "alert",
+      "actual": "Could not verify: Audit render fault",
+      "expected": "Could not verify: Audit render fault",
+      "ok": true
+    },
+    {
+      "name": "reset h1",
+      "actual": "Check a pack in your browser.",
+      "expected": "Check a pack in your browser.",
+      "ok": true
+    },
+    {
+      "name": "reset alert absent",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    },
+    {
+      "name": "reset verdict absent",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    },
+    {
+      "name": "only injected React error logged",
+      "actual": 1,
+      "expected": 1,
+      "ok": true
+    }
+  ],
+  "failures": [],
+  "artifacts": {},
+  "chrome": "155.0.8059.85",
+  "url": "http://127.0.0.1:55121/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  }
+}

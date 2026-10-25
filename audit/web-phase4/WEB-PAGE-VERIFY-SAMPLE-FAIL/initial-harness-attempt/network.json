@@ -1,0 +1,194 @@
+[
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:54806/verify",
+    "type": "document"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:54806/verify",
+    "method": "GET"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:54806/_next/static/css/ea6c74c1b48aeb92.css",
+    "type": "stylesheet"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:54806/_next/static/css/761117bc7dfdc954.css",
+    "type": "stylesheet"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:54806/_next/static/chunks/webpack-bb74b508448ddf40.js",
+    "type": "script"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:54806/_next/static/chunks/d6e00b03-13849fdf938b9eba.js",
+    "type": "script"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:54806/_next/static/chunks/79-7cc5d50eb914987b.js",
+    "type": "script"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:54806/_next/static/chunks/main-app-7c47e75341a002d5.js",
+    "type": "script"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:54806/_next/static/chunks/app/verify/error-39d6b18c925120d8.js",
+    "type": "script"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:54806/_next/static/chunks/920-2277c259ad757e93.js",
+    "type": "script"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:54806/_next/static/chunks/367-e9b8f9b40241541e.js",
+    "type": "script"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:54806/_next/static/chunks/968-685f039e0d6d6274.js",
+    "type": "script"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:54806/_next/static/chunks/app/verify/page-7fba7cbc628c9f1a.js",
+    "type": "script"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:54806/_next/static/css/ea6c74c1b48aeb92.css",
+    "method": "GET"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:54806/_next/static/css/761117bc7dfdc954.css",
+    "method": "GET"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap",
+    "type": "stylesheet"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:54806/_next/static/chunks/webpack-bb74b508448ddf40.js",
+    "method": "GET"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:54806/_next/static/chunks/main-app-7c47e75341a002d5.js",
+    "method": "GET"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:54806/_next/static/chunks/app/verify/error-39d6b18c925120d8.js",
+    "method": "GET"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:54806/_next/static/chunks/367-e9b8f9b40241541e.js",
+    "method": "GET"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:54806/_next/static/chunks/968-685f039e0d6d6274.js",
+    "method": "GET"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:54806/_next/static/chunks/920-2277c259ad757e93.js",
+    "method": "GET"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:54806/_next/static/chunks/79-7cc5d50eb914987b.js",
+    "method": "GET"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:54806/_next/static/chunks/app/verify/page-7fba7cbc628c9f1a.js",
+    "method": "GET"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:54806/_next/static/chunks/d6e00b03-13849fdf938b9eba.js",
+    "method": "GET"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap",
+    "method": "GET"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "https://fonts.gstatic.com/s/manrope/v20/xn7gYHE41ni1AdIRggexSvfedN4.woff2",
+    "type": "font"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "https://fonts.gstatic.com/s/firacode/v27/uU9NCBsR6Z2vfE9aq3bh3dSDqFGedA.woff2",
+    "type": "font"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "https://fonts.gstatic.com/s/manrope/v20/xn7gYHE41ni1AdIRggexSvfedN4.woff2",
+    "method": "GET"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "https://fonts.gstatic.com/s/firacode/v27/uU9NCBsR6Z2vfE9aq3bh3dSDqFGedA.woff2",
+    "method": "GET"
+  },
+  {
+    "event": "request",
+    "method": "GET",
+    "url": "http://127.0.0.1:54806/icon.svg?22f1035d28cba464",
+    "type": "other"
+  },
+  {
+    "event": "response",
+    "status": 200,
+    "url": "http://127.0.0.1:54806/icon.svg?22f1035d28cba464",
+    "method": "GET"
+  }
+]

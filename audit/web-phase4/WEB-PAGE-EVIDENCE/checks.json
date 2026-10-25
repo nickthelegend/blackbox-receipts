@@ -1,0 +1,164 @@
+{
+  "id": "WEB-PAGE-EVIDENCE",
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "navigation status",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "h1",
+      "actual": "The tape, the checks and the limits.",
+      "expected": "The tape, the checks and the limits.",
+      "ok": true
+    },
+    {
+      "name": "kicker",
+      "actual": "Evidence · session 933f87da",
+      "expected": "Evidence · session 933f87da",
+      "ok": true
+    },
+    {
+      "name": "strip Agent flight recorder",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "strip Session 933f87da",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "strip 10 receipts",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "strip Denied at step 03",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "signed seal time (CSS casing allowed)",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "old seal time absent",
+      "actual": false,
+      "expected": false,
+      "ok": true
+    },
+    {
+      "name": "diagram Signing key",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "diagram Tape",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "diagram Seal",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "diagram Locator",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "section Fig. 1",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "section 01 · Tape playback",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "section 02 · Investigation",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "section 03 · Limitations placard",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "section 04 · Built in the window",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "limitations",
+      "actual": 7,
+      "expected": 7,
+      "ok": true
+    },
+    {
+      "name": "limit Setup required",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "limit Not run yet",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "window entries",
+      "actual": 8,
+      "expected": 8,
+      "ok": true
+    },
+    {
+      "name": "window lead A case variant of .env is a denied read, not a PASS",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "window lead Before",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "window lead After",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    }
+  ],
+  "failures": [],
+  "artifacts": {},
+  "chrome": "155.0.8059.85",
+  "url": "http://127.0.0.1:55121/evidence",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  }
+}

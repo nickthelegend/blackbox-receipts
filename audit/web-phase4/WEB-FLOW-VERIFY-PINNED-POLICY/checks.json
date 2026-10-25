@@ -1,0 +1,86 @@
+{
+  "id": "WEB-FLOW-VERIFY-PINNED-POLICY",
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "navigation status",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "default policy",
+      "actual": "no-secrets-read/v2",
+      "expected": "no-secrets-read/v2",
+      "ok": true
+    },
+    {
+      "name": "sample policy",
+      "actual": "no-secrets-read/v1",
+      "expected": "no-secrets-read/v1",
+      "ok": true
+    },
+    {
+      "name": "sample badge",
+      "actual": "PASS",
+      "expected": "PASS",
+      "ok": true
+    },
+    {
+      "name": "policy mismatch",
+      "actual": "FAIL property: Proof was made under policy \"no-secrets-read/v1\" (720836167c0f), not the pinned policy (d1e72d1a6c22)",
+      "expected": "FAIL property: Proof was made under policy \"no-secrets-read/v1\" (720836167c0f), not the pinned policy (d1e72d1a6c22)",
+      "ok": true
+    },
+    {
+      "name": "tamper under no-secrets-read/v1",
+      "actual": "FAIL at step 5: Receipt contents were changed",
+      "expected": "FAIL at step 5: Receipt contents were changed",
+      "ok": true
+    },
+    {
+      "name": "tamper badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "tamper under no-secrets-read/v2",
+      "actual": "FAIL at step 5: Receipt contents were changed",
+      "expected": "FAIL at step 5: Receipt contents were changed",
+      "ok": true
+    },
+    {
+      "name": "tamper badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "tamper under no-secrets-read/v1",
+      "actual": "FAIL at step 5: Receipt contents were changed",
+      "expected": "FAIL at step 5: Receipt contents were changed",
+      "ok": true
+    },
+    {
+      "name": "tamper badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "requests after load",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    }
+  ],
+  "failures": [],
+  "artifacts": {},
+  "chrome": "155.0.8059.85",
+  "url": "http://127.0.0.1:55121/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  }
+}

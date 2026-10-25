@@ -1,0 +1,50 @@
+[
+  {
+    "id": "WEB-PAGE-EVIDENCE",
+    "status": "PASS",
+    "checks": 25,
+    "failures": []
+  },
+  {
+    "id": "WEB-PAGE-VERIFY-SAMPLE-FAIL",
+    "status": "PASS",
+    "checks": 10,
+    "failures": []
+  },
+  {
+    "id": "WEB-PAGE-VERIFY-ERROR",
+    "status": "PASS",
+    "checks": 8,
+    "failures": []
+  },
+  {
+    "id": "WEB-FLOW-VERIFY-PINNED-POLICY",
+    "status": "PASS",
+    "checks": 12,
+    "failures": []
+  },
+  {
+    "id": "EDGE-VERIFY-NON-PACK",
+    "status": "PASS",
+    "checks": 5,
+    "failures": []
+  },
+  {
+    "id": "API-POST-PROVE-FAIL",
+    "status": "PASS",
+    "checks": 55,
+    "failures": []
+  },
+  {
+    "id": "API-GET-EXPLAIN-SUCCESS",
+    "status": "PASS",
+    "checks": 95,
+    "failures": []
+  },
+  {
+    "id": "WEB-FLOW-RECORDER-TAMPER-CYCLE",
+    "status": "PASS",
+    "checks": 21,
+    "failures": []
+  }
+]

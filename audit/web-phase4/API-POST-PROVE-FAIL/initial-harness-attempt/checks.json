@@ -1,0 +1,22 @@
+{
+  "id": "API-POST-PROVE-FAIL",
+  "status": "FAIL",
+  "checks": [
+    {
+      "name": "navigation status",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    }
+  ],
+  "failures": [
+    "page.evaluate: TypeError: r.url is not a function\n    at eval (eval at evaluate (:311:30), <anonymous>:1:105)\n    at async <anonymous>:337:30\n    at request (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:57:62)\n    at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:129:17\n    at row (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:60:9)\n    at async file:///Volumes/Extreme%20SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:127:2"
+  ],
+  "artifacts": {},
+  "chrome": "155.0.8059.85",
+  "url": "http://127.0.0.1:54806/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  }
+}

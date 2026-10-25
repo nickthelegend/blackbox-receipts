@@ -1,0 +1,51 @@
+FAIL WEB-PAGE-EVIDENCE kicker: "EVIDENCE · SESSION 933F87DA" != "Evidence · session 933f87da"
+PASS WEB-PAGE-VERIFY-SAMPLE-FAIL
+FAIL WEB-PAGE-VERIFY-ERROR locator.innerText: Error: strict mode violation: locator('[role=alert]') resolved to 2 elements:
+    1) <p role="alert" class="vf-alert">Could not verify: Audit render fault</p> aka getByText('Could not verify: Audit')
+    2) <div role="alert" aria-live="assertive" id="__next-route-announcer__"></div> aka locator('[id="__next-route-announcer__"]')
+
+Call log:
+[2m  - waiting for locator('[role=alert]')[22m
+
+    at text (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:55:46)
+    at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:111:228
+    at async row (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:60:3)
+    at async file:///Volumes/Extreme%20SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:108:2
+PASS WEB-FLOW-VERIFY-PINNED-POLICY
+PASS EDGE-VERIFY-NON-PACK
+FAIL API-POST-PROVE-FAIL page.evaluate: TypeError: r.url is not a function
+    at eval (eval at evaluate (:311:30), <anonymous>:1:105)
+    at async <anonymous>:337:30
+    at request (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:57:62)
+    at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:129:17
+    at row (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:60:9)
+    at async file:///Volumes/Extreme%20SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:127:2
+FAIL API-GET-EXPLAIN-SUCCESS page.evaluate: TypeError: r.url is not a function
+    at eval (eval at evaluate (:311:30), <anonymous>:1:105)
+    at async <anonymous>:337:30
+    at request (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:57:62)
+    at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:139:17
+    at row (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:60:9)
+    at async file:///Volumes/Extreme%20SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:138:2
+FAIL WEB-FLOW-RECORDER-TAMPER-CYCLE Error: expect(locator).toHaveText(expected) failed
+
+Locator:  locator('.rc-lamp').filter({ has: locator('.rc-lamp-label').filter({ hasText: /^No-secrets proof$/ }) }).locator('b')
+Expected: "Fail · 04"
+Received: "Pass"
+Timeout:  5000ms
+
+Call log:
+  - Expect "toHaveText" locator('.rc-lamp').filter({ has: locator('.rc-lamp-label').filter({ hasText: /^No-secrets proof$/ }) }).locator('b') with timeout 5000ms
+  - waiting for locator('.rc-lamp').filter({ has: locator('.rc-lamp-label').filter({ hasText: /^No-secrets proof$/ }) }).locator('b')
+    2 × locator resolved to <b>Not run</b>
+      - unexpected value "Not run"
+    12 × locator resolved to <b>Pass</b>
+       - unexpected value "Pass"
+
+    at captureRawStack (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/node_modules/.pnpm/playwright-core@1.63.0/node_modules/playwright-core/lib/coreBundle.js:8588:17)
+    at callMatcherAsStep (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/node_modules/.pnpm/playwright@1.63.0/node_modules/playwright/lib/matchers/expect.js:13310:57)
+    at Object.toHaveText (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/node_modules/.pnpm/playwright@1.63.0/node_modules/playwright/lib/matchers/expect.js:13302:23)
+    at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:146:124
+    at async row (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:60:3)
+    at async file:///Volumes/Extreme%20SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:143:2
+3 PASS, 5 FAIL; slot released

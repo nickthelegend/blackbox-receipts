@@ -1,0 +1,40 @@
+{
+  "id": "WEB-PAGE-VERIFY-ERROR",
+  "status": "FAIL",
+  "checks": [
+    {
+      "name": "navigation status",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "heading",
+      "actual": "Could not verify",
+      "expected": "Could not verify",
+      "ok": true
+    },
+    {
+      "name": "lead",
+      "actual": "This pack could not be displayed, so no verdict was reached. Nothing was uploaded; the file never left this tab.",
+      "expected": "This pack could not be displayed, so no verdict was reached. Nothing was uploaded; the file never left this tab.",
+      "ok": true
+    },
+    {
+      "name": "only injected React error logged",
+      "actual": 1,
+      "expected": 1,
+      "ok": true
+    }
+  ],
+  "failures": [
+    "locator.innerText: Error: strict mode violation: locator('[role=alert]') resolved to 2 elements:\n    1) <p role=\"alert\" class=\"vf-alert\">Could not verify: Audit render fault</p> aka getByText('Could not verify: Audit')\n    2) <div role=\"alert\" aria-live=\"assertive\" id=\"__next-route-announcer__\"></div> aka locator('[id=\"__next-route-announcer__\"]')\n\nCall log:\n\u001b[2m  - waiting for locator('[role=alert]')\u001b[22m\n\n    at text (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:55:46)\n    at /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:111:228\n    at async row (/Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:60:3)\n    at async file:///Volumes/Extreme%20SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/audit/web-phase4/run.mjs:108:2"
+  ],
+  "artifacts": {},
+  "chrome": "155.0.8059.85",
+  "url": "http://127.0.0.1:54806/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  }
+}

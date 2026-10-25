@@ -1,0 +1,83 @@
+{
+  "status": 200,
+  "url": "http://127.0.0.1:55121/api/session",
+  "body": {
+    "sessionId": "3aff611a-4573-4f6d-a54c-b13fd5edec8c",
+    "receipts": [
+      {
+        "sessionId": "3aff611a-4573-4f6d-a54c-b13fd5edec8c",
+        "step": 1,
+        "timestamp": "2026-10-25T21:52:00.032Z",
+        "tool": "read_file",
+        "argsHash": "29d40bbfdd13f3523ea908faa023c900c13abfe47ab0bc7eee4fb904dc56e847",
+        "paths": [
+          "one.md"
+        ],
+        "secretsAccessed": false,
+        "permissions": [
+          "workspace:file:read"
+        ],
+        "cost": null,
+        "approver": null,
+        "outcome": "ok",
+        "resultHash": "d3d6c17dc18d99eaeb4cf4351b9ef3c60f1329890b32580e1c3443bf039bf3d9",
+        "previousHash": null,
+        "hash": "3719dffa87be26dda2a29f1167f1b0b590a23132a214fba12544c4827f06ea3f",
+        "signature": "QfcBgAFJ56EDSTg32y2zVLqWmrJEXMki7qjSjtkr8lMhhKPfqymUGc2ZsUUAknl+lK+N3k/xjvC/4lgshBh8Aw=="
+      },
+      {
+        "sessionId": "3aff611a-4573-4f6d-a54c-b13fd5edec8c",
+        "step": 2,
+        "timestamp": "2026-10-25T21:52:00.208Z",
+        "tool": "read_file",
+        "argsHash": "8b04583741852c8d60937d955ae5bb4b3a2cda92fe82536894d5fe5a4483ba79",
+        "paths": [
+          "two.md"
+        ],
+        "secretsAccessed": false,
+        "permissions": [
+          "workspace:file:read"
+        ],
+        "cost": null,
+        "approver": null,
+        "outcome": "ok",
+        "resultHash": "04077e1f0557184f429d96aacd839420c976beb21cfbd1248b82d58a59960ef0",
+        "previousHash": "3719dffa87be26dda2a29f1167f1b0b590a23132a214fba12544c4827f06ea3f",
+        "hash": "0bf430c1a86a5a062be1d3e628df0b42b4336a637ecd9766519329d633447ae7",
+        "signature": "EmFd8kmG2mbYyjmgVE8ZuPXl9WP0IpaMhviEdDXBiR5Oaq5OVLDanIiErFAVpExGktB//8JqJEZqDPh76muWAQ=="
+      },
+      {
+        "sessionId": "3aff611a-4573-4f6d-a54c-b13fd5edec8c",
+        "step": 3,
+        "timestamp": "2026-10-25T21:52:00.379Z",
+        "tool": "read_file",
+        "argsHash": "8a4e8efaa1f163487875ca1b8433e37b3480383ad8fd8be782fe41ddc66b8b72",
+        "paths": [
+          "three.md"
+        ],
+        "secretsAccessed": false,
+        "permissions": [
+          "workspace:file:read"
+        ],
+        "cost": null,
+        "approver": null,
+        "outcome": "ok",
+        "resultHash": "6e18a14f00129ba4bc9312105c423a4bc97ac5db7893927bb5d37d51eb824e81",
+        "previousHash": "0bf430c1a86a5a062be1d3e628df0b42b4336a637ecd9766519329d633447ae7",
+        "hash": "f5b5b2cf2b9d219782114972b7be876c31f2213432057ba02b6f0520868e4f5e",
+        "signature": "0ZQINKO6hGssctDv94VxqrcFPEnmYSNwnge1m2RdIu2BTp2/SyvbZ1ILYIqLjWph+ODRybA8Y6Qm1wOT67n7Ag=="
+      }
+    ],
+    "chain": {
+      "valid": true,
+      "brokenAt": null,
+      "reason": null
+    },
+    "root": "20256d3aa1f0c29b881c977b02bc7de4f646685589616881875c2cd75bf37719",
+    "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAU3cXhZOZ7rndXdkw2mRH08byHMcZ0QbW3hfPpCdDxZ0=\n-----END PUBLIC KEY-----\n",
+    "walrus": null,
+    "walrusConfigured": false,
+    "tampered": [],
+    "source": "/private/tmp/blackbox-web-phase4-8ePdO5/session/session.jsonl"
+  }
+}
