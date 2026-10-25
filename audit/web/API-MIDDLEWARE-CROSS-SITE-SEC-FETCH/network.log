@@ -1,0 +1,40 @@
+{
+  "id": "API-MIDDLEWARE-CROSS-SITE-SEC-FETCH",
+  "timestamp": "2026-10-25T21:31:26.437Z",
+  "browser": "155.0.8059.85",
+  "page": "http://127.0.0.1:52500/",
+  "setup": "Playwright page.request sends exact Sec-Fetch-Site and Origin; browser/CDP cannot override Fetch Metadata. No response stubs.",
+  "requests": [
+    {
+      "url": "http://127.0.0.1:52500/api/session",
+      "status": 403,
+      "headers": {
+        "content-type": "application/json",
+        "vary": "Accept-Encoding",
+        "content-encoding": "gzip",
+        "date": "Sun, 25 Oct 2026 21:31:26 GMT",
+        "connection": "keep-alive",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked"
+      },
+      "text": "{\"error\":\"The Blackbox dashboard API only answers the dashboard's own pages and refused a cross-site request from http://evil.example.\"}",
+      "request": {
+        "method": "GET",
+        "path": "/api/session",
+        "headers": {
+          "Sec-Fetch-Site": "cross-site",
+          "Origin": "http://evil.example"
+        },
+        "omitted": []
+      },
+      "transport": "Playwright page.request; artificial middleware headers",
+      "wire": [],
+      "body": {
+        "error": "The Blackbox dashboard API only answers the dashboard's own pages and refused a cross-site request from http://evil.example."
+      }
+    }
+  ],
+  "browserResponses": [],
+  "assertion": "PASS",
+  "consoleRule": "Only native Chrome resource diagnostics for this row’s required status and request URL are allowed."
+}

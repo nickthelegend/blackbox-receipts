@@ -1,0 +1,133 @@
+{
+  "id": "API-GET-SESSION-SUCCESS",
+  "timestamp": "2026-10-25T21:31:22.628Z",
+  "browser": "155.0.8059.85",
+  "page": "http://127.0.0.1:52500/recorder",
+  "setup": "",
+  "requests": [
+    {
+      "url": "http://127.0.0.1:52500/api/session",
+      "status": 200,
+      "headers": {
+        "connection": "keep-alive",
+        "content-type": "application/json",
+        "date": "Sun, 25 Oct 2026 21:31:22 GMT",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "text": "{\"sessionId\":\"ca3122a0-981f-4ffe-968e-95cd275132d8\",\"receipts\":[{\"sessionId\":\"ca3122a0-981f-4ffe-968e-95cd275132d8\",\"step\":1,\"timestamp\":\"2026-10-25T21:31:19.647Z\",\"tool\":\"git\",\"argsHash\":\"1ca9d1a0152b2c66a4236f28803f142f54336e4b8d58550bd867414e6a748548\",\"paths\":[],\"secretsAccessed\":false,\"permissions\":[\"workspace:git:read\"],\"cost\":null,\"approver\":null,\"outcome\":\"ok\",\"resultHash\":\"00ac1ec5cefb540b084ca492729b8d8cdabebf605f8cda66c88917d40cba0741\",\"previousHash\":null,\"hash\":\"2e8871820c2bd5c8a29a87e2dce62b746fed3f310929cd55f3053a8e954aedb5\",\"signature\":\"RNB1cei4bA6PS9D6acIfageqbBdQHtHRH00T6GHZ6JEiJhvVdYm4EypWnPSI9LzEfQprEK608JC8FOx+gkPVAQ==\"},{\"sessionId\":\"ca3122a0-981f-4ffe-968e-95cd275132d8\",\"step\":2,\"timestamp\":\"2026-10-25T21:31:19.821Z\",\"tool\":\"read_file\",\"argsHash\":\"23c73c6489beb9c5229ed7b1a1e610b1fecacc0f8c088e05f3f1cf121f998661\",\"paths\":[\"README.md\"],\"secretsAccessed\":false,\"permissions\":[\"workspace:file:read\"],\"cost\":null,\"approver\":null,\"outcome\":\"ok\",\"resultHash\":\"d037c2ad65bf4d850219463d4cd4fb13ba7fdd1a3ab025d5a00a09fdeadf4f95\",\"previousHash\":\"2e8871820c2bd5c8a29a87e2dce62b746fed3f310929cd55f3053a8e954aedb5\",\"hash\":\"5962321bf3d7c116669a168ebddc18c710b3bec64303edeac840333886233f57\",\"signature\":\"Lm3FPJvcP3s8RHlXcQCRHowuIWXuvYDUEfGUN2+uQ91h/QK4SfLtnGc5ApJwiCThy9rnyGrrRrtctSAicPkxDw==\"},{\"sessionId\":\"ca3122a0-981f-4ffe-968e-95cd275132d8\",\"step\":3,\"timestamp\":\"2026-10-25T21:31:19.999Z\",\"tool\":\"shell\",\"argsHash\":\"6e747990f4cc4ea647a67e2eea27225e88de0dcb8804f780b807adef3e9a4667\",\"paths\":[],\"secretsAccessed\":false,\"permissions\":[\"workspace:shell:execute\"],\"cost\":null,\"approver\":null,\"outcome\":\"ok\",\"resultHash\":\"31f2c5bc11d07c81d15ff71624a7e039e1246c145afd8fad608df54f61bc1b1c\",\"previousHash\":\"5962321bf3d7c116669a168ebddc18c710b3bec64303edeac840333886233f57\",\"hash\":\"cacadd43461fad51898fcf4239daf1422321d38064652690612d79d746a2e92b\",\"signature\":\"cAkwIa1++FVWZMCUteWuZO/cZ593n7Hp+1ms9YwhrSemkeaFazMvrgF/9R3Eu1/ZBSKpiuL3iRjrN5WpKCI1Bw==\"}],\"chain\":{\"valid\":true,\"brokenAt\":null,\"reason\":null},\"root\":\"b9dbba1b937d385d3f67168d7d0287a1cdb2700d522b634244de603da3b34c58\",\"publicKey\":\"-----BEGIN PUBLIC KEY-----\\nMCowBQYDK2VwAyEA+3cca4bDBwyklTVpzi6hxCcETSajxxVunTiGg5aICJs=\\n-----END PUBLIC KEY-----\\n\",\"walrus\":null,\"walrusConfigured\":false,\"tampered\":[],\"source\":\"/private/tmp/blackbox-api-audit-CqZs0y/session/session.jsonl\"}",
+      "body": {
+        "sessionId": "ca3122a0-981f-4ffe-968e-95cd275132d8",
+        "receipts": [
+          {
+            "sessionId": "ca3122a0-981f-4ffe-968e-95cd275132d8",
+            "step": 1,
+            "timestamp": "2026-10-25T21:31:19.647Z",
+            "tool": "git",
+            "argsHash": "1ca9d1a0152b2c66a4236f28803f142f54336e4b8d58550bd867414e6a748548",
+            "paths": [],
+            "secretsAccessed": false,
+            "permissions": [
+              "workspace:git:read"
+            ],
+            "cost": null,
+            "approver": null,
+            "outcome": "ok",
+            "resultHash": "00ac1ec5cefb540b084ca492729b8d8cdabebf605f8cda66c88917d40cba0741",
+            "previousHash": null,
+            "hash": "2e8871820c2bd5c8a29a87e2dce62b746fed3f310929cd55f3053a8e954aedb5",
+            "signature": "RNB1cei4bA6PS9D6acIfageqbBdQHtHRH00T6GHZ6JEiJhvVdYm4EypWnPSI9LzEfQprEK608JC8FOx+gkPVAQ=="
+          },
+          {
+            "sessionId": "ca3122a0-981f-4ffe-968e-95cd275132d8",
+            "step": 2,
+            "timestamp": "2026-10-25T21:31:19.821Z",
+            "tool": "read_file",
+            "argsHash": "23c73c6489beb9c5229ed7b1a1e610b1fecacc0f8c088e05f3f1cf121f998661",
+            "paths": [
+              "README.md"
+            ],
+            "secretsAccessed": false,
+            "permissions": [
+              "workspace:file:read"
+            ],
+            "cost": null,
+            "approver": null,
+            "outcome": "ok",
+            "resultHash": "d037c2ad65bf4d850219463d4cd4fb13ba7fdd1a3ab025d5a00a09fdeadf4f95",
+            "previousHash": "2e8871820c2bd5c8a29a87e2dce62b746fed3f310929cd55f3053a8e954aedb5",
+            "hash": "5962321bf3d7c116669a168ebddc18c710b3bec64303edeac840333886233f57",
+            "signature": "Lm3FPJvcP3s8RHlXcQCRHowuIWXuvYDUEfGUN2+uQ91h/QK4SfLtnGc5ApJwiCThy9rnyGrrRrtctSAicPkxDw=="
+          },
+          {
+            "sessionId": "ca3122a0-981f-4ffe-968e-95cd275132d8",
+            "step": 3,
+            "timestamp": "2026-10-25T21:31:19.999Z",
+            "tool": "shell",
+            "argsHash": "6e747990f4cc4ea647a67e2eea27225e88de0dcb8804f780b807adef3e9a4667",
+            "paths": [],
+            "secretsAccessed": false,
+            "permissions": [
+              "workspace:shell:execute"
+            ],
+            "cost": null,
+            "approver": null,
+            "outcome": "ok",
+            "resultHash": "31f2c5bc11d07c81d15ff71624a7e039e1246c145afd8fad608df54f61bc1b1c",
+            "previousHash": "5962321bf3d7c116669a168ebddc18c710b3bec64303edeac840333886233f57",
+            "hash": "cacadd43461fad51898fcf4239daf1422321d38064652690612d79d746a2e92b",
+            "signature": "cAkwIa1++FVWZMCUteWuZO/cZ593n7Hp+1ms9YwhrSemkeaFazMvrgF/9R3Eu1/ZBSKpiuL3iRjrN5WpKCI1Bw=="
+          }
+        ],
+        "chain": {
+          "valid": true,
+          "brokenAt": null,
+          "reason": null
+        },
+        "root": "b9dbba1b937d385d3f67168d7d0287a1cdb2700d522b634244de603da3b34c58",
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEA+3cca4bDBwyklTVpzi6hxCcETSajxxVunTiGg5aICJs=\n-----END PUBLIC KEY-----\n",
+        "walrus": null,
+        "walrusConfigured": false,
+        "tampered": [],
+        "source": "/private/tmp/blackbox-api-audit-CqZs0y/session/session.jsonl"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/api/session"
+      },
+      "wire": [
+        {
+          "requestId": "58034.78",
+          "headers": {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Host": "127.0.0.1:52500",
+            "Pragma": "no-cache",
+            "Referer": "http://127.0.0.1:52500/recorder",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\""
+          }
+        }
+      ]
+    }
+  ],
+  "browserResponses": [
+    {
+      "id": "API-GET-SESSION-SUCCESS",
+      "url": "http://127.0.0.1:52500/api/session",
+      "status": 200,
+      "method": "GET"
+    }
+  ],
+  "assertion": "PASS",
+  "consoleRule": "Only native Chrome resource diagnostics for this row’s required status and request URL are allowed."
+}

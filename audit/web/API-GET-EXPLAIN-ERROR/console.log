@@ -1,0 +1,1 @@
+{"id":"API-GET-EXPLAIN-ERROR","type":"error","text":"Failed to load resource: the server responded with a status of 500 (Internal Server Error)","location":{"url":"http://127.0.0.1:52500/api/explain","line":0,"column":0,"lineNumber":0,"columnNumber":0}}

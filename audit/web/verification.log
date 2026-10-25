@@ -1,0 +1,12 @@
+pnpm install --frozen-lockfile: PASS
+pnpm build (initial production build): PASS
+pnpm --filter @blackbox/web build (after both fixes, including type checking): PASS
+node --check audit/run-web-api.mjs: PASS
+Targeted Playwright Chrome API audit: 25 PASS, 0 FAIL, 2 UNTESTED
+Native property proof verification and all three commitment-opening checks: PASS
+Exact unconfigured integrations response plus both sponsor Setup required lamps: PASS
+Exact unconfigured Walrus HTTP 503 body: PASS
+Final console checks: only expected native Chrome resource diagnostics; no application console messages or page errors
+Owned server/Chrome PIDs: exited
+heavy slot bb-audit-web: released
+pnpm test:e2e: NOT RUN

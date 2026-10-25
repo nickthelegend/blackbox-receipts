@@ -1,0 +1,118 @@
+{
+  "id": "API-MIDDLEWARE-ALLOW-REMOTE",
+  "timestamp": "2026-10-25T21:27:11.026Z",
+  "browser": "155.0.8059.85",
+  "page": "http://blackbox.test:52165/",
+  "setup": "BLACKBOX_DASHBOARD_ALLOW_REMOTE=1; real Chrome URL sends non-loopback Host blackbox.test.",
+  "requests": [
+    {
+      "url": "http://blackbox.test:52165/api/session",
+      "status": 200,
+      "headers": {
+        "connection": "keep-alive",
+        "content-type": "application/json",
+        "date": "Sun, 25 Oct 2026 21:27:10 GMT",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "text": "{\"sessionId\":\"a0df1daf-3151-4a21-aa64-c7fdc3bf4196\",\"receipts\":[{\"sessionId\":\"a0df1daf-3151-4a21-aa64-c7fdc3bf4196\",\"step\":1,\"timestamp\":\"2026-10-25T21:26:57.606Z\",\"tool\":\"git\",\"argsHash\":\"5c5b9790b852209ee7fef7de59706a7d86d3c30c22fca810c33a5b6452e3c69c\",\"paths\":[],\"secretsAccessed\":false,\"permissions\":[\"workspace:git:read\"],\"cost\":null,\"approver\":null,\"outcome\":\"ok\",\"resultHash\":\"fd0a6a55a814c779d2954ed55cd5219d819f81eae4f398d5abaa5c1a84eff8de\",\"previousHash\":null,\"hash\":\"7707e7b0716358b25b39c6c30cf37379769642574587ef778efb9d6c0116c8df\",\"signature\":\"AS8DIu7YltlV56owooBd5Je+8Sf+QEQmHnVwMdbtD0oIW39r+dpi0Uj19i0ip5efVL+9s1JcZ7FLJGOQRSiZDg==\"},{\"sessionId\":\"a0df1daf-3151-4a21-aa64-c7fdc3bf4196\",\"step\":2,\"timestamp\":\"2026-10-25T21:26:57.794Z\",\"tool\":\"read_file\",\"argsHash\":\"cb41f74414ba52c17a3a519a03f37abc1c7d739b45292f4b791edf708b8285c6\",\"paths\":[\"README.md\"],\"secretsAccessed\":false,\"permissions\":[\"workspace:file:read\"],\"cost\":null,\"approver\":null,\"outcome\":\"ok\",\"resultHash\":\"98dced102862b0bb576c9f2e4c984815904b9fef4b183fd05075a71aeb440678\",\"previousHash\":\"7707e7b0716358b25b39c6c30cf37379769642574587ef778efb9d6c0116c8df\",\"hash\":\"1ff4a975d73eddcc6fbfb08c3368cfd32885cd723720d817471697182de7c5c0\",\"signature\":\"/Fc1AVDb71mnmyndtYwBoBE9ag8Xzkp6fuNZB9TPiP4YOHPoC4ThBMS3XEhIi7S85RAOLoSuYqrfTDb0kd2eCw==\"},{\"sessionId\":\"a0df1daf-3151-4a21-aa64-c7fdc3bf4196\",\"step\":3,\"timestamp\":\"2026-10-25T21:26:57.984Z\",\"tool\":\"shell\",\"argsHash\":\"c8b7ec0bc77bc1d437285ff76ba3f859d97e59f02629944d356a8e65764d59fe\",\"paths\":[],\"secretsAccessed\":false,\"permissions\":[\"workspace:shell:execute\"],\"cost\":null,\"approver\":null,\"outcome\":\"ok\",\"resultHash\":\"9a0d110468440b9d19b3711fb6c47e4bbd5f4197b882eca61e9a0db62665fed6\",\"previousHash\":\"1ff4a975d73eddcc6fbfb08c3368cfd32885cd723720d817471697182de7c5c0\",\"hash\":\"565dfb4a72e4e1899f217ad040c2f0d9624fcbede06bbed0afca6e4ee96b81fd\",\"signature\":\"UKjorR46iOBmfEbD5WgSWcj5IT26iQ82m2CHijZ13kAUlEhaj7atCUQ2i/628BP9QHxSG0U+FaKKFVPMzbFqCA==\"}],\"chain\":{\"valid\":true,\"brokenAt\":null,\"reason\":null},\"root\":\"6831bf7a3588bc8070356c1a9381365d6e9c3005faaa8e1271a414f5538d2bba\",\"publicKey\":\"-----BEGIN PUBLIC KEY-----\\nMCowBQYDK2VwAyEAu8NOytqAQvZNW2KDZYLs1TYdEL8jcpbIJjukB2epEk8=\\n-----END PUBLIC KEY-----\\n\",\"walrus\":null,\"walrusConfigured\":true,\"tampered\":[],\"source\":\"/private/tmp/blackbox-api-audit-NiKe8o/session/session.jsonl\"}",
+      "body": {
+        "sessionId": "a0df1daf-3151-4a21-aa64-c7fdc3bf4196",
+        "receipts": [
+          {
+            "sessionId": "a0df1daf-3151-4a21-aa64-c7fdc3bf4196",
+            "step": 1,
+            "timestamp": "2026-10-25T21:26:57.606Z",
+            "tool": "git",
+            "argsHash": "5c5b9790b852209ee7fef7de59706a7d86d3c30c22fca810c33a5b6452e3c69c",
+            "paths": [],
+            "secretsAccessed": false,
+            "permissions": [
+              "workspace:git:read"
+            ],
+            "cost": null,
+            "approver": null,
+            "outcome": "ok",
+            "resultHash": "fd0a6a55a814c779d2954ed55cd5219d819f81eae4f398d5abaa5c1a84eff8de",
+            "previousHash": null,
+            "hash": "7707e7b0716358b25b39c6c30cf37379769642574587ef778efb9d6c0116c8df",
+            "signature": "AS8DIu7YltlV56owooBd5Je+8Sf+QEQmHnVwMdbtD0oIW39r+dpi0Uj19i0ip5efVL+9s1JcZ7FLJGOQRSiZDg=="
+          },
+          {
+            "sessionId": "a0df1daf-3151-4a21-aa64-c7fdc3bf4196",
+            "step": 2,
+            "timestamp": "2026-10-25T21:26:57.794Z",
+            "tool": "read_file",
+            "argsHash": "cb41f74414ba52c17a3a519a03f37abc1c7d739b45292f4b791edf708b8285c6",
+            "paths": [
+              "README.md"
+            ],
+            "secretsAccessed": false,
+            "permissions": [
+              "workspace:file:read"
+            ],
+            "cost": null,
+            "approver": null,
+            "outcome": "ok",
+            "resultHash": "98dced102862b0bb576c9f2e4c984815904b9fef4b183fd05075a71aeb440678",
+            "previousHash": "7707e7b0716358b25b39c6c30cf37379769642574587ef778efb9d6c0116c8df",
+            "hash": "1ff4a975d73eddcc6fbfb08c3368cfd32885cd723720d817471697182de7c5c0",
+            "signature": "/Fc1AVDb71mnmyndtYwBoBE9ag8Xzkp6fuNZB9TPiP4YOHPoC4ThBMS3XEhIi7S85RAOLoSuYqrfTDb0kd2eCw=="
+          },
+          {
+            "sessionId": "a0df1daf-3151-4a21-aa64-c7fdc3bf4196",
+            "step": 3,
+            "timestamp": "2026-10-25T21:26:57.984Z",
+            "tool": "shell",
+            "argsHash": "c8b7ec0bc77bc1d437285ff76ba3f859d97e59f02629944d356a8e65764d59fe",
+            "paths": [],
+            "secretsAccessed": false,
+            "permissions": [
+              "workspace:shell:execute"
+            ],
+            "cost": null,
+            "approver": null,
+            "outcome": "ok",
+            "resultHash": "9a0d110468440b9d19b3711fb6c47e4bbd5f4197b882eca61e9a0db62665fed6",
+            "previousHash": "1ff4a975d73eddcc6fbfb08c3368cfd32885cd723720d817471697182de7c5c0",
+            "hash": "565dfb4a72e4e1899f217ad040c2f0d9624fcbede06bbed0afca6e4ee96b81fd",
+            "signature": "UKjorR46iOBmfEbD5WgSWcj5IT26iQ82m2CHijZ13kAUlEhaj7atCUQ2i/628BP9QHxSG0U+FaKKFVPMzbFqCA=="
+          }
+        ],
+        "chain": {
+          "valid": true,
+          "brokenAt": null,
+          "reason": null
+        },
+        "root": "6831bf7a3588bc8070356c1a9381365d6e9c3005faaa8e1271a414f5538d2bba",
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAu8NOytqAQvZNW2KDZYLs1TYdEL8jcpbIJjukB2epEk8=\n-----END PUBLIC KEY-----\n",
+        "walrus": null,
+        "walrusConfigured": true,
+        "tampered": [],
+        "source": "/private/tmp/blackbox-api-audit-NiKe8o/session/session.jsonl"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/api/session"
+      },
+      "wire": [
+        {
+          "requestId": "53725.69",
+          "headers": {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Host": "blackbox.test:52165",
+            "Pragma": "no-cache",
+            "Referer": "http://blackbox.test:52165/",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    }
+  ],
+  "assertion": "PASS"
+}

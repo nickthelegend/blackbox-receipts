@@ -1,0 +1,132 @@
+[
+  {
+    "id": "API-GET-SESSION-SUCCESS",
+    "status": "PASS",
+    "diagnostics": 0
+  },
+  {
+    "id": "API-POST-PROVE-PASS",
+    "status": "FAIL",
+    "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- 'blackbox-property-proof/v1'\n",
+    "diagnostics": 0
+  },
+  {
+    "id": "API-GET-EXPLAIN-SUCCESS",
+    "status": "FAIL",
+    "error": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'undefined'\n- 'string'\n",
+    "diagnostics": 0
+  },
+  {
+    "id": "API-GET-INTEGRATIONS-UNCONFIGURED",
+    "status": "PASS",
+    "diagnostics": 0
+  },
+  {
+    "id": "API-POST-ANCHOR-UNCONFIGURED",
+    "status": "PASS",
+    "diagnostics": 1
+  },
+  {
+    "id": "API-POST-TAMPER-SUCCESS",
+    "status": "PASS",
+    "diagnostics": 0
+  },
+  {
+    "id": "API-POST-TAMPER-DEFAULT-BODY",
+    "status": "PASS",
+    "diagnostics": 0
+  },
+  {
+    "id": "API-POST-TAMPER-INVALID-STEP",
+    "status": "PASS",
+    "diagnostics": 3
+  },
+  {
+    "id": "API-POST-TAMPER-OUT-OF-BOUNDS",
+    "status": "PASS",
+    "diagnostics": 1
+  },
+  {
+    "id": "API-POST-RESTORE-SUCCESS",
+    "status": "PASS",
+    "diagnostics": 0
+  },
+  {
+    "id": "API-POST-RESTORE-ERROR",
+    "status": "PASS",
+    "diagnostics": 1
+  },
+  {
+    "id": "API-POST-PROVE-FAIL",
+    "status": "PASS",
+    "diagnostics": 0
+  },
+  {
+    "id": "API-GET-SESSION-CORRUPT",
+    "status": "PASS",
+    "diagnostics": 1
+  },
+  {
+    "id": "API-POST-PROVE-CORRUPT",
+    "status": "PASS",
+    "diagnostics": 2
+  },
+  {
+    "id": "API-GET-EXPLAIN-CORRUPT",
+    "status": "PASS",
+    "diagnostics": 1
+  },
+  {
+    "id": "API-GET-EXPLAIN-ERROR",
+    "status": "PASS",
+    "diagnostics": 1
+  },
+  {
+    "id": "API-MIDDLEWARE-CROSS-SITE-SEC-FETCH",
+    "status": "FAIL",
+    "error": "Expected values to be strictly equal:\n\n200 !== 403\n",
+    "diagnostics": 0
+  },
+  {
+    "id": "API-MIDDLEWARE-CROSS-ORIGIN-HEADER",
+    "status": "FAIL",
+    "error": "Expected values to be strictly equal:\n\n200 !== 403\n",
+    "diagnostics": 0
+  },
+  {
+    "id": "API-MIDDLEWARE-OPAQUE-ORIGIN",
+    "status": "FAIL",
+    "error": "Expected values to be strictly equal:\n\n200 !== 403\n",
+    "diagnostics": 0
+  },
+  {
+    "id": "API-MIDDLEWARE-NON-LOOPBACK-HOST",
+    "status": "PASS",
+    "diagnostics": 1
+  },
+  {
+    "id": "API-POST-ANCHOR-NETWORK-FAIL",
+    "status": "PASS",
+    "diagnostics": 1
+  },
+  {
+    "id": "API-POST-ANCHOR-CORRUPT",
+    "status": "PASS",
+    "diagnostics": 1
+  },
+  {
+    "id": "API-POST-ANCHOR-EMPTY",
+    "status": "PASS",
+    "diagnostics": 1
+  },
+  {
+    "id": "API-MIDDLEWARE-ALLOW-REMOTE",
+    "status": "PASS",
+    "diagnostics": 0
+  },
+  {
+    "id": "API-DELETE-SESSION",
+    "status": "PASS",
+    "diagnostics": 0
+  }
+]

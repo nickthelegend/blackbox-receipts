@@ -1,0 +1,72 @@
+{
+  "id": "API-GET-INTEGRATIONS-UNCONFIGURED",
+  "timestamp": "2026-10-25T21:32:09.220Z",
+  "browser": "155.0.8059.85",
+  "page": "http://127.0.0.1:52691/recorder",
+  "setup": "All ZETARIS_* and METERLESS_* variables removed from server environment.",
+  "requests": [
+    {
+      "url": "http://127.0.0.1:52691/api/integrations",
+      "status": 200,
+      "headers": {
+        "connection": "keep-alive",
+        "content-type": "application/json",
+        "date": "Sun, 25 Oct 2026 21:32:09 GMT",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch"
+      },
+      "text": "{\"integrations\":[{\"name\":\"Zetaris\",\"ok\":false,\"detail\":\"Zetaris not configured: missing ZETARIS_API_KEY, ZETARIS_ORG_ID. Create an API key in the Zetaris Console and get your Org ID from Zetaris Support/Admin, then set them in .env.local.\"},{\"name\":\"Meterless\",\"ok\":false,\"detail\":\"Meterless not configured: set METERLESS_TOKEN, or METERLESS_STATE_DIR (the runtime writes its token to <stateDir>/proxy-token). Meterless runs locally; there is no hosted API key.\"}]}",
+      "body": {
+        "integrations": [
+          {
+            "name": "Zetaris",
+            "ok": false,
+            "detail": "Zetaris not configured: missing ZETARIS_API_KEY, ZETARIS_ORG_ID. Create an API key in the Zetaris Console and get your Org ID from Zetaris Support/Admin, then set them in .env.local."
+          },
+          {
+            "name": "Meterless",
+            "ok": false,
+            "detail": "Meterless not configured: set METERLESS_TOKEN, or METERLESS_STATE_DIR (the runtime writes its token to <stateDir>/proxy-token). Meterless runs locally; there is no hosted API key."
+          }
+        ]
+      },
+      "request": {
+        "method": "GET",
+        "path": "/api/integrations"
+      },
+      "wire": [
+        {
+          "requestId": "81468.78",
+          "headers": {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Host": "127.0.0.1:52691",
+            "Pragma": "no-cache",
+            "Referer": "http://127.0.0.1:52691/recorder",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Google Chrome\";v=\"155\", \"Chromium\";v=\"155\", \"Not(A:Brand\";v=\"24\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\""
+          }
+        }
+      ]
+    }
+  ],
+  "browserResponses": [
+    {
+      "id": "API-GET-INTEGRATIONS-UNCONFIGURED",
+      "url": "http://127.0.0.1:52691/api/integrations",
+      "status": 200,
+      "method": "GET"
+    }
+  ],
+  "assertion": "PASS",
+  "consoleRule": "Only native Chrome resource diagnostics for this row’s required status and request URL are allowed."
+}

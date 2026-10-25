@@ -1,0 +1,56 @@
+{
+  "id": "API-MIDDLEWARE-NON-LOOPBACK-HOST",
+  "timestamp": "2026-10-25T21:31:27.615Z",
+  "browser": "155.0.8059.85",
+  "page": "http://blackbox.test:52500/",
+  "setup": "Real Chrome URL blackbox.test resolves to 127.0.0.1; wire Host includes its dynamic port. Remote override unset.",
+  "requests": [
+    {
+      "url": "http://blackbox.test:52500/api/session",
+      "status": 403,
+      "headers": {
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-type": "application/json",
+        "date": "Sun, 25 Oct 2026 21:31:27 GMT",
+        "keep-alive": "timeout=5",
+        "transfer-encoding": "chunked",
+        "vary": "Accept-Encoding"
+      },
+      "text": "{\"error\":\"The Blackbox dashboard API is local-only and refused a request for host \\\"blackbox.test\\\". Open it at http://localhost:3000, or set BLACKBOX_DASHBOARD_ALLOW_REMOTE=1 on a trusted network.\"}",
+      "body": {
+        "error": "The Blackbox dashboard API is local-only and refused a request for host \"blackbox.test\". Open it at http://localhost:3000, or set BLACKBOX_DASHBOARD_ALLOW_REMOTE=1 on a trusted network."
+      },
+      "request": {
+        "method": "GET",
+        "path": "/api/session"
+      },
+      "wire": [
+        {
+          "requestId": "58272.69",
+          "headers": {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Host": "blackbox.test:52500",
+            "Pragma": "no-cache",
+            "Referer": "http://blackbox.test:52500/",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36"
+          }
+        }
+      ]
+    }
+  ],
+  "browserResponses": [
+    {
+      "id": "API-MIDDLEWARE-NON-LOOPBACK-HOST",
+      "url": "http://blackbox.test:52500/api/session",
+      "status": 403,
+      "method": "GET"
+    }
+  ],
+  "assertion": "PASS",
+  "consoleRule": "Only native Chrome resource diagnostics for this row’s required status and request URL are allowed."
+}
