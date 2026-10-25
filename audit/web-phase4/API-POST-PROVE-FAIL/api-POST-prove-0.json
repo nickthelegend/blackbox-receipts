@@ -1,0 +1,185 @@
+{
+  "status": 200,
+  "url": "http://127.0.0.1:55121/api/prove",
+  "body": {
+    "status": "PASS",
+    "step": null,
+    "reason": null,
+    "policyId": "no-secrets-read/v2",
+    "sessionRoot": "20256d3aa1f0c29b881c977b02bc7de4f646685589616881875c2cd75bf37719",
+    "chainBrokenAt": null,
+    "steps": 3,
+    "root": "20256d3aa1f0c29b881c977b02bc7de4f646685589616881875c2cd75bf37719",
+    "proof": {
+      "version": 1,
+      "property": "no-secrets-read",
+      "policy": {
+        "id": "no-secrets-read/v2",
+        "secretPathGlobs": [
+          ".env*",
+          "*.pem",
+          "*.key",
+          "id_rsa",
+          "id_ed25519",
+          "~/.ssh/**",
+          ".ssh/**",
+          "~/.aws/**",
+          ".aws/**",
+          "secrets/**",
+          ".blackbox/**",
+          "credentials.json",
+          ".ssh",
+          ".aws",
+          ".gnupg",
+          ".gnupg/**",
+          "secrets",
+          ".blackbox",
+          ".git/**",
+          ".git-credentials",
+          ".netrc",
+          ".npmrc",
+          ".pypirc",
+          ".pgpass",
+          "*.p12",
+          "*.pfx",
+          ".docker/config.json",
+          ".kube/config"
+        ],
+        "secretArgPatterns": [
+          {
+            "name": "private-key-block",
+            "pattern": "-----BEGIN [A-Z ]*PRIVATE KEY-----"
+          },
+          {
+            "name": "aws-access-key-id",
+            "pattern": "\\bAKIA[0-9A-Z]{16}\\b"
+          },
+          {
+            "name": "github-token",
+            "pattern": "\\bgh[pousr]_[A-Za-z0-9]{36,}\\b"
+          },
+          {
+            "name": "gitlab-token",
+            "pattern": "\\bglpat-[A-Za-z0-9_-]{20,}\\b"
+          },
+          {
+            "name": "api-secret-key",
+            "pattern": "\\bsk-(?:ant-)?[A-Za-z0-9_-]{20,}\\b"
+          },
+          {
+            "name": "slack-token",
+            "pattern": "\\bxox[abprs]-[A-Za-z0-9-]{10,}\\b"
+          }
+        ]
+      },
+      "policyHash": "d1e72d1a6c224ff147f946791f04f0e4102e28f75649f3c8839222ff3925517f",
+      "sessionId": "3aff611a-4573-4f6d-a54c-b13fd5edec8c",
+      "root": "20256d3aa1f0c29b881c977b02bc7de4f646685589616881875c2cd75bf37719",
+      "receiptCount": 3,
+      "steps": [
+        {
+          "step": 1,
+          "leaf": "3719dffa87be26dda2a29f1167f1b0b590a23132a214fba12544c4827f06ea3f",
+          "signature": "QfcBgAFJ56EDSTg32y2zVLqWmrJEXMki7qjSjtkr8lMhhKPfqymUGc2ZsUUAknl+lK+N3k/xjvC/4lgshBh8Aw==",
+          "inclusion": [
+            {
+              "hash": "0bf430c1a86a5a062be1d3e628df0b42b4336a637ecd9766519329d633447ae7",
+              "side": "right"
+            },
+            {
+              "hash": "8df69aeabdb87676097667a69cf5ad48df7cc576c7a6d133d1525ecaa3758c55",
+              "side": "right"
+            }
+          ],
+          "commitment": "fb5013cb0f06fbe48d496b58f4bd9a6b6f3bab2af15828aefb0acb4ce20cb74c"
+        },
+        {
+          "step": 2,
+          "leaf": "0bf430c1a86a5a062be1d3e628df0b42b4336a637ecd9766519329d633447ae7",
+          "signature": "EmFd8kmG2mbYyjmgVE8ZuPXl9WP0IpaMhviEdDXBiR5Oaq5OVLDanIiErFAVpExGktB//8JqJEZqDPh76muWAQ==",
+          "inclusion": [
+            {
+              "hash": "3719dffa87be26dda2a29f1167f1b0b590a23132a214fba12544c4827f06ea3f",
+              "side": "left"
+            },
+            {
+              "hash": "8df69aeabdb87676097667a69cf5ad48df7cc576c7a6d133d1525ecaa3758c55",
+              "side": "right"
+            }
+          ],
+          "commitment": "0fac0f5e9a5a18bc0d23b6eaf08b199399ff906b3c6cb99259663a449b29f25d"
+        },
+        {
+          "step": 3,
+          "leaf": "f5b5b2cf2b9d219782114972b7be876c31f2213432057ba02b6f0520868e4f5e",
+          "signature": "0ZQINKO6hGssctDv94VxqrcFPEnmYSNwnge1m2RdIu2BTp2/SyvbZ1ILYIqLjWph+ODRybA8Y6Qm1wOT67n7Ag==",
+          "inclusion": [
+            {
+              "hash": "f5b5b2cf2b9d219782114972b7be876c31f2213432057ba02b6f0520868e4f5e",
+              "side": "right"
+            },
+            {
+              "hash": "338849f81dd08d8e7e5fd57aad289140daf7fdc727d2895be309c503da6ed44b",
+              "side": "left"
+            }
+          ],
+          "commitment": "f2a8a8cdea880a2dbb2d214f0939bef82ac9e509faee3b215d38f33ce61f4b53"
+        }
+      ],
+      "attestation": "+SVXhZBXlGHe0OaWc+gwzGavahr1LW7r0wL990+wv6BP/JI2M7IDEe1t9v14jf8BBllUX1PF8kH2jp5jhZwCDg==",
+      "format": "blackbox-property-proof/v1",
+      "policyId": "no-secrets-read/v2",
+      "count": 3,
+      "publicKey": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAU3cXhZOZ7rndXdkw2mRH08byHMcZ0QbW3hfPpCdDxZ0=\n-----END PUBLIC KEY-----\n",
+      "leaves": [
+        {
+          "step": 1,
+          "leafHash": "3719dffa87be26dda2a29f1167f1b0b590a23132a214fba12544c4827f06ea3f",
+          "receiptHash": "3719dffa87be26dda2a29f1167f1b0b590a23132a214fba12544c4827f06ea3f",
+          "signature": "QfcBgAFJ56EDSTg32y2zVLqWmrJEXMki7qjSjtkr8lMhhKPfqymUGc2ZsUUAknl+lK+N3k/xjvC/4lgshBh8Aw==",
+          "inclusionPath": [
+            "0bf430c1a86a5a062be1d3e628df0b42b4336a637ecd9766519329d633447ae7",
+            "8df69aeabdb87676097667a69cf5ad48df7cc576c7a6d133d1525ecaa3758c55"
+          ]
+        },
+        {
+          "step": 2,
+          "leafHash": "0bf430c1a86a5a062be1d3e628df0b42b4336a637ecd9766519329d633447ae7",
+          "receiptHash": "0bf430c1a86a5a062be1d3e628df0b42b4336a637ecd9766519329d633447ae7",
+          "signature": "EmFd8kmG2mbYyjmgVE8ZuPXl9WP0IpaMhviEdDXBiR5Oaq5OVLDanIiErFAVpExGktB//8JqJEZqDPh76muWAQ==",
+          "inclusionPath": [
+            "3719dffa87be26dda2a29f1167f1b0b590a23132a214fba12544c4827f06ea3f",
+            "8df69aeabdb87676097667a69cf5ad48df7cc576c7a6d133d1525ecaa3758c55"
+          ]
+        },
+        {
+          "step": 3,
+          "leafHash": "f5b5b2cf2b9d219782114972b7be876c31f2213432057ba02b6f0520868e4f5e",
+          "receiptHash": "f5b5b2cf2b9d219782114972b7be876c31f2213432057ba02b6f0520868e4f5e",
+          "signature": "0ZQINKO6hGssctDv94VxqrcFPEnmYSNwnge1m2RdIu2BTp2/SyvbZ1ILYIqLjWph+ODRybA8Y6Qm1wOT67n7Ag==",
+          "inclusionPath": [
+            "f5b5b2cf2b9d219782114972b7be876c31f2213432057ba02b6f0520868e4f5e",
+            "338849f81dd08d8e7e5fd57aad289140daf7fdc727d2895be309c503da6ed44b"
+          ]
+        }
+      ],
+      "commitments": [
+        {
+          "step": 1,
+          "commitment": "fb5013cb0f06fbe48d496b58f4bd9a6b6f3bab2af15828aefb0acb4ce20cb74c",
+          "opening": "4521a8081a2f13481d4b8ab236beabe2151379ad1b24c8a7dda215de7ca47432"
+        },
+        {
+          "step": 2,
+          "commitment": "0fac0f5e9a5a18bc0d23b6eaf08b199399ff906b3c6cb99259663a449b29f25d",
+          "opening": "54eac986c703ed9710045fe337bf4cbbc253df945fbc452545e59f19bcc5859e"
+        },
+        {
+          "step": 3,
+          "commitment": "f2a8a8cdea880a2dbb2d214f0939bef82ac9e509faee3b215d38f33ce61f4b53",
+          "opening": "74177f4f40656fb06891a3951a3a7ab0418f38ec62e5e7ae7e6f532146b1b290"
+        }
+      ]
+    }
+  }
+}

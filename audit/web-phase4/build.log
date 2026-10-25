@@ -1,0 +1,69 @@
+
+> blackbox-receipts@0.1.0 build /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4
+> pnpm --filter @blackbox/verify build && pnpm --filter @blackbox/receipts build && pnpm --filter @blackbox/meterless build && pnpm --filter @blackbox/proxy build && pnpm --filter @blackbox/zetaris build && pnpm --filter @blackbox/web build
+
+
+> @blackbox/verify@0.1.0 build /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/packages/verify
+> tsc -p tsconfig.json && tsc -p tsconfig.bin.json
+
+
+> @blackbox/receipts@0.1.0 build /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/packages/receipts
+> tsc -p tsconfig.json
+
+
+> @blackbox/meterless@0.1.0 build /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/packages/meterless
+> tsc -p tsconfig.json
+
+
+> @blackbox/proxy@0.1.0 build /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/packages/proxy
+> tsc -p tsconfig.json
+
+
+> @blackbox/zetaris@0.1.0 build /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/packages/zetaris
+> tsc -p tsconfig.json
+
+
+> @blackbox/web@0.1.0 build /Volumes/Extreme SSD/Projects/.loom-worktrees/blackbox-receipts-e8f771dc6991/omvoa7g8u/t-phase4/apps/web
+> next build
+
+   ▲ Next.js 15.5.28
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 2.9s
+   Linting and checking validity of types ...
+
+ ⚠ The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/app/api-reference/config/eslint#migrating-existing-config
+   Collecting page data ...
+   Generating static pages (0/11) ...
+   Generating static pages (2/11) 
+   Generating static pages (5/11) 
+   Generating static pages (8/11) 
+ ✓ Generating static pages (11/11)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                      169 B         103 kB
+├ ○ /_not-found                            993 B         104 kB
+├ ƒ /api/anchor                            145 B         103 kB
+├ ƒ /api/explain                           145 B         103 kB
+├ ƒ /api/integrations                      145 B         103 kB
+├ ƒ /api/prove                             145 B         103 kB
+├ ƒ /api/restore                           145 B         103 kB
+├ ƒ /api/session                           145 B         103 kB
+├ ƒ /api/tamper                            145 B         103 kB
+├ ○ /evidence                             4.6 kB         135 kB
+├ ○ /icon.svg                                0 B            0 B
+├ ○ /recorder                            8.71 kB         131 kB
+└ ○ /verify                              5.05 kB         136 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/79-7cc5d50eb914987b.js        46.4 kB
+  ├ chunks/d6e00b03-13849fdf938b9eba.js  54.2 kB
+  └ other shared chunks (total)          1.94 kB
+
+
+ƒ Middleware                             34.1 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -1,0 +1,146 @@
+{
+  "id": "WEB-FLOW-RECORDER-TAMPER-CYCLE",
+  "status": "FAIL",
+  "checks": [
+    {
+      "name": "navigation status",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "tamper notice",
+      "actual": "Block 2 edited on disk. Verification now rejects its signature.",
+      "expected": "Block 2 edited on disk. Verification now rejects its signature.",
+      "ok": true
+    },
+    {
+      "name": "Chain",
+      "actual": "BROKEN · 02",
+      "expected": "Broken · 02",
+      "ok": false
+    },
+    {
+      "name": "Tamper test",
+      "actual": "EDITED · 02",
+      "expected": "Edited · 02",
+      "ok": false
+    },
+    {
+      "name": "No-secrets proof",
+      "actual": "STALE",
+      "expected": "Stale",
+      "ok": false
+    },
+    {
+      "name": "status",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "rejected signature",
+      "actual": "Signature fails",
+      "expected": "Signature fails",
+      "ok": true
+    },
+    {
+      "name": "downstream 3",
+      "actual": "Untrusted",
+      "expected": "Untrusted",
+      "ok": true
+    },
+    {
+      "name": "downstream 4",
+      "actual": "Untrusted",
+      "expected": "Untrusted",
+      "ok": true
+    },
+    {
+      "name": "downstream 5",
+      "actual": "Untrusted",
+      "expected": "Untrusted",
+      "ok": true
+    },
+    {
+      "name": "Rejected count",
+      "actual": "01",
+      "expected": "01",
+      "ok": true
+    },
+    {
+      "name": "reverify status",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "reverify rejected count",
+      "actual": "01",
+      "expected": "01",
+      "ok": true
+    },
+    {
+      "name": "reverify downstream 3",
+      "actual": "Untrusted",
+      "expected": "Untrusted",
+      "ok": true
+    },
+    {
+      "name": "reverify downstream 4",
+      "actual": "Untrusted",
+      "expected": "Untrusted",
+      "ok": true
+    },
+    {
+      "name": "reverify downstream 5",
+      "actual": "Untrusted",
+      "expected": "Untrusted",
+      "ok": true
+    },
+    {
+      "name": "restore notice",
+      "actual": "Restored block(s) 2 to their signed originals.",
+      "expected": "Restored block(s) 2 to their signed originals.",
+      "ok": true
+    },
+    {
+      "name": "restored chain",
+      "actual": "VERIFIED",
+      "expected": "Verified",
+      "ok": false
+    },
+    {
+      "name": "restored tamper",
+      "actual": "OFF",
+      "expected": "Off",
+      "ok": false
+    },
+    {
+      "name": "Restore disabled",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "restored Rejected",
+      "actual": "00",
+      "expected": "00",
+      "ok": true
+    }
+  ],
+  "failures": [
+    "Chain: \"BROKEN · 02\" != \"Broken · 02\"",
+    "Tamper test: \"EDITED · 02\" != \"Edited · 02\"",
+    "No-secrets proof: \"STALE\" != \"Stale\"",
+    "restored chain: \"VERIFIED\" != \"Verified\"",
+    "restored tamper: \"OFF\" != \"Off\""
+  ],
+  "artifacts": {},
+  "chrome": "155.0.8059.85",
+  "url": "http://127.0.0.1:55121/recorder",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  }
+}

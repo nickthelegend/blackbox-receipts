@@ -1,0 +1,177 @@
+{
+  "id": "WEB-PAGE-EVIDENCE",
+  "status": "FAIL",
+  "checks": [
+    {
+      "name": "navigation status",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "h1",
+      "actual": "The tape, the checks and the limits.",
+      "expected": "The tape, the checks and the limits.",
+      "ok": true
+    },
+    {
+      "name": "kicker",
+      "actual": "EVIDENCE · SESSION 933F87DA",
+      "expected": "Evidence · session 933f87da",
+      "ok": false
+    },
+    {
+      "name": "strip Agent flight recorder",
+      "actual": false,
+      "expected": true,
+      "ok": false
+    },
+    {
+      "name": "strip Session 933f87da",
+      "actual": false,
+      "expected": true,
+      "ok": false
+    },
+    {
+      "name": "strip 10 receipts",
+      "actual": false,
+      "expected": true,
+      "ok": false
+    },
+    {
+      "name": "strip Denied at step 03",
+      "actual": false,
+      "expected": true,
+      "ok": false
+    },
+    {
+      "name": "signed seal time (CSS casing allowed)",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "old seal time absent",
+      "actual": false,
+      "expected": false,
+      "ok": true
+    },
+    {
+      "name": "diagram Signing key",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "diagram Tape",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "diagram Seal",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "diagram Locator",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "section Fig. 1",
+      "actual": false,
+      "expected": true,
+      "ok": false
+    },
+    {
+      "name": "section 01 · Tape playback",
+      "actual": false,
+      "expected": true,
+      "ok": false
+    },
+    {
+      "name": "section 02 · Investigation",
+      "actual": false,
+      "expected": true,
+      "ok": false
+    },
+    {
+      "name": "section 03 · Limitations placard",
+      "actual": false,
+      "expected": true,
+      "ok": false
+    },
+    {
+      "name": "section 04 · Built in the window",
+      "actual": false,
+      "expected": true,
+      "ok": false
+    },
+    {
+      "name": "limitations",
+      "actual": 7,
+      "expected": 7,
+      "ok": true
+    },
+    {
+      "name": "limit Setup required",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "limit Not run yet",
+      "actual": false,
+      "expected": true,
+      "ok": false
+    },
+    {
+      "name": "window entries",
+      "actual": 8,
+      "expected": 8,
+      "ok": true
+    },
+    {
+      "name": "window lead A case variant of .env is a denied read, not a PASS",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "window lead Before",
+      "actual": true,
+      "expected": true,
+      "ok": true
+    },
+    {
+      "name": "window lead After",
+      "actual": false,
+      "expected": true,
+      "ok": false
+    }
+  ],
+  "failures": [
+    "kicker: \"EVIDENCE · SESSION 933F87DA\" != \"Evidence · session 933f87da\"",
+    "strip Agent flight recorder: false != true",
+    "strip Session 933f87da: false != true",
+    "strip 10 receipts: false != true",
+    "strip Denied at step 03: false != true",
+    "section Fig. 1: false != true",
+    "section 01 · Tape playback: false != true",
+    "section 02 · Investigation: false != true",
+    "section 03 · Limitations placard: false != true",
+    "section 04 · Built in the window: false != true",
+    "limit Not run yet: false != true",
+    "window lead After: false != true"
+  ],
+  "artifacts": {},
+  "chrome": "155.0.8059.85",
+  "url": "http://127.0.0.1:54806/evidence",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  }
+}

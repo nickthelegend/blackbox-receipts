@@ -1,0 +1,155 @@
+Skip to the recorder
+Blackbox
+RECORDER
+Overview
+Verify a pack
+RECORDING
+506a9618
+ANNUNCIATOR PANEL
+MASTER WARNING
+CHAIN
+VERIFIED
+5 signatures and links
+SECRET PATHS
+TOUCHED · 04
+1 call(s) denied before running
+NO-SECRETS PROOF
+FAIL · 04
+read_file touched secret path matching "secrets/**"
+TAMPER TEST
+OFF
+No block edited on disk
+WALRUS
+SETUP REQUIRED
+Set WALRUS_PUBLISHER_URL
+ZETARIS
+SETUP REQUIRED
+Set ZETARIS_API_KEY, ZETARIS_ORG_ID
+METERLESS
+SETUP REQUIRED
+Set METERLESS_TOKEN or METERLESS_STATE_DIR
+BLOCKS
+05
+REJECTED
+00
+DENIED CALLS
+01
+RECORDED SPAN
+1s
+MERKLE ROOT
+f29e140517be22f105a5224a01fda4f3d1820748014062c5b75282aa48d0d9ae
+Show public key
+LIVE TAPE
+Session 506a9618…3b01
+Reads /private/tmp/blackbox-web-phase4-uiN6A6/session/session.jsonl every 3 s
+POLICY FAIL · 04
+READ_FILE
+01
+02
+03
+04
+05
+T+0
++1s
+Signed call
+Tool error
+Secret access or failure
+Untrusted (after a break)
+Hash link
+TAPE LOG
+01
+03:22:34
+read_file
+one.md
+ok
+GENESIS → ebcf0e…b24c
+SIGNED
+02
+03:22:34
+read_file
+two.md
+ok
+ebcf0e…b24c → be373b…1fd1
+SIGNED
+03
+03:22:34
+read_file
+three.md
+ok
+be373b…1fd1 → b2b3a6…4977
+SIGNED
+04
+03:22:34
+read_file
+secrets/phase4-never-created.txt
+denied
+b2b3a6…4977 → 598fd7…9964
+POLICY FAIL
+05
+03:22:34
+read_file
+one.md
+ok
+598fd7…9964 → 9cf8d9…988d
+SIGNED
+TAMPER TEST
+Break a block, watch it fail.
+
+Edits a stored receipt on disk with the same store function as the CLI. Restore puts the signed original back.
+
+Block to tamper
+Block 01
+Block 02
+Block 03
+Block 04
+Block 05
+Tamper
+Restore
+Re-verify
+POLICY PROOF · NO-SECRETS-READ/V2
+Fail at block 04
+
+read_file touched secret path matching "secrets/**"
+
+EXPLAIN WHY BLOCK 04 FAILSProve: no secrets read
+WALRUS STORAGE
+Setup required
+
+Set WALRUS_PUBLISHER_URL to a funded publisher endpoint. None is bundled, and the root is not anchored on-chain.
+
+Upload to Walrus
+
+Restored block(s) 2 to their signed originals.
+
+Zetaris and Meterless lamps come from a live request on load; nothing is cached or simulated. Neither client is used in the agent loop yet.
+
+MCP PROXY
+Any MCP client
+5 RECORDED
+START
+pnpm --filter @blackbox/proxy start
+TRANSPORT
+stdio · packages/proxy/dist/server.js
+TOOLS
+read_file · write_file · git · shell · blackbox_explain
+OR PROXY
+server.js --upstream "<any stdio MCP server>"
+STORE
+/private/tmp/blackbox-web-phase4-uiN6A6/session/session.jsonl
+GITLAB DUO
+Custom flow
+NOT YET RUN ON GITLAB
+FLOW
+.gitlab/duo/flows/blackbox-receipts.yaml
+BRIDGE
+node packages/proxy/dist/call.js <tool> '<json>'
+CI
+.gitlab-ci.yml
+IDE
+.gitlab/duo/mcp.json
+
+Setup: docs/gitlab-setup.md. No Duo run or pipeline history exists yet.
+
+Signatures prove what the proxy observed. They do not prove the proxy machine was uncompromised. TEE attestation is future work.
+
+BLACKBOX RECEIPTS · ED25519 · SHA-256 · MERKLE · MIT

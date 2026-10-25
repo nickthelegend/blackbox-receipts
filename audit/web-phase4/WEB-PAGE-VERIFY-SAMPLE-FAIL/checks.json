@@ -1,0 +1,74 @@
+{
+  "id": "WEB-PAGE-VERIFY-SAMPLE-FAIL",
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "navigation status",
+      "actual": 200,
+      "expected": 200,
+      "ok": true
+    },
+    {
+      "name": "badge",
+      "actual": "FAIL",
+      "expected": "FAIL",
+      "ok": true
+    },
+    {
+      "name": "headline",
+      "actual": "FAIL no-secrets-read/v1 at step 3: No proof: step 3 (read_file .env) is signed as a secret access",
+      "expected": "FAIL no-secrets-read/v1 at step 3: No proof: step 3 (read_file .env) is signed as a secret access",
+      "ok": true
+    },
+    {
+      "name": "step count",
+      "actual": 10,
+      "expected": 10,
+      "ok": true
+    },
+    {
+      "name": "flagged step number",
+      "actual": "03",
+      "expected": "03",
+      "ok": true
+    },
+    {
+      "name": "flagged step badge",
+      "actual": "Secret access",
+      "expected": "Secret access",
+      "ok": true
+    },
+    {
+      "name": "flagged outcome",
+      "actual": "denied",
+      "expected": "denied",
+      "ok": true
+    },
+    {
+      "name": "flagged tool",
+      "actual": "read_file",
+      "expected": "read_file",
+      "ok": true
+    },
+    {
+      "name": "flagged path",
+      "actual": ".env",
+      "expected": ".env",
+      "ok": true
+    },
+    {
+      "name": "network requests after load",
+      "actual": 0,
+      "expected": 0,
+      "ok": true
+    }
+  ],
+  "failures": [],
+  "artifacts": {},
+  "chrome": "155.0.8059.85",
+  "url": "http://127.0.0.1:55121/verify",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  }
+}

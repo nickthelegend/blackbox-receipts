@@ -1,0 +1,28 @@
+2026-10-25T21:51:26.703Z runner pid=41915; acquired slot transferred to live runner; state=/private/tmp/blackbox-web-phase4-wmNxrr
+2026-10-25T21:51:26.975Z real MCP read_file {"path":"one.md"} exit=0; expectedDenied=false
+2026-10-25T21:51:27.144Z real MCP read_file {"path":"two.md"} exit=0; expectedDenied=false
+2026-10-25T21:51:27.317Z real MCP read_file {"path":"three.md"} exit=0; expectedDenied=false
+2026-10-25T21:51:27.321Z Next pid=42282; origin=http://127.0.0.1:54806; env is minimal with throwaway RECEIPTS_DIR and BLACKBOX_KEY_DIR; external service credentials absent
+2026-10-25T21:51:28.707Z Google Chrome 155.0.8059.85; PIDs=43454,43460,43461,43462,43463
+2026-10-25T21:51:45.413Z Next PIDs=42282; Chrome PIDs=43454,43460,43461,43462,43463; alive after graceful shutdown=[]; throwaway state removed
+2026-10-25T21:51:45.428Z release bb-audit-web exit=0; slot exists=false
+2026-10-25T21:51:59.768Z runner pid=61132; acquired slot transferred to live runner; state=/private/tmp/blackbox-web-phase4-8ePdO5
+2026-10-25T21:52:00.040Z real MCP read_file {"path":"one.md"} exit=0; expectedDenied=false
+2026-10-25T21:52:00.216Z real MCP read_file {"path":"two.md"} exit=0; expectedDenied=false
+2026-10-25T21:52:00.387Z real MCP read_file {"path":"three.md"} exit=0; expectedDenied=false
+2026-10-25T21:52:00.392Z Next pid=61190; origin=http://127.0.0.1:55121; env is minimal with throwaway RECEIPTS_DIR and BLACKBOX_KEY_DIR; external service credentials absent
+2026-10-25T21:52:01.495Z Google Chrome 155.0.8059.85; PIDs=63713,63719,63720,63721,63722
+2026-10-25T21:52:10.348Z real MCP read_file {"path":"secrets/phase4-never-created.txt"} exit=1; expectedDenied=true
+2026-10-25T21:52:10.559Z real MCP read_file {"path":"one.md"} exit=0; expectedDenied=false
+2026-10-25T21:52:14.636Z Next PIDs=61190; Chrome PIDs=63713,63719,63720,63721,63722; alive after graceful shutdown=[]; throwaway state removed
+2026-10-25T21:52:14.656Z release bb-audit-web exit=0; slot exists=false
+2026-10-25T21:52:33.950Z runner pid=74600; acquired slot transferred to live runner; state=/private/tmp/blackbox-web-phase4-uiN6A6
+2026-10-25T21:52:34.122Z real MCP read_file {"path":"one.md"} exit=0; expectedDenied=false
+2026-10-25T21:52:34.297Z real MCP read_file {"path":"two.md"} exit=0; expectedDenied=false
+2026-10-25T21:52:34.468Z real MCP read_file {"path":"three.md"} exit=0; expectedDenied=false
+2026-10-25T21:52:34.638Z real MCP read_file {"path":"secrets/phase4-never-created.txt"} exit=1; expectedDenied=true
+2026-10-25T21:52:34.809Z real MCP read_file {"path":"one.md"} exit=0; expectedDenied=false
+2026-10-25T21:52:34.814Z Next pid=74707; origin=http://127.0.0.1:55472; env is minimal with throwaway RECEIPTS_DIR and BLACKBOX_KEY_DIR; external service credentials absent
+2026-10-25T21:52:35.852Z Google Chrome 155.0.8059.85; PIDs=74843,74849,74850,74851,74852
+2026-10-25T21:52:38.583Z Next PIDs=74707; Chrome PIDs=74843,74849,74850,74851,74852; alive after graceful shutdown=[]; throwaway state removed
+2026-10-25T21:52:38.600Z release bb-audit-web exit=0; slot exists=false
