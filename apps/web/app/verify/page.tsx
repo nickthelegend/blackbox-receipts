@@ -269,7 +269,7 @@ export default function VerifyPage() {
           })}
         </ol>
         {result.root && <p className="vf-root">Merkle root <code>{result.root}</code></p>}
-        <p className="vf-note">{result.keyPinned ? 'The pack was signed by the key you pinned.' : 'The public key comes from the pack itself, so this PASS shows only that the pack is internally consistent and was signed by that key.'} Pin a key under Expected signer key above, or with <code>BLACKBOX_PUBLIC_KEY</code> in <code>verify-pack</code>, and compare it with the one the proxy operator publishes (<code>cli public-key</code>).</p>
+        <p className="vf-note">{result.keyPinned ? 'The pack was signed by the key you pinned.' : 'The public key comes from the pack itself, so this check shows only that the pack is internally consistent and was signed by that key.'} Pin a key under Expected signer key above, or with <code>BLACKBOX_PUBLIC_KEY</code> in <code>verify-pack</code>, and compare it with the one the proxy operator publishes (<code>cli public-key</code>).</p>
       </section>}
     </main>
   </div>;
