@@ -5,7 +5,7 @@
 import { Arrow, Logo } from './components/brand';
 import { loadFlight } from './flight';
 import { RecorderUnit } from './recorder-unit';
-import { recorder, route } from './site';
+import { asset, recorder, route } from './site';
 import './landing.css';
 
 export const dynamic = 'force-static';
@@ -50,6 +50,16 @@ export default function Landing() {
           <RecorderUnit flight={flight} />
           <figcaption className="ld-unit-cap">Drawn from recorded session {flight.sessionId.slice(0, 8)}: {flight.steps.length} receipts, sealed.</figcaption>
         </figure>
+      </section>
+
+      <section className="ld-tape" aria-labelledby="tape-title">
+        <div className="ld-tape-art" aria-hidden="true">
+          <img src={asset('/art/recorder.webp')} alt="" width={1600} height={900} loading="lazy" decoding="async" />
+        </div>
+        <div className="ld-wrap ld-tape-copy">
+          <h2 id="tape-title">The agent talks. <em>The tape keeps the receipts.</em></h2>
+          <p>Signed by the proxy, not the agent, and chained so nothing can be quietly removed from the record.</p>
+        </div>
       </section>
 
       <section id="how" className="ld-section" aria-labelledby="how-title">

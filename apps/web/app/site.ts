@@ -9,6 +9,9 @@ const REPO_URL = process.env.NEXT_PUBLIC_REPO_URL || 'https://github.com/nickthe
 /** An in-app link. The static build exports `verify/index.html` and `evidence/index.html`, so its links carry the base path and a trailing slash. */
 export const route = (path: '/' | '/verify' | '/evidence') => (STATIC_SITE ? `${BASE_PATH}${path === '/' ? '/' : `${path}/`}` : path);
 
+/** A file from public/, with the base path on the static build. */
+export const asset = (path: `/${string}`) => `${STATIC_SITE ? BASE_PATH : ''}${path}`;
+
 /** The recorder needs the local proxy store, so the static site links to how to run it instead. */
 export const recorder = STATIC_SITE
   ? { href: `${REPO_URL}#setup`, short: 'Run it locally', long: 'Run the recorder locally' }

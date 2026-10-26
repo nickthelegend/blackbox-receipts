@@ -249,3 +249,16 @@
   .ld-big dd{font-size:52px}
   .ld-big dt{font-size:11px}
 }
+
+/* the tape band: generated art of the recorder printing its receipts (public/art/recorder.webp) */
+.ld-tape{position:relative;isolation:isolate;overflow:hidden;border-top:1px solid var(--line);background:var(--deep)}
+.ld-tape-art{position:absolute;inset:0 0 0 34%;z-index:-1}
+.ld-tape-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% 50%}
+.ld-tape-art::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--deep) 0%,rgba(11,13,16,.55) 20%,rgba(11,13,16,0) 46%)}
+.ld-tape-art::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;background:linear-gradient(105deg,transparent 38%,rgba(255,170,110,.18) 50%,transparent 62%) no-repeat;background-size:260% 100%;background-position:150% 0}
+.ld-tape-copy{min-height:clamp(380px,40vw,580px);display:flex;flex-direction:column;justify-content:center;padding-block:72px}
+.ld-tape h2{font-size:clamp(36px,4.8vw,66px);line-height:1;letter-spacing:-.035em;max-width:9.5em}
+.ld-tape h2 em{font-style:normal;color:var(--accent)}
+.ld-tape p{margin-top:20px;max-width:26em;font-size:18px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.ld-tape-art{animation:bb-drift 24s ease-in-out infinite alternate}.ld-tape-art::before{animation:bb-sweep 9s cubic-bezier(.45,0,.25,1) 2.6s infinite}@keyframes bb-drift{from{transform:scale(1)}to{transform:scale(1.05) translate3d(-1.2%,-.8%,0)}}@keyframes bb-sweep{0%{background-position:150% 0}55%,100%{background-position:-50% 0}}}
+@media (max-width:760px){.ld-tape-art{left:0;bottom:auto;height:60vw}.ld-tape-art::after{background:linear-gradient(0deg,var(--deep) 0%,rgba(11,13,16,.2) 60%,rgba(11,13,16,0) 100%)}.ld-tape-copy{min-height:0;padding-top:56vw;padding-bottom:56px}}
